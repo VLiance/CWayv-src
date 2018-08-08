@@ -55,17 +55,18 @@ package language.cwMake.line;
 			
 			
 			sLib_IdName = sFolder.substring(sFolder.indexOf("_") + 1,sFolder.length);
-					
+					/*
 			Debug.fTrace("----BuildEntry---- "  + sFile);
 			Debug.fTrace("sFileName "  + sFileName);
 			Debug.fTrace("sLib_IdName "  + sLib_IdName);
 			Debug.fTrace("sFolder "  + sFolder);
 			Debug.fTrace("sPath "  + sPath);
-
+*/
 			
 		
 			
 			//TODO Relative path?
+			/*
 			if (_sLine.charAt(1) != ":"){
 				Debug.fTrace("TODO Make relative path"  + _sLine);
 				//Debug.fTrace("oCwmFile.sPath " + oCwmFile.oMake.sCurrentDir);
@@ -74,7 +75,7 @@ package language.cwMake.line;
 				Debug.fTrace("oMake.sCurrentFile " + oCwmFile.oMake.sCurrentFile);
 				Debug.fTrace("oMake.sExportBasePath" + oCwmFile.oMake.sExportBasePath);
 				
-			}
+			}*/
 						
 
 		}

@@ -52,16 +52,24 @@ package language.project.convertCpp ;
 				pushLine("#include \"" + _oSClass.sFilePath + ".h\"");
 			}
 			
-			pushLine("extern \"C\" Int IniLib_" +  oLib.sWriteName  +"(){");
+			//pushLine("class uLib;");//Temp?
+			pushLine("extern \"C\" Lib_GZ::uLib* IniLib_" +  oLib.sWriteName  +"(){");
 			
-			pushLine("if(" +  oLib.sWriteName + "::rLastClass != 0){return 0;}");
+			pushLine("if(" +  oLib.sWriteName + "::rLastClass == 0){ //If not Already initialised");
+		//	pushLine(oLib.sWriteName + "::rLastClass = 0; //Reset class list");//Reset list
   			
 		//	pushLine(oLib.sWriteName + "::zpLib = " +  oLib.sWriteName  +"::NewLib();");
 			
 			for( _oSClass in oLib.aClass ) {//SClass
-				pushLine( _oSClass.sNsAccess + _oSClass.sName + "::NewClass();" );
+				pushLine( _oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
 			}
-			pushLine("return 1;");
+			
+			pushLine("}");
+		
+			pushLine("GZ_mCppSetLib(" + oLib.sWriteName +");");
+			//pushLine("return Lib_GZ::fSetLib(&"+   oLib.sWriteName + "::zpLib)"  + ";");
+			pushLine("return (&"+   oLib.sWriteName + "::zpLib)"  + ";");
+			
 			pushLine("}");
 		}
 		

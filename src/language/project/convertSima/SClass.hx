@@ -432,6 +432,7 @@ package language.project.convertSima;
 				if(sName != "Class" && !bIsPod){
 					var oExtend : SClass = SFind.findClass(this, "Class");
 					aExtendClass.push(oExtend);
+					
 				}
 				
 			}else{
@@ -460,6 +461,21 @@ package language.project.convertSima;
 							ExtractBlocs.oCurrSClass = this; //Reset
 							ExtractBlocs.nCurrLine = nLine; //Reset
 						}
+						
+						if (_oExtend.sName == "EntryPoint"){
+							var _oLib : SLib = _oExtend.oSLib;
+							if (_oLib.sIdName == "GZ"){
+							//	Debug.fFatal("aaok");
+								if (oSProject.oEntryPoint == null){
+									oSProject.oEntryPoint = this;
+								}else{
+									Debug.fFatal("Multiple Entry Point in: " + oSClass.sName + " & " + oSProject.oEntryPoint.sName );
+								}
+								
+							}
+						}
+						
+
 					}
 				}
 			}

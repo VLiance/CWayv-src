@@ -6,6 +6,9 @@ package language;
  */
 class Setting 
 {
+	public static var bDoTryCatch = true;
+	
+	
 	public static var sFileExtention = ".cw";
 	public static var sShortNameDisplay = "C～";
 	

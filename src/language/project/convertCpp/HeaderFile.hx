@@ -807,7 +807,7 @@ package language.project.convertCpp ;
 			
 			if(!_oSClass.bExtension && !_oSClass.bIsPod){
 				pushLine("virtual gzAny MemCopy();"); 
-				pushLine("virtual gzAny DeepCopy();");
+		//		pushLine("virtual gzAny DeepCopy();");
 			}
 		}
 		

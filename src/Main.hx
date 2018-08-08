@@ -32,14 +32,14 @@ class Main
 			
 		
 			//var	oProjectData =  new ProjectData(_oRoot);
-		
+		/*
 		  for (arg in Sys.args()){
 			Sys.println(arg);
-		  }
+		  }*/
 			
 
 
-		Out.fDebug("Finish !");
+		//Out.fDebug("Finish !");
 		
 	//	File.saveContent("Test.txt","HELLO");
 		

@@ -48,8 +48,7 @@ package language.project.convertCpp ;
 		//	pushLine("//GroundZero Engine Demo File -- An example to show the capabilities of GZE, modify this file as you like --");
 			pushLine("#include \"" + oLib.sWriteName + "/" + oLib.sWriteName + ".h\"");	
 			
-			pushLine("#include \"" + oLib.sWriteName + "/" + oLib.sWriteName + ".icpp\"");
-			
+		
 			///AllFunc////
 			/*
 			var _sAllFunc : String = "";
@@ -59,7 +58,10 @@ package language.project.convertCpp ;
 			}*/
 			//////////
 			
+			//pushLine("GZ_mCppLib(" + oLib.sWriteName + ")");
 			pushLine("GZ_mCppLib(" + oLib.sWriteName + ")");
+			
+			pushLine("#include \"" + oLib.sWriteName + "/" + oLib.sWriteName + ".icpp\""); //Desactivate for now TODO?
 			
 		}
 		

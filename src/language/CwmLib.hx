@@ -54,7 +54,7 @@ package language;
 			oLib.oCwmLib = this;
 			
 			
-			Debug.fTrace("--CwmLib _sLine "  + _sLine);
+		//	Debug.fTrace("--CwmLib _sLine "  + _sLine);
 			
 			_sLine = StringTools.replace(_sLine, "\\", "/");
 			
@@ -90,11 +90,11 @@ package language;
 			oLib.sWritePath = "Lib_" + oLib.sIdName + "/";
 			
 			oLib.bReadOnly = _bReadOnly;//Interface are readOnly
-			
+			/*
 			Debug.fTrace("oLib.sReadPath "  + oLib.sReadPath);
 			Debug.fTrace("oLib.sName "  + oLib.sName);
 			Debug.fTrace("oLib.sIdName  "  + oLib.sIdName);
-				
+				*/
 			
 				
 			/*
@@ -106,15 +106,17 @@ package language;
 
 			
 			//TODO Relative path?
+				/*
 			if (_sLine.charAt(1) != ":"){
-				Debug.fTrace("TODO Make relative path"  + _sLine);
+				Debug.fTrace("TODO Make relative path: "  + _sLine);
 				//Debug.fTrace("oCwmFile.sPath " + oCwmFile.oMake.sCurrentDir);
+			
 				Debug.fTrace("oCwmFile.sPath " + oCwmFile.sPath);
 				Debug.fTrace("oCwmFile.oMake.sPath " + oCwmFile.oMake.sCurrentDir);
 				Debug.fTrace("oMake.sCurrentFile " + oCwmFile.oMake.sCurrentFile);
 				Debug.fTrace("oMake.sExportBasePath" + oCwmFile.oMake.sExportBasePath);
 				
-			}
+			}*/
 						
 						
 			

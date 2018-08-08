@@ -5,6 +5,7 @@ package language.project.convertCpp ;
 	import language.enumeration.EuSharing;
 	import language.enumeration.EuOperator;
 	import language.project.convertSima.SClass;
+	import language.pck.SLib;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.vars.special.UnitObj;
@@ -258,6 +259,7 @@ package language.project.convertCpp ;
 					_sExtend += _oExtend.sNsAccess + "c" +  _oExtend.sName + _sCopy;
 					i++;
 				}
+			
 			}
 			
 			if (i == 0) {

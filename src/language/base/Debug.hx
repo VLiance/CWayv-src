@@ -28,9 +28,9 @@ import language.project.convertSima.ExtractBlocs;
 		
 				
 		public static function fTrace(_oText:Dynamic):Void {
-			#if debug
+			//#if debug
 				Sys.println(_oText);
-			#end
+			//#end
 		}
 		
 		public static function fBreak():Void {
@@ -140,7 +140,8 @@ import language.project.convertSima.ExtractBlocs;
 				debugTrace(oListBox3, _oText, 0);
 			}*/
 			//var _aStopExecution 
-			throw  "Fatal error : ";
+			//fTrace("Fatal error : " +_oText );
+			throw  "Fatal error : " +  _oText  + " : ";
 		}
 		
 		

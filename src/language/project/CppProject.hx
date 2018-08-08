@@ -204,7 +204,7 @@ package language.project ;
 		
 		public static function fGetFilesInfo(_sPath:String):FileStat {
 			
-		//	if(FileSystem.exists(_sPath)){
+			if(FileSystem.exists(_sPath)){
 				try{
 					return FileSystem.stat(_sPath);
 				//	 sys.FileSystem.stat("myFile.txt");
@@ -218,7 +218,7 @@ package language.project ;
 					throw err; //throw away
 				}
 			}
-		//	}
+			}
 			return null;
 		}
 		
@@ -670,12 +670,17 @@ package language.project ;
 		
 		public function writeCwList():Void {
 			var _aList : Array<Dynamic>  =  oSProject.aLibList;
+	
+			
 			for (i in 0 ... _aList.length) {
 				var _oSLib : SLib = _aList[i];
+				
+	
 				if( sPlaformTarget == "" || _oSLib.sPlatform == sPlaformTarget || _oSLib.sPlatform == ""){
 					writeLibCpp(_oSLib);
 					writeCwListLib(_oSLib);
 				}
+				
 			}
 		}
 		public function writeCwListLib(_oSLib : SLib):Void {
@@ -719,26 +724,49 @@ package language.project ;
 			if (_nCount != 0) {
 				var _sPath : String = oProject.oCWaveMake.sExportBasePath + sCppDir + _oSLib.sWritePath +  "_" + _oSLib.sIdName + ".gcpp";
 				MyFile.fwritefile(_sPath,  _oCompileList.aFile);
-				Debug.fTrace("Create GCPP " +_sPath);
+			//	Debug.fTrace("Create GCPP " +_sPath);
 			}
 		}
 		public function writeLibCpp(_oSLib : SLib):Void {
+			if (_oSLib.bReadOnly){return; }//Don't create cpp h lib for Readonly Lib ??!
 			_oSLib.sCppModTime = fGetModifiedFilesInfoLib(_oSLib);
+			var _sPath : String = oProject.oCWaveMake.sExportBasePath  + sCppDir  + _oSLib.sWritePath  + _oSLib.sWriteName;
+				
 			if (_oSLib.sCppGetTime !=  _oSLib.sCppModTime || _oSLib.sCompGetTime != sCompilateurModInfo) {
 				
-				var _sPath : String = oProject.oCWaveMake.sExportBasePath  + sCppDir  + _oSLib.sWritePath  + _oSLib.sWriteName;
-				
+			
 				var _oLibCpp : LibCpp = new LibCpp(Main, _oSLib);
 				MyFile.fwritefile(_sPath + ".cpp",  _oLibCpp.aFile );
 				
 				var _oLibH : LibH = new LibH(Main, _oSLib);
-				MyFile.fwritefile(_sPath + ".h",  _oLibH.aFile);
+				MyFile.fwritefile(_sPath + ".h",  _oLibH.aFile); 
 				
 				var _oLibIni : LibIni = new LibIni(Main, _oSLib);
-				MyFile.fwritefile(_sPath + ".icpp",  _oLibIni.aFile);
-				
-				
+				MyFile.fwritefile(_sPath + ".icpp",  _oLibIni.aFile); //TODO RECREATE FILE IF CLASS CHANGE!!
+				/*
+				Debug.fTrace("    ------------------------------------------  ");
+				Debug.fTrace("bReadOnly: "  + _oSLib.bReadOnly);
+				Debug.fTrace("sIdName: "  + _oSLib.sIdName);
+				Debug.fTrace("sReadPath: "  + _oSLib.sReadPath);
+				Debug.fTrace("sPlatform: "  + _oSLib.sPlatform);
+				Debug.fTrace("sWriteName: "  + _oSLib.sWriteName);
+				Debug.fTrace("sWritePath: "  + _oSLib.sWritePath);
+				Debug.fTrace("Lib: "  +_sPath);
+				Debug.fTrace("sCompilateurModInfo : "  + sCompilateurModInfo);
+				Debug.fTrace("_oSLib.sCompGetTime : "  + _oSLib.sCompGetTime );
+				Debug.fTrace("       sCppGetTime  : "  +_oSLib.sCppGetTime );
+				Debug.fTrace("_oSLib.sCppModTime  : "  + _oSLib.sCppModTime );
+				*/
+
 				_oSLib.sCppModTime = fGetModifiedFilesInfoLib(_oSLib);
+				
+				Debug.fAssist( Setting.sShortName + Setting.sToCpp  +  "| " + _sPath.split("\\").join("/") );
+					//Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
+					
+			}else{
+				Debug.fAssist(  Setting.sShortName +  Setting.sUpToDate +  "| " + _sPath.split("\\").join("/") );
+			//	Debug.fAssist(  Setting.sShortName +  Setting.sUpToDate +  "|Lib:" + _oSLib.sIdName +  ": " + _sPath );
+				//	Debug.fAssist( Setting.sShortName +  Setting.sUpToDate +  "| " + sCppWritePathCl.split("\\").join("/") );
 			}
 		}
 		

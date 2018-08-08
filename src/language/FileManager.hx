@@ -47,10 +47,15 @@ package language;
 		//	oWin = new Form("MainForm");
 		//	oWin.addEventListener( FormCopyDataEvent.COPY_DATA, onExtEv, false, 30, true);  //TODO
 			
-	
-			//var bForceDebug : Boolean = true;
-			var bForceDebug : Bool = false;
+		
+			var bForceDebug : Bool = true;
+			//var bForceDebug : Bool = false;
 
+			#if debug
+				bForceDebug = false;
+			#end
+			
+			
 			
 			oMakeProject = new CWaveMake(oMain, sRootPath);
 			
@@ -129,7 +134,7 @@ package language;
 				}
 				
 				bReady = true;
-				Debug.fTrace("END-------------00");
+			//	Debug.fTrace("END-------------00");
 			}
 		
 		//oWin.allowClosing = true;	

@@ -62,24 +62,21 @@ package language.project.convertSima ;
 			oCurrSClass = null;
 		}
 		
-		private static function allLineInFunction(_oSClass:SClass, _oFunction : SFunction):Void {
-			
-			
-			
-			//New function main bloc
-			var _oSBloc : SBloc = cast(_oFunction);
-			//_oSBloc.oFunction = _oFunction;
-			//_oSBloc.oSClass = _oFunction.oSClass;
-			//_oFunction.oMainBloc = _oSBloc;
-			
-			var _aFile : Array<Dynamic> = _oSClass.aFile;
-			var _nCurentLine : UInt = _oFunction.nLineNum - 1;
-			var _nTotalLines : UInt = _aFile.length;
+		
+		private static function allLineInFunctionTry(_oSClass:SClass, _oFunction : SFunction):Void {
+		
+				//New function main bloc
+				var _oSBloc : SBloc = cast(_oFunction);
+				//_oSBloc.oFunction = _oFunction;
+				//_oSBloc.oSClass = _oFunction.oSClass;
+				//_oFunction.oMainBloc = _oSBloc;
 				
-			#if !debug
-				try {
-			#end
+				var _aFile : Array<Dynamic> = _oSClass.aFile;
+				var _nCurentLine : UInt = _oFunction.nLineNum - 1;
+				var _nTotalLines : UInt = _aFile.length;
 				
+			
+			
 				//Read file until reach end of function or the end of file
 				while (_nCurentLine < _nTotalLines) {
 					_nCurentLine ++;
@@ -97,18 +94,34 @@ package language.project.convertSima ;
 				
 				//fTestErrorNoReturnInFunction(_oFunction); *Auto nullable
 				nCurrLine = -1;
-				
-			#if !debug
-			} catch (err:String) {
-				
-				if (err.charAt(0) == ":") { //My errors
-					//trace("Er");
-					Debug.fError("Func Internal Error: " + err);
-				}else {
-					throw err; //throw away
+			
+		}
+	
+		
+		
+		
+		private static function allLineInFunction(_oSClass:SClass, _oFunction : SFunction):Void {
+		
+			if(Setting.bDoTryCatch){
+	
+				try {
+
+					allLineInFunctionTry(_oSClass, _oFunction);
+
+				} catch (err:String) {
+
+					if (err.charAt(0) == ":") { //My errors
+						//trace("Er");
+						Debug.fError("Func Internal Error: " + err);
+					}else {
+						throw err; //throw away
+					}
 				}
+				
+			}else{
+				
+				allLineInFunctionTry(_oSClass, _oFunction);
 			}
-			#end
 		}
 		
 		
@@ -126,6 +139,29 @@ package language.project.convertSima ;
 			
 		}*/
 		
+		
+		public static function extractLineObjTry( _oSBloc : SBloc, _sLine:String, _nLineNum : UInt, _sWord:String):Void {
+
+				var _oLine : VarObj = ExtractLines.extractLineObj(_oSBloc, _sLine, _sWord, Text.nCurrentIndex, _nLineNum); //var //return 
+				if(_oLine != null){ //Ex : new Var eithout ini
+					_oSBloc.pushLine(_oLine);
+				}
+						
+						/*
+						if (_nLineId == -2) {//Just initialisation :: var _oObj : Object;
+							return _oSBloc;
+						}
+						if (_nLineId != -1) {
+							analyseLine(aCurrentClassVar[_nLineId] );
+							aCurrentBloc[cLineList].push(_nLineId);
+						}else {
+							Debug.fError("in extractLineId returning negative id : " + _sLine)
+							var _aBug : Array<Dynamic> = _aBug[6];
+						}*/
+		}
+
+		
+		
 		public static function extractLine( _oSBloc : SBloc, _sLine:String, _nLineNum : UInt):SBloc {
 			if(_sLine != ""){
 				var _sWord : String = Text.between3(_sLine, 0,EuBetween.Word);
@@ -139,36 +175,26 @@ package language.project.convertSima ;
 					}else{
 						//Normal line    Not( For //while //if )
 								
-						#if !debug
+						if (Setting.bDoTryCatch){
+							
 							try {
-						#end
-							
-							var _oLine : VarObj = ExtractLines.extractLineObj(_oSBloc, _sLine, _sWord, Text.nCurrentIndex, _nLineNum); //var //return 
-							if(_oLine != null){ //Ex : new Var eithout ini
-								_oSBloc.pushLine(_oLine);
+					
+								extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord);
+							} catch (err:String) {
+								Debug.fBreak();
+								if (err.charAt(0) == ":") { //My errors
+								}else {
+									throw err; //throw away
+								}
 							}
 							
-						#if !debug
-						} catch (err:String) {
-							Debug.fBreak();
-							if (err.charAt(0) == ":") { //My errors
-							}else {
-								throw err; //throw away
-							}
-						}
-						#end
+						}else{
 							
-						/*
-						if (_nLineId == -2) {//Just initialisation :: var _oObj : Object;
-							return _oSBloc;
+							extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord);
+							
 						}
-						if (_nLineId != -1) {
-							analyseLine(aCurrentClassVar[_nLineId] );
-							aCurrentBloc[cLineList].push(_nLineId);
-						}else {
-							Debug.fError("in extractLineId returning negative id : " + _sLine)
-							var _aBug : Array<Dynamic> = _aBug[6];
-						}*/
+						
+					
 					}
 				
 				}else {

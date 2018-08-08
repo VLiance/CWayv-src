@@ -48,10 +48,10 @@ package language.cwMake.line;
 		
 		
 		
-		Debug.fTrace("Arguemnts : " +Sys.args().join(" "));
+	//	Debug.fTrace("Arguemnts : " +Sys.args().join(" "));
 			
 			fExtractCommandLine(Sys.args());
-			
+			/*
 Debug.fTrace("---------------------- : " );
 			
 			if (sCurrentFile == ""){
@@ -59,7 +59,7 @@ Debug.fTrace("---------------------- : " );
 			}
 			Out.fDebug("sCurrentFile: " +sCurrentFile);
 			
-			
+			*/
 			if (nHandleID != 0 || nAssistHandle != 0) {	
 				bManaged = true;
 			}else {
@@ -117,11 +117,7 @@ Debug.fTrace("---------------------- : " );
 							
 						
 					default:
-						
-						
-					
 				}
-				
 				
 			}*/
 		}

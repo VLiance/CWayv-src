@@ -102,12 +102,13 @@ package language.project.convertCpp ;
 			addSpace();
 			getDefHeaderDefinition();
 			
-	
+			
 			fAddThreadFonction();
 			addSpace();
 			
 			//AddCppCode
 			fAddCppLines(oSClass.aCppLineListNormal);
+			fAddEntryPoint();
 			
 			//ClassId
 			pushLine(oSClass.sNamespace);
@@ -137,6 +138,10 @@ package language.project.convertCpp ;
 			
 			pushLine("}");
 			addSpace();
+			
+			
+		
+			
 			
 			//if(oSClass.bHaveOverplace == false){
 				//pushLine("GZ_mCppClass(::" + oSClass.oSLib.sWriteName + ", "  + oSClass.sName + ")");
@@ -184,6 +189,15 @@ package language.project.convertCpp ;
 			
 		}
 		
+		
+		public function 	fAddEntryPoint(){
+			if ( oSClass.oSProject.oEntryPoint == oSClass){
+				var _sEntry : String = "new " + oSClass.sNsAccess + "c"  + oSClass.sName  + "(NULL)";
+				pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
+				//pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
+			//	pushLine("Lib_GZ::cEntryPoint*  GZ_IniEntryPointClass(Lib_GZ::cEntryPoint* _oEntry){("+ oSClass.sNsAccess + "c" + oSClass.sName  "*)(_oEntry)->Ini_" +  oSClass.sName + "()" ;}");
+			}
+		}
 		
 		private function extractDestructor():Void {
 			if (oSClass.oFuncDestrutor != null) {
@@ -396,9 +410,9 @@ package language.project.convertCpp ;
 		//	ConvertLines.convertBlocLines(this, _oSFunction);
 			addOverrideFunctionLines(_oSFunction); //Exmple Opengl generated function
 			
-			//if (_oSFunction.oReturn.eType != EuVarType._Void) {  //Add nullable retrun to give cpp compiler happy
-				fAddMissingReturnInFunction(_oSFunction);
-			//}
+
+			fAddMissingReturnInFunction(_oSFunction);
+		
 			
 			
 			subTab();
@@ -429,7 +443,7 @@ package language.project.convertCpp ;
 					}
 			
 				}
-				pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";");
+				pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";" + _oSFunc.oReturn.eType);
 
 			}
 		}

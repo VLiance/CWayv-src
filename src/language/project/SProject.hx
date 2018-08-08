@@ -28,6 +28,10 @@ package language.project ;
 	class SProject extends InObject 
 	{
 		
+		
+		public var oEntryPoint : SClass = null;
+		
+		
 		public var bConvertDebug : Bool = true;
 			
 		public var bAddDebugUndefObjTest : Bool = false;
@@ -222,7 +226,7 @@ package language.project ;
 		//public function addLib(_oCWMLib : CwmLib, _sReadPath:String, _sWritePath:String, _sLibName:String, _bReadOnly:Bool, _sWriteName:String = "", _sIdName:String = "", _bLoadAll : Bool = false, _sPlatform:String = ""):SLib {	
 		public function addLib(_oCWMLib : CwmLib):SLib {	
 			//aLibList[_sLibName] = ".as";
-			
+
 			var _oSLib : SLib = _oCWMLib.oLib;
 			aLibList.push(_oSLib);
 
