@@ -435,7 +435,7 @@ package language.project.convertSima
 					//	var _nCharCode : Int  = _sVar.charAt(0)
 				
 					//1 char OR _ is local
-					if (((_sVar.length == 1  && _sVar.charCodeAt(0) >  90 /*"Z"*/)  || _sVar.charAt(0) == "_")) { //1 char minuscule
+					if (((_sVar.length == 1  && _sVar.charCodeAt(0) >  90 /*"Z"*/)  || _sVar.charCodeAt(0) == "_".code)) { //1 char minuscule
 						
 						/////////////
 						/// LOCAL ///

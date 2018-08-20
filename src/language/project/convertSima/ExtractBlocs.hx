@@ -101,7 +101,11 @@ package language.project.convertSima ;
 		
 		
 		private static function allLineInFunction(_oSClass:SClass, _oFunction : SFunction):Void {
-		
+			
+			if (_oSClass.oSFrame.bSkipContent){ //Make Not implemented Debug print
+				return;
+			}
+			
 			if(Setting.bDoTryCatch){
 	
 				try {
@@ -110,11 +114,14 @@ package language.project.convertSima ;
 
 				} catch (err:String) {
 
-					if (err.charAt(0) == ":") { //My errors
+					if (err.charCodeAt(0) == ":".code) { //My errors
 						//trace("Er");
+						trace("bbb:" + err);
 						Debug.fError("Func Internal Error: " + err);
 					}else {
-						throw err; //throw away
+						
+						trace("aaa:" + err);
+						//throw err; //throw away
 					}
 				}
 				
@@ -181,7 +188,7 @@ package language.project.convertSima ;
 					
 								extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord);
 							} catch (err:String) {
-								Debug.fBreak();
+								//Debug.fBreak();
 								if (err.charAt(0) == ":") { //My errors
 								}else {
 									throw err; //throw away

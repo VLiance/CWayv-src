@@ -484,7 +484,8 @@ package language.project.convertCpp ;
 			//if (oSClass.bExtension  && _oSFunction.eFuncType == EuFuncType.Main ) {  
 			if ( _oSFunction.eFuncType == EuFuncType.Main ) {  
 				if(!oSClass.bIsPod){
-					pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent);");
+					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent);");
+					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
 					pushLine("virtual void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
 				}else {
 					pushLine(_sReturn + "c" + _sFuncName + "();"); //Default constructor only

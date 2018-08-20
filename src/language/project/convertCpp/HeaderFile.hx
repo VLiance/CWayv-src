@@ -220,6 +220,9 @@ package language.project.convertCpp ;
 			
 			//!!!!!!!!!!!!!!!!! Important keep same order as in the CPP backward heritage !!!!!!!!!!!!!!
 			
+			pushLine("//Static singleton function");
+			getStaticFunctionToConvert(oSClass);
+			
 			subTab();
 			//////////////////////
 			//Get only private //
@@ -272,19 +275,24 @@ package language.project.convertCpp ;
 			getVarToConvert(oSClass.aStaticVarList, EuSharing.Public, false, false,EuConstant.Normal);
 			
 			addSpace();
-			pushLine("//Static function");
-			getStaticFunctionToConvert(oSClass);
+	//		pushLine("//Static function");
+	//		getStaticFunctionToConvert(oSClass);
 			
 			
 			
 			getVarToConvert(oSClass.aStaticVarList, EuSharing.Private, false, false,EuConstant.Normal);
 			
+		//	pushLine("//Auto Singleton");
+		//	pushLine("gzSp<" + "c" + oSClass.sName  + "> zInst;");
+			
 			//subTab();
 			if(oSClass.bHaveOverplace == false){
-				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent){};");
+			//	pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent), zInst(0) {};");
+				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent) {};");
 			}else {
 				var _oSClassOp : SClass =  cast(oSClass.aExtendClass[0]);
-				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent){};");
+				//pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent), zInst(0) {};");
+				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent) {};");
 			}
 			pushLine("inline ~cs" + oSClass.sName +"(){};");
 			
@@ -762,6 +770,18 @@ package language.project.convertCpp ;
 					subTab();
 					pushLine("}");
 				//	pushLine("#endif");
+				
+				//	pushLine("//Auto Singleton");
+				//	pushLine("gzSp<" + _sLocOp  + "> zInst;");
+					/*
+					pushLine("inline gzSp<" + _sLocOp  + "> NewSingleton(" + getFunctionParam( oSClass.oFuncConstructor , true, false, true) + "){" );
+					addTab();
+					pushLine("zInst = New(parent" + getFunctionParam(oSClass.oFuncConstructor , false, true, false)  + ");");
+					pushLine("return zInst;");
+					subTab();
+					pushLine("}");*/
+					
+					addSpace();
 				}
 			}
 			
@@ -798,7 +818,13 @@ package language.project.convertCpp ;
 			//pushLine("inline Void iniCpy(const c" + _oSClass.sName + " &_o){" +    + "};" ); 
 			
 			
-			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + " &_o) " +  getAllExtendClassToString(oSClass,"(_o)") + fCopyAllVar(oSClass)  + "{};" ); 
+			
+			
+			
+			//TODO copy
+		//!!/pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + " &_o) " +  getAllExtendClassToString(oSClass,"(_o)") + fCopyAllVar(oSClass)  + "{};" ); 
+
+
 
 			//DeepCopy not sure??
 		//			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + " &_o, gzBool _b) " + getAllExtendClassToString(oSClass,"(_o, _b)") + fCopyAllVar(oSClass, true)  + "{};" ); 

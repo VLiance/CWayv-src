@@ -48,7 +48,7 @@ package language.cwMake.line;
 			
 			sFileName = _sLine.substring(_sLine.lastIndexOf("/") + 1, _sLine.length);
 			sPath = _sLine.substring(0,  _sLine.length - sFileName.length);
-			if (sPath.charAt(sPath.length-1) ==  "/"){
+			if (sPath.charCodeAt(sPath.length-1) ==  "/".code){
 				var _sSubPath : String = sPath.substring(0,sPath.length-1);
 				sFolder = _sSubPath.substring(_sSubPath.lastIndexOf("/") + 1, _sSubPath.length);
 			}

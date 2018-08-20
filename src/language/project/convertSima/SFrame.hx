@@ -30,6 +30,7 @@ package language.project.convertSima ;
 
 		public var oSProject : SProject;
 		public var oSClass : SClass;
+		public var bSkipContent : Bool = false;
 		public var aFile : Array<Dynamic>;
 		public var aGenerate : Array<Dynamic> = [];
 		
@@ -68,6 +69,10 @@ package language.project.convertSima ;
 				if (getPackage( Text.removeComments(aFile[i], oSClass) , i + 1) ) { //Also Create oSClass
 					//oSClass.sLib  = _sLib;
 					//oSClass.sPath = _sPath;
+					if (bSkipContent){
+						Debug.fWarning("#skipContent: " + _sPath +  oSClass.sName);
+						//return false; 
+					}
 					
 					//Count num of subfolder
 					var _nbFolder : UInt = MyFile.countFolder(_sPath);
@@ -177,6 +182,15 @@ package language.project.convertSima ;
 		
 		
 		private function getPackage(_sLine:String, _nLineNum : UInt) : Bool {
+			
+			
+				
+			var _nIndex : Int = _sLine.indexOf("#skipContent");
+			if (_nIndex >= 0) {
+				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
+				bSkipContent = true;
+				return true;
+			}
 			
 			var _nIndex : Int = _sLine.indexOf("package ");
 			if (_nIndex >= 0) {

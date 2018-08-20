@@ -282,7 +282,9 @@ package language.project ;
 		private function insertFile(_aFile:Array<Dynamic>, _oLib:SLib, _sPath:String, _sName:String):SClass {
 			
 			var _oSClass : SClass = new SClass(Main, this, _aFile, _oLib, _sPath, _sName);
-			aClass.push(_oSClass);
+			//if (!_oSClass.oSFrame.bSkipFile){
+				aClass.push(_oSClass);
+			//}
 			return _oSClass;
 		}
 		
@@ -311,11 +313,13 @@ package language.project ;
 					var _aRead : Array<Dynamic> = File.getContent(_sFilePath).split("\n");
 					//var _aRead : Array<Dynamic> = mFile.readFile(_sFilePath);
 					var _oSClass : SClass = insertFile(_aRead, _oSLib, _sPath, _sName); //aCurrentImport reseted
-					aImportCreated[_sFilePath] = _oSClass; //No repeat
-					_oImport.oRefClass = _oSClass; 
-					loadFileImport( _oSClass.aSImportList ); //Recursive import load
-					
-					aImportCppLoc[_oSLib.sIdName + "/" + _sPath + _sName + ".cpp"] = _oSClass;
+				//	if(!_oSClass.oSFrame.bSkipFile){
+						aImportCreated[_sFilePath] = _oSClass; //No repeat
+						_oImport.oRefClass = _oSClass; 
+						loadFileImport( _oSClass.aSImportList ); //Recursive import load
+						
+						aImportCppLoc[_oSLib.sIdName + "/" + _sPath + _sName + ".cpp"] = _oSClass;
+				//	}
 
 				
 				}else {

@@ -55,7 +55,7 @@ package language.project.convertCpp ;
 			
 			} catch (err:String) {
 				
-					if (err.charAt(0) == ":") { //My errors
+					if (err.charCodeAt(0) == ":".code) { //My errors
 						//trace("Er");
 						Debug.fError("Internal Error: " + err);
 					}else {
@@ -183,7 +183,7 @@ package language.project.convertCpp ;
 			subTab();
 			addSpace();
 			
-			convertUnitFunction();
+		//	convertUnitFunction(); //TODO UNIT??
 			pushLine(oSClass.sCEndNamespace);
 			//pushLine("}");
 			
@@ -192,8 +192,11 @@ package language.project.convertCpp ;
 		
 		public function 	fAddEntryPoint(){
 			if ( oSClass.oSProject.oEntryPoint == oSClass){
+				pushLine("extern \"C\" Lib_GZ::uLib* IniLib_Lib_" + oSClass.oSLib.sIdName + "();");
 				var _sEntry : String = "new " + oSClass.sNsAccess + "c"  + oSClass.sName  + "(NULL)";
-				pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
+				var _sIniLib : String = "Lib_GZ::uLib* _rLib =  IniLib_Lib_" + oSClass.oSLib.sIdName + "();if(_rLib != NULL){Lib_GZ::Lib::fAllClass(*_rLib->_rLastClass);}";
+				pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ " +   _sIniLib +  "  return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
+		
 				//pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
 			//	pushLine("Lib_GZ::cEntryPoint*  GZ_IniEntryPointClass(Lib_GZ::cEntryPoint* _oEntry){("+ oSClass.sNsAccess + "c" + oSClass.sName  "*)(_oEntry)->Ini_" +  oSClass.sName + "()" ;}");
 			}
@@ -344,12 +347,15 @@ package language.project.convertCpp ;
 				_sStatic = "p";
 				pushLine("#ifndef tFDef_" + _oSFunction.oSClass.sHeaderName + "_" + _oSFunction.sName);
 			}else if (_oSFunction.bStatic ) {
-				_sStatic = "cs";
+				//_sStatic = "cs";
+				_sStatic = "c"; //Now auto sigleton, mabe make pure static?
 			}
 			
 			//if (_oSFunction.eFuncType == EuFuncType.Main &&  oSClass.bExtension) { //Special case for class extension They have no param
-			if (_oSFunction.eFuncType == EuFuncType.Main ) { 
+			if (_oSFunction.eFuncType == EuFuncType.Main ) {
+		/* Use inline constructor instead for performances, TODO Verify  
 				var _sEmbedIni :String = fGetEmbedVarIni(oSClass);
+				
 				
 				if( !oSClass.bIsPod){
 				
@@ -371,7 +377,7 @@ package language.project.convertCpp ;
 					pushLine("{" + _sStack);
 				}
 				
-				
+			 */	
 			}else {
 				//pushLine(_sReturn + _sClass + _sFuncName + "(" + _sParam + ")" + _sIni + "{");
 				pushLine(_sReturn + _sStatic + _sClass  + _sFuncName + "(" + _sParam + "){" + _sStack);
@@ -380,11 +386,13 @@ package language.project.convertCpp ;
 			addTab();
 			//addSpace();
 			
+	
 			if (_oSFunction.eFuncType == EuFuncType.Main) {
 				//if(!oSClass.bIsPod){
-					iniGlobalVar();
 				
-					
+			/* Use inline constructor instead for performances, TODO Verify  
+					iniGlobalVar();
+			
 					//pushLine("//Special var ini");
 					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
 					iniAssociateVar();
@@ -395,8 +403,8 @@ package language.project.convertCpp ;
 						subTab();
 						pushLine("}");
 						addSpace();
-						
 				//}
+			*/
 				
 				pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" +  "{" + _sStack);
 				addTab();
@@ -443,7 +451,8 @@ package language.project.convertCpp ;
 					}
 			
 				}
-				pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";" + _oSFunc.oReturn.eType);
+				//pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";" + _oSFunc.oReturn.eType);
+				pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";");
 
 			}
 		}
@@ -469,7 +478,8 @@ package language.project.convertCpp ;
 					return "GzNullVal";
 				//break;
 				default :
-					return "zNull";
+					return "NULL";
+					//return "zNull";
 				//break;
 			}
 			return "";

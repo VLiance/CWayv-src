@@ -809,7 +809,7 @@ package language.project.convertCpp ;
 					var _oVarNew : VarNew = cast(_oVar);	
 					//return "gzSp<" + convertCppVarType(_oVarNew.oNewRef, _nLineNum) + ">(new " + convertCppVarType(_oVarNew.oNewRef, _nLineNum) + "(" + convertFuncCallParam(_oVarNew)  + ") )";
 					if(_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef,VarStaticClass).oRefClass.bThread ){
-						return  convertCppVarType(_oVarNew.oNewRef, _nLineNum) + "::NewThread(this)";
+						return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) + "::NewThread(this)";
 					}else { //Normal
 						//if(_oVarNew.oSBloc.eType == EuVarType._LineInput || _oVarNew.oSBloc.eType == EuVarType ){
 						var _sParam : String = convertFuncCallParam(_oVarNew);
@@ -817,9 +817,9 @@ package language.project.convertCpp ;
 							_sParam = ", " + _sParam;
 						}
 						if (_oConvertIn.eType == EuVarType._CallClass && !cast(_oConvertIn,VarCallClass).bScopeOwner) {
-							return  convertCppVarType(_oVarNew.oNewRef, _nLineNum) + "::Get(thread)->New(this" + _sParam  + ").get()";//this is temp
+							return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) + "::Get(thread)->New(this" + _sParam  + ").get()";//this is temp
 						}else {
-							return  convertCppVarType(_oVarNew.oNewRef, _nLineNum) +  "::Get(thread)->New(this" + _sParam + ")"; //this is temp
+							return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) +  "::Get(thread)->New(this" + _sParam + ")"; //this is temp
 						}
 					}
 					//return  checkVarConvertIn(_oVarCallClass, _oConvertIn,  _oVarCallClass.sName);
@@ -943,9 +943,13 @@ package language.project.convertCpp ;
 						return _oVarStaticClass.oRefClass.sNsAccess +  "p"  + _oVarStaticClass.sName  ; //TODO "p" not for var
 					}
 					
+					 //Auto singleton
+					if (_oContainer == null && _oNextVar == null && _oConvertIn == null ) {
+						return _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName + "::SetInst(thread)";
+					}
+					
 					return _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName;
-				
-	
+
 				//break;
 				
 				case EuVarType._Delegate :
@@ -1245,7 +1249,8 @@ package language.project.convertCpp ;
 				if (_oCommon.oSBloc.oSFunction != null && _oCommon.oSBloc.oSFunction.bStatic ) {
 					return "";
 				}else{
-					return "_::Get(thread)->" ;
+				//	return "_::Get(thread)->" ;
+					return "_::GetInst(thread)->" ;
 				}
 			}
 			return "";
@@ -1456,7 +1461,8 @@ package language.project.convertCpp ;
 							}else{
 								//_sReturn += "::"  ; //Normal
 								//_sReturn += "->" ; //??
-								_sReturn += "::Get(thread)->";
+								//_sReturn += "::Get(thread)->";
+								_sReturn += "::GetInst(thread)->";
 							}
 						}
 						

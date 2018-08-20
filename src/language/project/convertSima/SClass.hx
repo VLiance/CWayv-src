@@ -204,13 +204,18 @@ package language.project.convertSima;
 				sPath = _sPath;
 				aFile = _aFile;
 				oSLib = _oSLib;
-				oSLib.aClass.push(this);
+		
 				
 				if (oSLib.bReadOnly) {//CPP TODO MAY change
 					bCpp = true;
 				}
 				super(null);
 				oSFrame = new SFrame(_Main, _oSProject, this, _aFile, _sPath);	
+				//if (oSFrame.bSkipFile){
+				//	return;
+				//}
+				
+				oSLib.aClass.push(this);
 				
 				eType = EuVarType._SClass;
 			
