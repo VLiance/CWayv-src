@@ -49,7 +49,7 @@ package language.project.convertCpp ;
 			pushLine("#include \"" + oLib.sWriteName + "/" + oLib.sWriteName + ".h\"");
 			
 			for( _oSClass in oLib.aClass ) {//SClass
-				pushLine("#include \"" + _oSClass.sFilePath + ".h\"");
+				pushLine("//#include \"" + _oSClass.sFilePath + ".h\"");
 			}
 			
 			//pushLine("class uLib;");//Temp?
@@ -61,7 +61,7 @@ package language.project.convertCpp ;
 		//	pushLine(oLib.sWriteName + "::zpLib = " +  oLib.sWriteName  +"::NewLib();");
 			
 			for( _oSClass in oLib.aClass ) {//SClass
-				pushLine( _oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
+				pushLine("//" + _oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
 			}
 			
 			pushLine("}");

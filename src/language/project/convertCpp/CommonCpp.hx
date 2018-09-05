@@ -4,12 +4,14 @@ package language.project.convertCpp ;
 	import language.enumeration.EuVarType;
 	import language.enumeration.EuSharing;
 	import language.enumeration.EuOperator;
+	import language.project.convertSima.SBloc;
 	import language.project.convertSima.SClass;
 	import language.pck.SLib;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
+	import language.vars.varObj.Delegate;
 	import language.vars.varObj.EaseOut;
 	import language.vars.varObj.LineInput;
 	import language.vars.varObj.ParamInput;
@@ -330,7 +332,8 @@ package language.project.convertCpp ;
 				var _aList:Array<Dynamic> =  _oSClass.aExtendClass;
 				var _i : UInt = _aList.length;
 				if (!_oSClass.bHaveOverplace ||  _i == 0) {//TODO, better way
-					return " : public Lib_GZ::cStThread"; //New delegate for all class
+					//return " : public Lib_GZ::cStThread"; //New delegate for all class
+					return " : public Lib_GZ::csClass"; //New delegate for all class
 				}
 				
 				var _sExtend : String = "";
@@ -485,7 +488,12 @@ package language.project.convertCpp ;
 			if ( _oSFunction.eFuncType == EuFuncType.Main ) {  
 				if(!oSClass.bIsPod){
 					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent);");
-					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
+					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
+					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)"));
+				
+					
+					fGetInitializerList(_oSFunction);
+					pushLine("{};");
 					pushLine("virtual void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
 				}else {
 					pushLine(_sReturn + "c" + _sFuncName + "();"); //Default constructor only
@@ -574,16 +582,44 @@ package language.project.convertCpp ;
 		}
 	
 		public function fAddCppLines(_aSource:Array<Dynamic>) :Void {
-			if (_aSource.length > 0) {
-				pushLine("// ------  Cpp section  ------ //");
-				for (  _oLine  in _aSource) {//VarCppLine
-					pushLine(_oLine.sCppLine);
-				}
-				pushLine("// --------------------------- //");
-				addSpace();
+			if(!oSClass.oSFrame.bSkipContent){ //TODO only when we are in function (not outside?)
+					if (_aSource.length > 0) {
+						pushLine("// ------  Cpp section  ------ //");
+						for (  _oLine  in _aSource) {//VarCppLine
+							pushLine(_oLine.sCppLine);
+						}
+						pushLine("// --------------------------- //");
+						addSpace();
+					}
 			}
 		}
 		
+		
+		
+		public function fGetInitializerList(_oSFunction : SFunction):Void { 
+	
+			 convertDelegateIni(this, _oSFunction);
+		}
+		
+		public static function convertDelegateIni(_oFile:CommonCpp,  _oSBloc:SBloc) :Void {
+			var _oSClass : SClass = _oSBloc.oSClass;
+			var _aVarList  : Array<Dynamic>  = _oSClass.aDelegateListIni;
+			if(_aVarList.length > 0){		
+				//_oFile.pushLine("//Delegate ini");
+				var _i:UInt = _aVarList.length;
+				for (i in 0 ...  _i) {
+					_oFile.pushLine("," + convertDelegate(_oFile, _aVarList[i]));
+		
+				}
+				//_oFile.addSpace();
+			}
+			//return _sFirst;
+		}
+		
+		public static function convertDelegate(_oFile:CommonCpp, _oDlg:Delegate):String {
+			
+			return _oDlg.sName + "("  + TypeText.getFuncPtrTypeIni(_oDlg, "this") + "&"  + TypeText.getFuncLocWrapper(_oDlg.oInputPtrFunc.oFunc) + ")";
+		}
 		
 		
 	private function fAddLicence():String {
@@ -600,6 +636,10 @@ package language.project.convertCpp ;
 		return sLicence;
 	}
 		
+	
+	
+	
+	
 		
 	}
 

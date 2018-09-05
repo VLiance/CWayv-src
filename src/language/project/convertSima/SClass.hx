@@ -255,8 +255,8 @@ package language.project.convertSima;
 			oDebugImport.sPath = "Sys/";
 			oDebugImport.sName = "Debug";
 			oDebugImport.nLine = 0;
-			oDebugImport.oSLib = oSProject.oGzLib;
-			//oDebugImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+			//oDebugImport.oSLib = oSProject.oGzLib;
+			oDebugImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 			
 			oClassImport = newSImport();
 			oClassImport.sPath = "";
@@ -265,12 +265,15 @@ package language.project.convertSima;
 			//oClassImport.oSLib = oSProject.oGzLib;
 			oClassImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 
+			
 			oThreadMsgImport = newSImport();
 			oThreadMsgImport.sPath = "";
 			oThreadMsgImport.sName = "ThreadMsg";
 			oThreadMsgImport.nLine = 0;
-			oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
-		//	oThreadMsgImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+		//	oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
+			oThreadMsgImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+			
+			
 	
 		}
 		

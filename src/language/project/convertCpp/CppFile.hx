@@ -106,8 +106,11 @@ package language.project.convertCpp ;
 			fAddThreadFonction();
 			addSpace();
 			
+
 			//AddCppCode
 			fAddCppLines(oSClass.aCppLineListNormal);
+			
+		
 			fAddEntryPoint();
 			
 			//ClassId
@@ -152,8 +155,10 @@ package language.project.convertCpp ;
 			//}
 			
 			addSpace();
+
 			fAddCppLines(oSClass.aCppLineListClass);
 			fAddCppLines(oSClass.aCppLineListStatic);
+		
 
 			//Get all function
 			var _aFunctionList : Array<Dynamic> = oSClass.aFunctionList;
@@ -406,8 +411,12 @@ package language.project.convertCpp ;
 				//}
 			*/
 				
-				pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" +  "{" + _sStack);
+				pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" + "{" + _sStack);
+				
 				addTab();
+				pushLine("//Special var ini");
+				//ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
+			
 				//}
 				iniEmbedVar();
 			}
@@ -882,30 +891,8 @@ package language.project.convertCpp ;
 			}
 			return false;
 		}
-		public function fGetStackIniAll(_oSFunction : SFunction):Void { 
-	
-			 convertDelegateIni(this, _oSFunction);
-		}
 		
-		public static function convertDelegateIni(_oFile:CommonCpp,  _oSBloc:SBloc) :Void {
-			var _oSClass : SClass = _oSBloc.oSClass;
-			var _aVarList  : Array<Dynamic>  = _oSClass.aDelegateListIni;
-			if(_aVarList.length > 0){		
-				_oFile.pushLine("//Delegate ini");
-				var _i:UInt = _aVarList.length;
-				for (i in 0 ...  _i) {
-					_oFile.pushLine("," + convertDelegate(_oFile, _aVarList[i]));
 		
-				}
-				_oFile.addSpace();
-			}
-			//return _sFirst;
-		}
-		
-		public static function convertDelegate(_oFile:CommonCpp, _oDlg:Delegate):String {
-			
-			return _oDlg.sName + "("  + TypeText.getFuncPtrTypeIni(_oDlg, "this") + "&"  + TypeText.getFuncLocWrapper(_oDlg.oInputPtrFunc.oFunc) + ")";
-		}
 		
 		/*
 		public function getGateList(_oSClass : SClass) :Void { 

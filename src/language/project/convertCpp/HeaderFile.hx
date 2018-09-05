@@ -288,11 +288,12 @@ package language.project.convertCpp ;
 			//subTab();
 			if(oSClass.bHaveOverplace == false){
 			//	pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent), zInst(0) {};");
-				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent) {};");
+		//		pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent) {};");
+				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cThread* _thread): Lib_GZ::csClass(_thread) {};");
 			}else {
 				var _oSClassOp : SClass =  cast(oSClass.aExtendClass[0]);
 				//pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent), zInst(0) {};");
-				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent) {};");
+				pushLine("inline cs" + oSClass.sName +"(Lib_GZ::cThread* _thread): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_thread) {};");
 			}
 			pushLine("inline ~cs" + oSClass.sName +"(){};");
 			
@@ -694,7 +695,7 @@ package language.project.convertCpp ;
 				pushLine("namespace " + _oDlg.sDelegateStringFull + "{");
 				addTab();
 				pushLine("///////");
-				pushLine("GZ_mDlgIni(" + _sReturn + ", GZ_PARAM" + _sParamDlgIni + "){return " + _sDefaultReturn + ";};"); 
+				pushLine("GZ_mDlgIni(" + _sReturn + ", GZ_PARAM" + _sParamDlgIni + "){printf(\" (Not set) \"); return " + _sDefaultReturn + ";};");
 				pushLine(" class Dlg { GZ_mDlgClass(" + _oDlg.sDelegateString + ")");
 				addTab();
 				pushLine("///////////////////");

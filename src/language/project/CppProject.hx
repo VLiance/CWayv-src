@@ -742,7 +742,8 @@ package language.project ;
 				MyFile.fwritefile(_sPath + ".h",  _oLibH.aFile); 
 				
 				var _oLibIni : LibIni = new LibIni(Main, _oSLib);
-				MyFile.fwritefile(_sPath + ".icpp",  _oLibIni.aFile); //TODO RECREATE FILE IF CLASS CHANGE!!
+				MyFile.fwritefile(_sPath + ".icpp",  _oLibIni.aFile); //TODO RECREATE FILE IF CLASS LIST CHANGE!!
+				
 				/*
 				Debug.fTrace("    ------------------------------------------  ");
 				Debug.fTrace("bReadOnly: "  + _oSLib.bReadOnly);

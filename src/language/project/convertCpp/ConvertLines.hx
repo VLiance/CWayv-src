@@ -967,7 +967,10 @@ package language.project.convertCpp ;
 					 //GZ::Attribute::Dlg_fRotationOrder1_r_Void_p_No::Dlg(this, & GZ::cAttribute::wRotationOrder2); //TODO
 					// GZ::Dlg_r_Void_p_::Dlg(this, & GZ::cAttribute::wRotationOrder2).get();
 					
-					 return  _oPtrFunc.oPtrClass.oSLib.sName + "::Dlg" + _oPtrFunc.oFunc.getDelegateString() + "::Dlg(this, &" + _oPtrFunc.oPtrClass.oSLib.sName + "::c" +  _oPtrFunc.oPtrClass.sName + "::w" + _oPtrFunc.oFunc.sName.substr(1) + ")";
+				//	 return  _oPtrFunc.oPtrClass.oSLib.sName + "::Dlg" + _oPtrFunc.oFunc.getDelegateString() + "::Dlg(this, &" + _oPtrFunc.oPtrClass.oSLib.sName + "::c" +  _oPtrFunc.oPtrClass.sName + "::w" + _oPtrFunc.oFunc.sName.substr(1) + ")";
+					// return  _oPtrFunc.oPtrClass.oSLib.sWriteName +"::"+ _oPtrFunc.oPtrClass.sName + "::Dlg" + _oPtrFunc.oFunc.getDelegateString() + "::Dlg(this, &" + _oPtrFunc.oPtrClass.oSLib.sName + "::c" +  _oPtrFunc.oPtrClass.sName + "::w" + _oPtrFunc.oFunc.sName.substr(1) + ")";
+					 return  _oPtrFunc.oPtrClass.oSLib.sWriteName +"::"+ _oPtrFunc.oPtrClass.sName  + "::Dlg" + "_" + _oPtrFunc.oFunc.oSFunction.sName + _oPtrFunc.oFunc.getDelegateString() + "::Dlg(this, &" + _oPtrFunc.oPtrClass.oSLib.sWriteName + "::c" +  _oPtrFunc.oPtrClass.sName + "::w" + _oPtrFunc.oFunc.sName.substr(1) + ")";
+					// return  "Lib_GZ::Dlg" + _oPtrFunc.oFunc.getDelegateString() + "::Dlg(this, &" + _oPtrFunc.oPtrClass.oSLib.sName + "::c" +  _oPtrFunc.oPtrClass.sName + "::w" + _oPtrFunc.oFunc.sName.substr(1) + ")";
 				//break;
 				
 				case EuVarType._CallDelgate :
