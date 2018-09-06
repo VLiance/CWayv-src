@@ -1,6 +1,7 @@
 package language.cwMake.line;
 	
 
+	import language._system.System;
 	import language.base.InObject;
 	import language.base.Root;
 	import language.base.Debug;
@@ -33,7 +34,7 @@ package language.cwMake.line;
 			
 			
 			//sCurrentDir = File.getCurrentDirectory();
-			sCurrentDir = Sys.programPath();
+			sCurrentDir = System.fProgramPath();
 			
 			
 			//Debug.trace3("Arguemnts : " + Application.commandLineArguments.toString() );
@@ -50,7 +51,7 @@ package language.cwMake.line;
 		
 	//	Debug.fTrace("Arguemnts : " +Sys.args().join(" "));
 			
-			fExtractCommandLine(Sys.args());
+			fExtractCommandLine(System.fArg());
 			/*
 Debug.fTrace("---------------------- : " );
 			
@@ -151,7 +152,7 @@ Debug.fTrace("---------------------- : " );
 						sCurrentFile = sCurrentDir.substring( fGetFileStartIndex(sCurrentDir) );
 						sCurrentDir = sCurrentDir.substring(0, fGetFileStartIndex(sCurrentDir));
 						if (sCurrentDir.charAt(1) != ":") { //Relative path
-							sCurrentDir = Sys.programPath() + sCurrentDir;
+							sCurrentDir = System.fProgramPath() + sCurrentDir;
 						}
 
 							//Debug.fStop();

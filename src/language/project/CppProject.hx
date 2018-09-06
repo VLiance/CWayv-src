@@ -1,5 +1,6 @@
 package language.project ;
 	import haxe.io.Path;
+	import language._system.System;
 	import language.cwMake.line.PCH;
 	import language.cwMake.line.Rc;
 	import language.cwMake.line.Require;
@@ -31,9 +32,11 @@ package language.project ;
 	import language.base.InObject;
 	import language.base.Root;
 	import language.base.Debug;
-	import sys.FileSystem;
-	import sys.FileStat;
-	import sys.io.File;
+	
+	import language._system.FileSys;
+	import language._system.FileSysStat;
+	
+	
 	//FileStat 
 	//import ssp.filesystem.File;
 	//import ssp.filesystem.FileStat;
@@ -202,11 +205,11 @@ package language.project ;
 		
 		
 		
-		public static function fGetFilesInfo(_sPath:String):FileStat {
+		public static function fGetFilesInfo(_sPath:String):FileSysStat {
 			
-			if(FileSystem.exists(_sPath)){
+			if(FileSys.fExist(_sPath)){
 				try{
-					return FileSystem.stat(_sPath);
+					return FileSys.fStat(_sPath);
 				//	 sys.FileSystem.stat("myFile.txt");
 					//return File.getFileInfo(_sPath);
 				} catch (err:String) {
@@ -227,9 +230,9 @@ package language.project ;
 		//	var _sCompilateurCpp : String = MyFile.getFullPathFromRelative(sCompilerPath, "../") + "cwc.exe"; 
 			//var _sCompilateurCWift : String = sCompilerPath + "cwcc.exe";
 			//var _sCompilateurCWift : String =  Sys.executablePath() + "cwcc.exe";
-			var _sCompilateurCWift : String  = Sys.programPath();
+			var _sCompilateurCWift : String  = System.fProgramPath();
 		//	var _oCompAS3 : FileStat = fGetFilesInfo(_sCompilateurAS3);
-			var _oCompilateurCWift : FileStat = fGetFilesInfo(_sCompilateurCWift);
+			var _oCompilateurCWift : FileSysStat = fGetFilesInfo(_sCompilateurCWift);
 		//	var _oCompAS3 : FileStat = fGetFilesInfo(_sCompilateurAS3);
 		
 		//Debug.trace3("_sCompilateurCWift !! : " + _sCompilateurCWift);
@@ -237,7 +240,7 @@ package language.project ;
 			//if (_oCompAS3 == null || _sCompilateurAS3 == null){return ""; }
 			if (_oCompilateurCWift == null){return ""; }
 			//return  _oCompilateurCWift.mtime + "|"  + _oCompAS3.mtime;
-			return  _oCompilateurCWift.mtime.toString();
+			return  _oCompilateurCWift.dModTime.toString();
 		}
 		
 		
@@ -264,20 +267,20 @@ package language.project ;
 			sCppWritePathDH = sCppWritePath + "_" + _sClassName + ".h";
 			//sCppWritePathOp =  sCppWritePath + "__" + _sClassName + ".h";
 			
-			var _oCppInfo : FileStat = fGetFilesInfo(sCppWritePathCpp);
-			var _oHInfo : FileStat= fGetFilesInfo(sCppWritePathH);		
-			var _oNxInfo : FileStat = fGetFilesInfo(_sNxPath);
+			var _oCppInfo : FileSysStat = fGetFilesInfo(sCppWritePathCpp);
+			var _oHInfo : FileSysStat= fGetFilesInfo(sCppWritePathH);		
+			var _oNxInfo : FileSysStat = fGetFilesInfo(_sNxPath);
 			if (_oCppInfo == null || _oHInfo == null || _oNxInfo == null) {
 				return "Error";
 			}
 
-			_sResult  =	_oNxInfo.mtime + "|" +  _oCppInfo.mtime + "|" + _oHInfo.mtime;
+			_sResult  =	_oNxInfo.dModTime + "|" +  _oCppInfo.dModTime + "|" + _oHInfo.dModTime ;
 					
 			if (_oSClass.bDefHeader) {
 
-				var _oDefHInfo : FileStat = fGetFilesInfo(sCppWritePathDH);
+				var _oDefHInfo : FileSysStat = fGetFilesInfo(sCppWritePathDH);
 				if(_oDefHInfo != null){
-					_sResult += "|" + _oDefHInfo.mtime;
+					_sResult += "|" + _oDefHInfo.dModTime ;
 				}
 			}
 			
@@ -289,12 +292,12 @@ package language.project ;
 			sCppWritePathH = sCppWritePath + ".h";	
 			sCppWritePathCpp = sCppWritePath + ".cpp";
 			
-			var _oCppInfo : FileStat = fGetFilesInfo(sCppWritePathCpp);
-			var _oHInfo : FileStat= fGetFilesInfo(sCppWritePathH);
+			var _oCppInfo : FileSysStat = fGetFilesInfo(sCppWritePathCpp);
+			var _oHInfo : FileSysStat= fGetFilesInfo(sCppWritePathH);
 			if (_oCppInfo == null || _oHInfo == null ) {
 				return "Error";
 			}
-			return	 _oCppInfo.mtime + "|" + _oHInfo.mtime;
+			return	 _oCppInfo.dModTime + "|" + _oHInfo.dModTime;
 		}
 		
 		
@@ -310,9 +313,9 @@ package language.project ;
 			fRetreiveAllModificationInfo();
 			
 			var _oCurrentClass : SClass;
-			var _oCppInfo : FileStat;
-			var _oHInfo : FileStat;	
-			var _oNxInfo : FileStat;
+			var _oCppInfo : FileSysStat;
+			var _oHInfo : FileSysStat;	
+			var _oNxInfo : FileSysStat;
 
 			sCompilateurModInfo = fGetModifiedCompilateurInfo();
 			
@@ -552,7 +555,7 @@ package language.project ;
 					_sReturn +=  _oLib.sReadPath + "<" + _oLib.sWritePath + "<";
 				//	var _aFiles:Array<Dynamic> = File.listFileNames(_oLib.sReadPath, "*.cpp", "all", true);
 					//var _aFiles:Array<String> = FileSystem.readDirectory(_oLib.sReadPath); //TODO
-					var _aFiles:Array<String> = MyFile.fReadDirectory(_oLib.sReadPath, true, ".cpp"); //TODO
+					var _aFiles:Array<String> = FileSys.fReadDirectory(_oLib.sReadPath, true, ".cpp"); //TODO
 					for ( j in 0 ...  _aFiles.length) {
 						
 						//var _sFile : String = _aFiles[j];
@@ -640,14 +643,14 @@ package language.project ;
 			var _sPathFrom : String =  _oLib.sReadPath + _oRequire.sPath + "." + _oRequire.sType;
 			var _sPathTo : String =  _sExpBasePath + _oLib.sWritePath + _oRequire.sPath + "." + _oRequire.sType;
 			
-			var _oInfoFrom : FileStat = fGetFilesInfo(_sPathFrom);
+			var _oInfoFrom : FileSysStat = fGetFilesInfo(_sPathFrom);
 			if (_oInfoFrom == null) { //error
 				Debug.fError("Require file not found: " +  _sPathFrom);
 				return;
 			}
-			var _oInfoTo : FileStat = fGetFilesInfo(_sPathTo);
+			var _oInfoTo : FileSysStat = fGetFilesInfo(_sPathTo);
 			if (_oInfoTo != null) {
-				if (_oInfoFrom.mtime.getTime() > _oInfoTo.mtime.getTime() ) {
+				if (_oInfoFrom.dModTime.getTime() > _oInfoTo.dModTime.getTime() ) {
 					//Copy Replace
 					fCopy(_sPathFrom, _sPathTo);
 				}
@@ -659,12 +662,12 @@ package language.project ;
 		public function fCopy(_sSource  : String, _sTo : String):Void {
 			Debug.fAssist("Copy " +  _sSource + " to " + _sTo);
 		//	if (!File.fileExists(_sTo)) {
-			if (!FileSystem.exists(_sTo)) {
+			if (!FileSys.fExist(_sTo)) {
 				_sTo = _sTo.split("/").join("\\"); 
 //				mFile.createFolderTree(_sTo);//CW TODO
 			}
 			//File.copyFile(_sSource, _sTo, true);
-			File.copy(_sSource, _sTo);
+			FileSys.fCopy(_sSource, _sTo);
 		}
 		
 		
@@ -794,7 +797,7 @@ package language.project ;
 			}
 				
 				
-			if(!FileSystem.exists(_sPath)){
+			if(!FileSys.fExist(_sPath)){
 				return;
 			}
 		

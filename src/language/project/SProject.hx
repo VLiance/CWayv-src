@@ -20,7 +20,8 @@ package language.project ;
 	import language.base.Root;
 	import language.base.Debug;
 	import language.project.convertSima.SClass;
-	import sys.io.File;
+	
+	//import sys.io.File;
 	/**
 	 * ...
 	 * @author ...
@@ -310,7 +311,11 @@ package language.project ;
 				//Don't reImporte files already imported
 				if (aImportCreated[_sFilePath] == null) { ///Dont reload same classe //Array<Dynamic> with string index, check if work in c++
 
-					var _aRead : Array<Dynamic> = File.getContent(_sFilePath).split("\n");
+					//var _aRead : Array<Dynamic> = File.getContent(_sFilePath).split("\n");
+					
+					var _aRead : Array<Dynamic> = MyFile.readFile(_sFilePath);
+					
+					
 					//var _aRead : Array<Dynamic> = mFile.readFile(_sFilePath);
 					var _oSClass : SClass = insertFile(_aRead, _oSLib, _sPath, _sName); //aCurrentImport reseted
 				//	if(!_oSClass.oSFrame.bSkipFile){

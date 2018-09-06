@@ -1,4 +1,5 @@
 package language.project.convertSima;
+	import language._system.FileSys;
 	import language.enumeration.EuBetween;
 	import language.enumeration.EuConstant;
 	import language.enumeration.EuCppLineType;
@@ -28,7 +29,7 @@ package language.project.convertSima;
 	import language.vars.varObj.VarStaticClass;
 	import language.base.Root;
 	import language.base.Debug;
-	import sys.io.File;
+	//import sys.io.File;
 
 
 	class SClass extends SBloc {
@@ -623,7 +624,7 @@ package language.project.convertSima;
 			var _sReadFilePath : String  = oSLib.sReadPath + sPath + sName + Setting.sFileExtention;
 			_sReadFilePath = _sReadFilePath.split("\\").join("/");
 		//	var _aRead : Array<Dynamic> = mFile.readFile(_sReadFilePath);
-			var _aRead : Array<Dynamic> = File.getContent(_sReadFilePath).split("\n"); // .readFile(_sReadFilePath);
+			var _aRead : Array<Dynamic> = FileSys.fGetContent(_sReadFilePath).split("\n"); // .readFile(_sReadFilePath);
 			
 		//	try{
 				oSFrame = new SFrame(oSFrame.Main, oSProject, this, _aRead, sPath);

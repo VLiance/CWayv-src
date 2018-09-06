@@ -1,5 +1,6 @@
 package language;
 
+	import language._system.FileSys;
 	import language.base.Debug;
 	import language.cwMake.line.BuildEntry;
 	import language.cwMake.line.CWaveArg;
@@ -14,7 +15,7 @@ package language;
 	import language.project.SProject;
 	import language.vars.varObj.VarInt;
 	import language.vars.varObj.VarObj;
-	import sys.FileSystem;
+	//import sys.FileSystem;
 	
 
 	import language.base.InObject;
@@ -195,12 +196,12 @@ package language;
 		
 		public function fFindFirstLibPath(_sSubPath: String) :String {
 			//Check current folder
-			if (FileSystem.exists(oMake.sCurrentDir + _sSubPath)) {
+			if (FileSys.fExist(oMake.sCurrentDir + _sSubPath)) {
 				return oMake.sCurrentDir;
 			}
 			var _aPath : Array<Dynamic> = oMake.aLibPath;
 			for (i in 0 ...  _aPath.length) {
-				if (FileSystem.exists(oMake.aLibPath[i] + _sSubPath)) {
+				if (FileSys.fExist(oMake.aLibPath[i] + _sSubPath)) {
 					return oMake.aLibPath[i];
 				}
 			}

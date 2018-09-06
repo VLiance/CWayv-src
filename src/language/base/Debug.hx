@@ -1,5 +1,6 @@
 
 package language.base ;
+import language._system.System;
 import language.cwMake.line.CWaveArg;
 import language.project.assist.CwInfo;
 import language.project.convertSima.ExtractBlocs;
@@ -21,7 +22,8 @@ import language.project.convertSima.ExtractBlocs;
 			Sys.println(_oText);
 		}*/
 		public static function error(_oText:Dynamic, _nColor:UInt = 0):Void {
-			Sys.println(_oText);
+			//Sys.println(_oText);
+			System.fPrint(_oText);
 		}
 		
 		
@@ -29,7 +31,8 @@ import language.project.convertSima.ExtractBlocs;
 				
 		public static function fTrace(_oText:Dynamic):Void {
 			//#if debug
-				Sys.println(_oText);
+				System.fPrint(_oText);
+				//Sys.println(_oText);
 			//#end
 		}
 		
@@ -111,8 +114,8 @@ import language.project.convertSima.ExtractBlocs;
 					//System.sendStringMessage(CWaveArg.nHandleID, "E: " + _sPath + String(_oText));
 				}
 			}else {
-				
-				Sys.println("E: " + _sPath + cast(_oText) + " ");
+			
+				System.fPrint("E: " + _sPath + cast(_oText) + " ");
 			//	debugTrace(oListBox3, "E: " + _sPath + String(_oText), 0);
 			}
 			
@@ -122,7 +125,8 @@ import language.project.convertSima.ExtractBlocs;
 			
 			
 		public static function fWarning(_oText:Dynamic):Void {
-				Sys.println("W: " +_oText);
+			//	Sys.println("W: " +_oText);
+				System.fPrint("W: " +_oText);
 				/*
 			if(CWaveArg.bManaged){
 				System.sendStringMessage(CWaveArg.nHandleID, "W: " + String(_oText));
@@ -132,7 +136,8 @@ import language.project.convertSima.ExtractBlocs;
 		}
 		
 		public static function fFatal(_oText:Dynamic):Void {
-			Sys.println(_oText);
+			System.fPrint(_oText);
+			//Sys.println(_oText);
 			/*
 			if(CWaveArg.bManaged){
 				System.sendStringMessage(CWaveArg.nHandleID, "F: " + String(_oText));

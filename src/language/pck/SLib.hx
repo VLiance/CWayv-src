@@ -1,13 +1,16 @@
 package language.pck ;
 	import language.CwmLib;
+	import language._system.FileSys;
 	import language.project.convertSima.SClass;
 	import language.project.run.ArrayLocation;
 	import language.vars.special.TypeDef;
 	import language.base.Debug;
+	
+	/*
 	import sys.FileSystem;
 	import sys.io.File;
 //	import ssp.filesystem.File;
-	
+	*/
 
 	class SLib  {
 
@@ -66,11 +69,11 @@ package language.pck ;
 		public function fGetFolderFileList(_sFolder:String, _sRelative : String = ""):Void { 
 			
 			
-			var _aFileDir: Array<String> = FileSystem.readDirectory(_sFolder + _sRelative );
+			var _aFileDir: Array<String> = FileSys.fReadOneDirectory(_sFolder + _sRelative );
 			for (i in 0 ...   _aFileDir.length) {
 				var _sFile : String = _aFileDir[i];
 				var _sPath =  _sRelative + _sFile;
-				if (FileSystem.isDirectory(_sFolder + _sPath)  ){
+				if (FileSys.fIsDirectory(_sFolder + _sPath)  ){
 					//_sRelative +=  _aFileDir[i] + "/";
 				//	fGetFolderFileList(_sPath + "/" );
 					fGetFolderFileList(_sFolder , _sPath +  "/");
@@ -89,31 +92,6 @@ package language.pck ;
 				}
 			}
 			
-			//aFileList = aFileList.concat(_aFile );
-			
-			
-			/*
-			
-		//	var _aFile: Array<Dynamic> = File.listFileNames(_sFolder, "*.*", "",  false);
-			var _aFile: Array<String> = FileSystem.readDirectory(_sFolder);
-		
-			for (i in 0 ...   _aFile.length) {
-				var _sFile : String = 	_aFile[i];
-				var _nIndex : Int = _sFile.indexOf(".");
-				if (_nIndex > -1) {
-					_sFile = _sFile.substring( 0 , _nIndex);
-				}
-				_aFile[i] = _sRelative + _sFile;
-			}
-				
-			var _aDir : Array<String> =  FileSystem.readDirectory(_sFolder);
-		//	var _aDir : Array<Dynamic> = File.listFolderNames(_sFolder, "*.*", "",  false);
-			for (j in 0 ...  _aDir.length) {
-				fGetFolderFileList(_sFolder + "/" +_aDir[j], _sRelative  +_aDir[j] + ".");
-			}
-			
-			aFileList = aFileList.concat(_aFile );
-			*/
 		}
 		
 		

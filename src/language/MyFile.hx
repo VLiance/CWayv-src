@@ -8,19 +8,15 @@ package language;
 	import language.base.InObject;
 	import language.base.Root;
 	import language.base.Debug;
+	import language._system.FileSys;
+	
+	/*
+	//import sys.io.FileInput;
 	import sys.FileSystem;
 	import sys.io.File;
-	import sys.io.FileInput;
 	import sys.io.FileOutput;
-	
-	//import maelib.events.MainEvent;
+	*/
 
-	//import ssp.filesystem.File;
-//import ssp.error.SSPError;
-
-//	import flash.events.Event;
-//import flash.events.MouseEvent;
-	
 
 	class MyFile extends InObject {
 		
@@ -53,12 +49,13 @@ package language;
 
 			var _aRead : Array<String> = [];
 
-			if(FileSystem.exists(_sFile)){
+			//if(FileSystem.exists(_sFile)){
+			if(FileSys.fExist(_sFile) ){
 				
 				//var sText : String = File.readText(_sFile, "\n");
 			// FileInput _oFile = 	File.read(_sFile,false);
 			 
-				var sText : String =  File.getContent( _sFile );
+				var sText : String =  FileSys.fGetContent( _sFile );
 				_aRead = sText.split("\n");
 
 				
@@ -125,17 +122,16 @@ package language;
 			*/
 				
 		//	if (!File.fileExists(_sFile)) {
-			if (!FileSystem.exists(_sFile)) {
+			if (!FileSys.fExist(_sFile)) {
 				createFolderTree(_sFile);
 			}
 			
 		//	 File.encoding =  "utf8";
 			//var _bResult : Bool = File.writeText(_sData, _sFile);
 		//	var _bResult : Bool = File.writeText(_sData, _sFile);
-			var _oOut : FileOutput = File.write(_sFile, false);
-			
-			_oOut.writeString(_sData);
-			_oOut.close();
+				
+			FileSys.fWrite(_sFile,_sData);
+	
 			/*
 			if (!_bResult) {
 				Debug.fStop();
@@ -425,7 +421,7 @@ package language;
 				
 					_sNextFolder = _sPath.substring(0, _nIndex);
 
-					FileSystem.createDirectory(_sNextFolder);
+					FileSys.fCreateDirectory(_sNextFolder);
 
 				}
 			}
@@ -445,7 +441,7 @@ package language;
 				_nIndex  = _sPreviousFolder.lastIndexOf("\\", _nIndex);
 				_sPreviousFolder = _sPreviousFolder.substring(0, _nIndex);
 			//	if (File.folderExists(_sPreviousFolder)) {
-				if (FileSystem.exists(_sPreviousFolder)) {
+				if (FileSys.fExist(_sPreviousFolder)) {
 					break;
 				}
 			}
@@ -520,55 +516,11 @@ package language;
 		}
 	
 		
-		public static function fEndSameExtention(_sFile:String, _sExtention:String ) : Bool{
-			if (_sExtention == ""){
-				return true;
-			}
-			if (_sFile.length < _sExtention.length){
-				return false;
-			}
-			
-			var j : Int = _sFile.length;
-			var i : Int = _sExtention.length;
-			while (i > 0){i--; j--;
-				if (_sExtention[i] != _sFile[j]){
-					return false;
-				}
-			}
-			return true;
-		}
+	
 		
 		
 		
-		public static function  fReadDirectory(_sFolder:String, _bSubFolder :Bool = true, _sExtention: String = "", _aList:Array<String> = null, _sRelative : String = "") : Array<String> {
-			if (_aList == null){
-				_aList = new Array<String>();
-			}
-			
-			var _aFileDir: Array<String> = FileSystem.readDirectory(_sFolder + _sRelative );
-			for (i in 0 ...   _aFileDir.length) {
-				var _sFile : String = _aFileDir[i];
-				var _sPath =  _sRelative + _sFile;
-				if (FileSystem.isDirectory(_sFolder + _sPath)  ){
-					//_sRelative +=  _aFileDir[i] + "/";
-				//	fGetFolderFileList(_sPath + "/" );
-					if(_bSubFolder){
-						fReadDirectory(_sFolder ,  true, _sExtention, _aList, _sPath +  "/");
-					}
-					
-				}else{ //It's a file
-					
-					//End with same
-					if (fEndSameExtention(_sPath, _sExtention) ){
-						_aList.push(_sPath);				
-					}
-				
-				}
-			}
-			
-			return _aList;
-			
-		}
+	
 		
 
 	}
