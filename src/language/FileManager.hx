@@ -7,6 +7,7 @@ package language;
 	import language.project.assist.CwInfo;
 	import language.project.convertSima.ExtractBlocs;
 	import language.project.convertSima.SClass;
+	import language.project.convertSima.SPackage;
 
 			
 	/**
@@ -109,7 +110,7 @@ package language;
 
 					try{	
 						fExtract();
-						fConvertToCPP();
+						fConvertCW();
 					} catch (err:String) {
 				
 						if (err.charAt(0) == ":") { //My errors
@@ -123,7 +124,7 @@ package language;
 				}else {
 			//		try{	
 						fExtract();
-						fConvertToCPP();
+						fConvertCW();
 				//	}catch(err:String){
 				//		Debug.fError("Internal Error: " + err);
 				//	}
@@ -177,10 +178,10 @@ package language;
 						
 						//Debug.fAssist("CW File save|");
 						
-						var _oSClass : SClass = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
-						if (_oSClass != null) {
-							Debug.fAssist("CW File save, Reload|" + _oSClass.sName);
-							_oSClass.fReload();
+						var _oSPackage : SPackage = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
+						if (_oSPackage != null) {
+							Debug.fAssist("CW File save, Reload|" + _oSPackage.sName);
+							_oSPackage.fReload();
 						}else {
 							//Debug.fAssist("ErrorNotFoundClassForFileSave|" + _aArg[1]);
 							Debug.fAssist("ErrorNotFoundClassForFileSave|" + _aArg[1].substring(0,_aArg[1].length-2 ) + "|" );
@@ -192,9 +193,10 @@ package language;
 					
 					
 					case "LineChange":
-						var _oSClass : SClass = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
-						if (_oSClass != null) {
-							var _sScope : String = CwInfo.fIsScopeChange(_oSClass, cast(_aArg[2]), cast(_aArg[3]));
+							/* TODO with package** 
+						var _oSPackage : SPackage = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
+						if (_oSPackage != null) {
+							var _sScope : String = CwInfo.fIsScopeChange(_oSPackage, cast(_aArg[2]), cast(_aArg[3]));
 							if (_sScope != "") {
 								//Debug.fAssist("ScopeVar|" + _aArg[1] + "|" + _sScope + "|" +  CwInfo.nScopeLevel  + "|");
 								Debug.fAssist("ScopeVar|" + _aArg[1] + "|" + _sScope + "|");
@@ -205,18 +207,19 @@ package language;
 						}else {
 							Debug.fAssist("ErrorNotFoundClassForLocalScope|" + _aArg[1]);
 						}
-								
+							*/	
 						return;
 					
 					
 					case "GetRelScope":
-						var _oSClass : SClass = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
-						if (_oSClass != null) {
-							var _sScope : String = CwInfo.fGetRelScope(_oSClass, cast(_aArg[2]), _aArg[3] );
+						/*TODO with package 
+						var _oSPackage : SPackage = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
+						if (_oSPackage != null) {
+							var _sScope : String = CwInfo.fGetRelScope(_oSPackage, cast(_aArg[2]), _aArg[3] );
 							Debug.fAssist("RelScope|" + _aArg[1] + "|" + _sScope);
 						}else {
 							Debug.fAssist("ErrorNotFoundClassForLocalScope|" + _aArg[1]);
-						}
+						}*/
 						return;
 					
 
@@ -232,32 +235,36 @@ package language;
 				
 
 					case "GetClassInfo":
-						var _oSClass : SClass = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
-						if(_oSClass != null){
-							Debug.fAssist("ClassInfo|"  + _aArg[1] + "|" + CwInfo.fGetClassInfo(_oSClass ));
+						/* TODO with package** 
+						var _oSPackage : SPackage = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
+						if(_oSPackage != null){
+							Debug.fAssist("ClassInfo|"  + _aArg[1] + "|" + CwInfo.fGetClassInfo(_oSPackage ));
 						}else {
 							Debug.fAssist("ErrorNotFoundClass|" + _aArg[1]);
 						//		Debug.fError("ErrorNotFoundClass|" + _aArg[1]);
-						}
+						}*/
 						return;
 					
 					
 					case "GetFuncInfo":
+							/* TODO with package** 
 						var _oSClass : SClass = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
 						if(_oSClass != null){
 							Debug.fAssist("FuncInfo|"  + _aArg[1] + "|" + CwInfo.fGetFunctionInfo(_oSClass, cast(_aArg[2]), _aArg[3]  ));
 						}else {
 							Debug.fAssist("ErrorNotFoundFunc|" + _aArg[1]);
 						}
+						*/
 						return;
 				
 	
 					
 					case "ExtractClassFunc":
+							/* TODO with package** 
 						var _oSClass : SClass = CwInfo.fGetClassFromFile(oProject.oSProject, _aArg[1]);  
 						if (_oSClass != null) {
 							ExtractBlocs.extractClassFunctions(_oSClass);
-						}
+						}*/
 						return;
 					
 					
@@ -268,7 +275,7 @@ package language;
 							_sBuildType = _aArg[2];
 						}
 					
-						fConvertToCPP( _aArg[1], _sBuildType);
+						fConvertCW( _aArg[1], _sBuildType);
 						Debug.fAssist("FinishCompile|");
 						return;
 					
@@ -344,8 +351,8 @@ package language;
 		}
 		
 		
-		public function fConvertToCPP(_sTarget:String = "", _sBuildType: String = ""):Void {
-			oProject.convertCPP("", "", false, "MyApp", true, _sTarget, _sBuildType);
+		public function fConvertCW(_sTarget:String = "", _sBuildType: String = ""):Void {
+			oProject.convertCW("", "", false, "MyApp", true, _sTarget, _sBuildType);
 		}
 		
 		

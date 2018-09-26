@@ -31,6 +31,10 @@ package language;
 	class CWaveMake extends InObject {
 		
 
+
+		
+		
+		
 		public var sRootPath : String = "";
 		public var sCurrentFile : String = "";
 		public var sCurrentDir : String = "";

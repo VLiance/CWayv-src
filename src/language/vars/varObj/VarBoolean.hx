@@ -12,9 +12,7 @@ package language.vars.varObj ;
 		}
 		
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
-			return "Bool";
-		}
+
 	}
 	
 		

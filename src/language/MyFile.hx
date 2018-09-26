@@ -60,7 +60,9 @@ package language;
 
 				
 			}else {
-				Debug.fError("file not exist : " + _sFile);
+				//Debug.fError("file not exist : " + _sFile);
+				Debug.fFatal("file not exist : " + _sFile);
+				//Debug.fFatal();
 				var aTruc : Array<Dynamic>=[];aTruc = aTruc[5];//bug
 			}
 			return _aRead;

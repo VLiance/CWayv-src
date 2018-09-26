@@ -19,10 +19,11 @@ package language.project.convertSima ;
 		
 		
 		public static function iniGlobal(_Main:Root, _oSProject : SProject):Void {
-			
-			var _oSClassNative : SClass = new SClass(_Main, _oSProject, null, null, null, null);
-			_oSProject.loadFileImport( _oSClassNative.aSImportList );
-			_oSClassNative.aAllVarList.push(new VarStaticClass(_oSClassNative, _oSClassNative.oThreadMsgImport));
+			//_oSProject.oMainSPackage ... not sure
+			//var _oSClassNative : SClass = new SClass(_Main, _oSProject, null, "ClassNative");
+			var _oSClassNative : SClass = new SClass(_Main, _oSProject, _oSProject.oMainSPackage, "ClassNative");
+			_oSProject.loadFileImport( _oSClassNative.oPackage.aSImportList );
+			_oSClassNative.aAllVarList.push(new VarStaticClass(_oSClassNative, _oSClassNative.oPackage.oThreadMsgImport,  _oSClassNative.oPackage.oThreadMsgImport.oRefPackage.oSClass));
 			
 		//	Debug.fError("awqwwsName : " + VarStaticClass(_oSClassNative.aClassVarList[0]).sName );
 			createNativeAttribut(_Main, _oSProject, _oSClassNative);

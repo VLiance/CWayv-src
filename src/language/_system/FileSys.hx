@@ -5,6 +5,9 @@ package language._system;
 	import sys.FileSystem;
 	import sys.io.File;
 	import sys.io.FileOutput;
+
+#else
+	import js.html.FileReader;
 #end
 
 	import language._system.FileSysStat;
@@ -15,9 +18,9 @@ class FileSys
 
 	public static function fExist(_sFile:String):Bool {
 		#if !js
-		return FileSystem.exists(_sFile);
+			return FileSystem.exists(_sFile);
 		#else
-		return false;
+			return false;
 		#end
 		
 	}
@@ -25,9 +28,19 @@ class FileSys
 	
 	public static function fGetContent(_sFile:String):String {
 		#if !js
-		return File.getContent( _sFile );
+			return File.getContent( _sFile );
 		#else
-		return "TODO JS";
+			//return "TODO JS";
+		//	var reader = new FileReader();
+		///	reader.readAsText();
+			
+			/*
+			var fr = new FileReader(); fr.onload = function(e) {
+				console.log(e.target.result) 
+				
+			}; fr.readAsText(file);
+			*/
+			return "TODO JS";
 		#end
 	}
 
@@ -41,7 +54,7 @@ class FileSys
 	
 	public static function fCopy(_sSource:String, _sTo :String):Bool {
 		#if !js
-		File.copy(_sSource, _sTo);
+			File.copy(_sSource, _sTo);
 		#end
 		return true;
 	}
@@ -81,7 +94,7 @@ class FileSys
 			#if !js
 				return FileSystem.readDirectory(_sFolder  );
 			#else
-			return new Array<String>();
+				return new Array<String>();
 			#end
 		}
 		
@@ -97,7 +110,7 @@ class FileSys
 			var j : Int = _sFile.length;
 			var i : Int = _sExtention.length;
 			while (i > 0){i--; j--;
-				if (_sExtention[i] != _sFile[j]){
+				if (_sExtention.charAt(i) != _sFile.charAt(j)){
 					return false;
 				}
 			}

@@ -3,11 +3,13 @@ package language;
 
 
 	import language.cwMake.line.BuildEntry;
+	import language.cwMake.line.CWaveArg;
 	import language.pck.FileImport;
 	import language.pck.SLib;
 	import language.project.convertSima.SFrame;
 	import language.project.CppProject;
 	import language.project.SProject;
+	import language.project.packLib.PackLib;
 	import language.vars.varObj.VarInt;
 	import language.vars.varObj.VarObj;
 	
@@ -69,7 +71,8 @@ package language;
 			
 			fAddAllLib();
 			fBuildEntryPoints();
-			
+			oSProject.setGZE_lib();
+			oSProject.fTestAddFullImport();
 		
 			return true;
 		}
@@ -99,7 +102,7 @@ package language;
 			if (!_oFile.bReadOnly && !_oLib.oLib.bReadOnly) {
 				_bReadOnly = false;
 			}*/
-				//	Debug.fTrace("--LIB : " + _oLib.sLibCWaveName + "  File " + _oFile.sName );
+					Debug.fTrace("--LIB : " + _oLib.oLib.sName + "  File " + _oFile.sName );
 				//	Debug.fTrace("--LIB : " + _oLib.bReadOnly + "  File " + _oFile.bReadOnly );
 		//	oSProject.addLib(_oLib, _oLib.sReadCWavePath, _oLib.sWriteCppPath, _oLib.sLibCWaveName, _bReadOnly, _oLib.sLibCppName, _oLib.sIdName, _oLib.bLoadAll, _oLib.sPlatform);
 			oSProject.addLib(_oLib);
@@ -134,16 +137,27 @@ package language;
 		private static var bDone : Bool = false;
 		/////////////////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////////////////////////////////////////////////////////////////////
-		public function convertCPP(_sCppPath:String, _sLibCppPath:String, _bMakeFile : Bool, _sAppName : String, _bConvertFullDebug : Bool, _sTarget:String = "", _sBuildType:String = ""):Bool {			
-			
-			//if (!bDone) {
-			//bDone = true;	
-			if(oCppProject == null){
-				oCppProject = new CppProject(Main, this, oSProject, _sCppPath, "", _sAppName, _bConvertFullDebug, _sTarget, _sBuildType);
+		public function convertCW(_sCppPath:String, _sLibCppPath:String, _bMakeFile : Bool, _sAppName : String, _bConvertFullDebug : Bool, _sTarget:String = "", _sBuildType:String = ""):Bool {
+
+			if(CWaveArg.bHaveToCompileFile){
+				//if (!bDone) {
+				//bDone = true;	
+				if(oCppProject == null){
+					oCppProject = new CppProject(Main, this, oSProject, _sCppPath, "", _sAppName, _bConvertFullDebug, _sTarget, _sBuildType);
+				}
+				oCppProject.fIni(Main, this, oSProject, _sCppPath, "", _sAppName, _bConvertFullDebug, _sTarget, _sBuildType);
+				oCppProject.writeAllFiles();
+				
+				return true;
 			}
-			oCppProject.fIni(Main, this, oSProject, _sCppPath, "", _sAppName, _bConvertFullDebug, _sTarget, _sBuildType);
-			oCppProject.writeAllFiles();
-			return true;
+			
+			if (CWaveArg.bHavePackingLib){
+				var _oPackLib : PackLib = new PackLib(Main);
+				_oPackLib.fIni( this, oSProject, _sCppPath, "", _sAppName, _bConvertFullDebug, _sTarget, _sBuildType);
+			}
+			
+			
+			return false;
 		}
 		
 

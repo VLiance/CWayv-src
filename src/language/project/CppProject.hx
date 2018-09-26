@@ -32,6 +32,7 @@ package language.project ;
 	import language.base.InObject;
 	import language.base.Root;
 	import language.base.Debug;
+	import language.project.convertSima.SPackage;
 	
 	import language._system.FileSys;
 	import language._system.FileSysStat;
@@ -65,8 +66,8 @@ package language.project ;
 		
 		private var aDefHFile : Array<Dynamic> = [];
 		private var aCppFileFound : Array<Dynamic> = [];
-		public var oMainFile : CppMainFile;
-		private var oHDelegateFile : HDelegateFile;
+	//	public var oMainFile : CppMainFile;
+	//	private var oHDelegateFile : HDelegateFile;
 		private var oHCommonStructFile : HCommonStructFile;
 		
 		public var sCppMainHeader : String = "mainHeader.h";
@@ -91,7 +92,6 @@ package language.project ;
 		
 
 		public function new(_Main:Root, _oProject:ProjectData,  _oSProject:SProject, _sPath:String, _sLibPath:String, _sAppName : String, _bConvertFullDebug : Bool, _sPlaformTarget : String, _sBuildType:String) {
-		
 			super(_Main);
 		}
 		public function fIni(_Main:Root, _oProject:ProjectData,  _oSProject:SProject, _sPath:String, _sLibPath:String, _sAppName : String, _bConvertFullDebug : Bool, _sPlaformTarget : String, _sBuildType:String) {
@@ -132,8 +132,8 @@ package language.project ;
 			bConvertFullDebug = _bConvertFullDebug;
 
 			//MainFile
-			oMainFile = new CppMainFile(Main, this, oSProject.oMainSClass);
-			oHDelegateFile = new HDelegateFile(Main, this, oSProject.oSDelegate);
+		//	oMainFile = new CppMainFile(Main, this, oSProject.oMainSPackage);
+	//		oHDelegateFile = new HDelegateFile(Main, this, oSProject.oSDelegate);
 			//oHCommonStructFile = new HCommonStructFile(Main, this, oSProject.oSDelegate, oSProject);
 			/*
 			var _i:UInt = oSProject.aLibList.length;
@@ -145,29 +145,28 @@ package language.project ;
 			}*/
 			
 			//Create all class
-			var _i:UInt = oSProject.aClass.length;
-			for (i in 0 ..._i) {
-				var _oSClass : SClass =  oSProject.aClass[i];
-				
-				if(!_oSClass.oSLib.bReadOnly  && (_oSClass.oSLib.sPlatform == "" || _oSClass.oSLib.sPlatform == _sPlaformTarget)){
+		//	var _i:UInt = oSProject.aClass.length;for (i in 0 ..._i) {var _oSClass : SClass =  oSProject.aClass[i];
+			for (_oPckg in  oSProject.aPackage) {
+				if(!_oPckg.oSLib.bReadOnly  && (_oPckg.oSLib.sPlatform == "" || _oPckg.oSLib.sPlatform == _sPlaformTarget)){
 					
 					//Extract functions if not already
-					ExtractBlocs.extractClassFunctions(_oSClass);
+					_oPckg.fExtractClasFunction();
+					
 					
 					//Header
-					aHFile.push( fCreateHeader(_oSClass) );
+					aHFile.push( fCreateHeader(_oPckg) );
 					
-					if (cast(oSProject.aClass[i],SClass).aEnumList.length > 0 || cast(oSProject.aClass[i],SClass).aConstList.length > 0 ) {
-						var _oDefHeader : DefHeaderFile = new DefHeaderFile(Main, this, _oSClass);
+					if (_oPckg.fHaveConstant() ) {
+						var _oDefHeader : DefHeaderFile = new DefHeaderFile(Main, this, _oPckg);
 						aDefHFile.push(_oDefHeader);
-						cast(oSProject.aClass[i],SClass).bDefHeader = true;
-						cast(oSProject.aClass[i],SClass).oDefHeader = _oDefHeader;
+						_oPckg.bDefHeader = true;
+						_oPckg.oDefHeader = _oDefHeader;
 					}
 					
 					//oSProject.aClass[i] = _oHeader; //MAybe
 					
 					//Class
-					aCppFile.push(fCreateCpp(_oSClass));
+					aCppFile.push(fCreateCpp(_oPckg));
 					/*
 					//OverPlace
 					var _oOverPlace : OverPlaceFile = new OverPlaceFile(Main, this, oSProject.aClass[i]);
@@ -186,19 +185,21 @@ package language.project ;
 			//Debug.trac("Finish convert class")
 		}
 		
-		public function fCreateHeader(_oSClass : SClass):CommonCpp { 
+		public function fCreateHeader(_oSPck : SPackage):CommonCpp { 
 		
-			if (_oSClass.bGenerated) {
-				return new GpuFunctions(Main, this, _oSClass); //TODO check Tag
+		//	if (_oSClass.bGenerated) {
+			if (_oSPck.bGenerated) {
+				return new GpuFunctions(Main, this, _oSPck); //TODO check Tag
 			}else{
-				return new HeaderFile(Main, this, _oSClass);
+				return new HeaderFile(Main, this, _oSPck);
 			}
 		}
-		public function fCreateCpp(_oSClass : SClass):CommonCpp { 
-			if (_oSClass.bGenerated) {
-				return new GpuFuncCpp(Main, this, _oSClass); //TODO check Tag
+		public function fCreateCpp(_oSPck : SPackage):CommonCpp { 
+			//if (_oSClass.bGenerated) {
+			if (_oSPck.bGenerated) {
+				return new GpuFuncCpp(Main, this, _oSPck); //TODO check Tag
 			}else{
-				return new CppFile(Main, this, _oSClass);
+				return new CppFile(Main, this, _oSPck);
 			}
 		}
 		
@@ -251,16 +252,16 @@ package language.project ;
 		public static var sCppWritePathCpp : String; //Output
 		public static var sCppWritePathH : String; //Output
 		public static var sCppWritePathDH : String; //Output
-		public function fGetModifiedFilesInfo(_oSClass:SClass):String {
+		public function fGetModifiedFilesInfo(_oSPackage:SPackage):String {
 			
 			var _sResult : String = "";
-			var _sClassName : String = _oSClass.sName; 
-			var _sClassPath : String = _oSClass.sPath; 
+			var _sClassName : String = _oSPackage.sName; 
+			var _sClassPath : String = _oSPackage.sPath; 
 
-			var _sNxPath : String  =  _oSClass.oSLib.sReadPath + _sClassPath + _sClassName + Setting.sFileExtention;
+			var _sNxPath : String  =  _oSPackage.oSLib.sReadPath + _sClassPath + _sClassName + Setting.sFileExtention;
 			
-			sGenPath = _oSClass.oSLib.sWritePath + _sClassPath + _sClassName;
-			sCppWritePath = oProject.oCWaveMake.sExportBasePath  + sCppDir + _oSClass.oSLib.sWritePath + _sClassPath ;
+			sGenPath = _oSPackage.oSLib.sWritePath + _sClassPath + _sClassName;
+			sCppWritePath = oProject.oCWaveMake.sExportBasePath  + sCppDir + _oSPackage.oSLib.sWritePath + _sClassPath ;
 			sCppWritePathCl = sCppWritePath + _sClassName;
 			sCppWritePathCpp = sCppWritePathCl + ".cpp";
 			sCppWritePathH = sCppWritePathCl + ".h";	
@@ -276,7 +277,7 @@ package language.project ;
 
 			_sResult  =	_oNxInfo.dModTime + "|" +  _oCppInfo.dModTime + "|" + _oHInfo.dModTime ;
 					
-			if (_oSClass.bDefHeader) {
+			if (_oSPackage.bDefHeader) {
 
 				var _oDefHInfo : FileSysStat = fGetFilesInfo(sCppWritePathDH);
 				if(_oDefHInfo != null){
@@ -312,7 +313,7 @@ package language.project ;
 			//Todo Earase _oClass.sCppGetTime? Or set different of "" Useless?
 			fRetreiveAllModificationInfo();
 			
-			var _oCurrentClass : SClass;
+			var _oCurrentPackage : SPackage;
 			var _oCppInfo : FileSysStat;
 			var _oHInfo : FileSysStat;	
 			var _oNxInfo : FileSysStat;
@@ -326,11 +327,11 @@ package language.project ;
 				var _oCppFile : CommonCpp = aCppFile[i];
 				//var _oOverPlaceFile : OverPlaceFile = aOverPlace[i];
 				
-				_oCurrentClass = _oHeader.oSClass;
-				if ( !_oCurrentClass.oSLib.bReadOnly) { //not in readonly
+				_oCurrentPackage = _oHeader.oSPackage;
+				if ( !_oCurrentPackage.oSLib.bReadOnly) { //not in readonly
 					
-					_oCurrentClass.sCppModTime = fGetModifiedFilesInfo(_oCurrentClass);
-					if (_oCurrentClass.sCppGetTime !=  _oCurrentClass.sCppModTime || _oCurrentClass.oSLib.sCompGetTime != sCompilateurModInfo) {
+					_oCurrentPackage.sCppModTime = fGetModifiedFilesInfo(_oCurrentPackage);
+					if (_oCurrentPackage.sCppGetTime !=  _oCurrentPackage.sCppModTime || _oCurrentPackage.oSLib.sCompGetTime != sCompilateurModInfo) {
 						
 						//Debug.fError(_oCurrentClass.sName +  " sCppGetTime| " + _oCurrentClass.sCppGetTime + " sCppModTime " + _oCurrentClass.sCppModTime );
 						//Debug.fError(_oCurrentClass.sName +  " sCompGetTime| " + _oCurrentClass.oSLib.sCompGetTime + " sCompilateurModInfo " + sCompilateurModInfo );
@@ -339,8 +340,8 @@ package language.project ;
 						if(!bNoBuild){
 							MyFile.fwritefile(sCppWritePathH, _oHeader.aFile);
 							MyFile.fwritefile(sCppWritePathCpp,  _oCppFile.aFile);
-							if (_oCurrentClass.bDefHeader) {
-								MyFile.fwritefile(sCppWritePathDH, _oCurrentClass.oDefHeader.aFile);
+							if (_oCurrentPackage.bDefHeader) {
+								MyFile.fwritefile(sCppWritePathDH, _oCurrentPackage.oDefHeader.aFile);
 							}
 							
 							Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
@@ -354,7 +355,7 @@ package language.project ;
 					//	Debug.fTrace("sCppModTime: " + _oCurrentClass.sCppModTime);
 					//	Debug.fTrace("");
 						
-						_oCurrentClass.sCppModTime = fGetModifiedFilesInfo(_oCurrentClass); //ReUpdate info
+						_oCurrentPackage.sCppModTime = fGetModifiedFilesInfo(_oCurrentPackage); //ReUpdate info
 
 					}else {
 						
@@ -693,21 +694,20 @@ package language.project ;
 			
 			var _nCount : UInt = 0;
 			var _oCompileList : FileForm = new FileForm(Main);
-			var _aClass : Array<Dynamic>  =  _oSLib.aClass;
+			var _aPckg : Array<SPackage>  =  _oSLib.aPackage;
 			//Add Lib
 			if ( !_oSLib.bReadOnly) { //not in readonly
 				_oCompileList.pushLine( "#include \"" + _oSLib.sWriteName + ".cpp\"" ); //Alos Cpp?
 			}
-			
-			for (i in 0 ...  _aClass.length) {
-				var _oSClass : SClass = _aClass[i];
-				if ( !_oSClass.oSLib.bReadOnly) { //not in readonly
+			for (_oPckg in _aPckg) {
+			//for (_oSClass in  _oPckg.aClassList) {
+				if ( !_oPckg.oSLib.bReadOnly) { //not in readonly
 					_nCount++;
-					var _sClassName : String = _oSClass.sName; 
-					var _sClassPath : String = _oSClass.sPath; 
-					_oCompileList.pushLine( "#include \"" + _sClassPath + _sClassName + ".cpp\"" + " //" + _oSClass.sCppModTime);
+					var _sClassName : String = _oPckg.sName; 
+					var _sClassPath : String = _oPckg.sPath; 
+					_oCompileList.pushLine( "#include \"" + _sClassPath + _sClassName + ".cpp\"" + " //" + _oPckg.sCppModTime);
 				}
-			}
+			}//}
 			
 			if (_oSLib.bReadOnly) { //bReadOnly = Cpp, add all .cpp founded
 				for ( _sFile  in aCppFileFound) {
@@ -813,13 +813,13 @@ package language.project ;
 				if (_nCurrIndex != -1) {
 					var _sResult : String = Text.between3(_sLine, _nCurrIndex + 1, EuBetween.EndString );
 						//	Debug.fAssist("_sResult : " + _sResult);
-					var _oClass : SClass = oSProject.aImportCppLoc[_oSLib.sIdName + "/" + _sResult];
-					if(_oClass != null){
+					var _oPck : SPackage = oSProject.aImportCppLoc[_oSLib.sIdName + "/" + _sResult];
+					if(_oPck != null){
 						var _nIndex : Int = Text.search(_sLine, "/", _nCurrIndex + _sResult.length + 2 );
 						if (_nIndex != -1) {
 							var _sTime : String = _sLine.substr(_nIndex + 2);
 
-							_oClass.sCppGetTime = _sTime;
+							_oPck.sCppGetTime = _sTime;
 						//Debug.fWarning("--Found  (" + _sPath + ") : "  + _oSLib.sIdName + "/"  + _sResult + " :: " + _sTime);//Debug.fBreak();
 					
 							//Debug.fAssist("_sTime : " + _sTime);

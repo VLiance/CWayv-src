@@ -6,6 +6,7 @@ package language.project.convertSima ;
 	import language.enumeration.EuFuncType;
 	import language.enumeration.EuSharing;
 	import language.enumeration.EuVarType;
+	import language.enumeration.EuClassType;
 	import language.MyFile;
 	import language.pck.SLib;
 	import language.project.SProject;
@@ -24,15 +25,19 @@ package language.project.convertSima ;
 	import language.base.Root;
 	import language.base.Debug;
 
+
 	
 	class SFrame extends InObject
 	{
 
 		public var oSProject : SProject;
-		public var oSClass : SClass;
+	//	public var oSCurrClass : SClass;
+		public var oSPackage : SPackage;
 		public var bSkipContent : Bool = false;
 		public var aFile : Array<Dynamic>;
 		public var aGenerate : Array<Dynamic> = [];
+		
+		public var oCurrSClass : SClass = null;
 		
 		private var cStartType: String = ":";
 		private var cStartSet: String = "=";
@@ -42,20 +47,24 @@ package language.project.convertSima ;
 
 		
 		
-		public function new(_Main:Root, _oSProject : SProject, _oSClass:SClass, _aFile:Array<Dynamic>, _sPath:String) {
+	//	public function new(_Main:Root, _oSProject : SProject, _oSClass:SClass, _aFile:Array<Dynamic>, _sPath:String) {
+		public function new(_Main:Root, _oSProject : SProject, _oSPackage:SPackage, _aFile:Array<Dynamic>, _sPath:String) {
 			super(_Main);
 			oSProject = _oSProject;
-			oSClass = _oSClass;
+			oSPackage = _oSPackage;
+			
 			oSProject = _oSProject;
 			aFile = _aFile;
-			ExtractBlocs.oCurrSClass = oSClass;
+			ExtractBlocs.oCurrPackage = oSPackage;
 			All( _sPath);
-			ExtractBlocs.oCurrSClass = null;
+			ExtractBlocs.oCurrPackage = null;
 		}
 		
 		
 		
 		private function All(_sPath:String) :Bool {
+			
+			oCurrSClass = oSPackage.oSClass;
 			
 			var _i:UInt = aFile.length;
 			//aFile = aFile;
@@ -64,26 +73,26 @@ package language.project.convertSima ;
 			//Find Package
 			var i : Int = 0;
 			while (i < _i) {
-		
+				
 				ExtractBlocs.nCurrLine = i + 1;
-				if (getPackage( Text.removeComments(aFile[i], oSClass) , i + 1) ) { //Also Create oSClass
+				if (getPackage( Text.removeComments(aFile[i], oSPackage.oSClass) , i + 1) ) { //Also Create oSClass
 					//oSClass.sLib  = _sLib;
 					//oSClass.sPath = _sPath;
 					if (bSkipContent){
-						Debug.fWarning("#skipContent: " + _sPath +  oSClass.sName);
+						Debug.fWarning("#skipContent: " + _sPath +  oSPackage.sName);
 						//return false; 
 					}
 					
 					//Count num of subfolder
-					var _nbFolder : UInt = MyFile.countFolder(_sPath);
+					//var _nbFolder : UInt = MyFile.countFolder(_sPath);
 					//Get string back ex : _Flash\MyEngine\CPPcode = ..\..\..\ 
-					var _sStringBack : String = MyFile.getStringBackFolder(_nbFolder);
-					oSClass.nNbFolder = _nbFolder;
+					//var _sStringBack : String = MyFile.getStringBackFolder(_nbFolder);
+				//	oSClass.nNbFolder = _nbFolder;
 					//Debug.trac("_sPath : " + _sPath);
 					//Debug.trac("_nbFolder : " + _nbFolder);
 					//Debug.trac("Stringback : " + oSClass);
-					_sStringBack = _sStringBack.split("\\").join("/");  
-					oSClass.sPathBack = _sStringBack;	
+				//	_sStringBack = _sStringBack.split("\\").join("/");  
+			//		oSClass.sPathBack = _sStringBack;	
 					i++;
 					break;
 					
@@ -92,7 +101,7 @@ package language.project.convertSima ;
 				i++;
 			}
 			if (i == _i) {
-				Debug.fWarning("No Package in: " + oSClass.sName);
+				Debug.fWarning("No Package in: " + oSPackage.sName);
 				return false;
 			}
 			
@@ -116,13 +125,13 @@ package language.project.convertSima ;
 			
 			while (i < _i) {
 				ExtractBlocs.nCurrLine = i + 1;
-				_sLine = Text.removeComments(aFile[i], oSClass);
+				_sLine = Text.removeComments(aFile[i], oSPackage.oSClass);
 				
 				getImport(_sLine , i + 1);
 				
 				if (beginClass(_sLine, i + 1)) {
 					//Class is initialised
-					oSClass.aFile = aFile; //Save in array to reusse when functions load
+					oCurrSClass.aFile = aFile; //Save in array to reusse when functions load
 					i++;
 					break;
 				}
@@ -132,7 +141,7 @@ package language.project.convertSima ;
 				i++;
 			}
 			if (i == _i) {
-				Debug.fWarning("No Class in: " + oSClass.sName);
+				Debug.fWarning("No Class in: " + oCurrSClass.sName);
 				return false;
 			}
 			
@@ -141,7 +150,7 @@ package language.project.convertSima ;
 			//Get variable and find first function
 			while (i < _i) {
 				ExtractBlocs.nCurrLine = i + 1;
-				_sLine = Text.removeComments(aFile[i], oSClass, true);
+				_sLine = Text.removeComments(aFile[i], oCurrSClass, true);
 				
 				getMainVariable(  _sLine , i);
 				
@@ -157,7 +166,7 @@ package language.project.convertSima ;
 			
 	
 			if (i == _i) {
-				Debug.fWarning("No function in: " + oSClass.sName);
+				Debug.fWarning("No function in: " + oCurrSClass.sName);
 				return false;
 			}else {
 				
@@ -195,7 +204,7 @@ package language.project.convertSima ;
 			var _nIndex : Int = _sLine.indexOf("package ");
 			if (_nIndex >= 0) {
 				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
-				oSClass.nPackageLine = _nLineNum;
+				oSPackage.nPackageLine = _nLineNum;
 				return true;
 			}
 				
@@ -203,7 +212,7 @@ package language.project.convertSima ;
 			if (_nIndex >= 0) {
 				fExtractGenerate(_sLine, _nIndex);
 				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
-				oSClass.nPackageLine = _nLineNum;
+				oSPackage.nPackageLine = _nLineNum;
 				return true;
 			}
 
@@ -213,11 +222,11 @@ package language.project.convertSima ;
 		private function fExtractGenerate(_sLine:String, _nFromIndex : UInt) : Bool {
 			var _nIndex : Int = Text.search(_sLine, "\"" , _nFromIndex, true);
 			if (_nIndex < 0) {
-				Debug.fError("Generate classs: " + oSClass.sName + " require Tag in quote: " + _sLine);
+				Debug.fError("Generate classs: " + oSPackage.sName + " require Tag in quote: " + _sLine);
 				return false;
 			}
-			oSClass.bGenerated = true;
-			oSClass.sGenerateTag = Text.between3(_sLine, _nIndex, EuBetween.EndString);
+			oSPackage.bGenerated = true;
+			oSPackage.sGenerateTag = Text.between3(_sLine, _nIndex, EuBetween.EndString);
 			return true;
 		}
 		
@@ -236,7 +245,7 @@ package language.project.convertSima ;
 				var _sPath : String = _sLine.substring(_nIndex, _sLine.length);
 				_sPath = _sPath.substring(0, _sPath.indexOf(";"));
 
-				return 	extractImport(_sPath, oSClass, _nLineNum);
+				return 	extractImport(_sPath, oSPackage, _nLineNum);
 			}else {
 				
 				return false;
@@ -244,7 +253,7 @@ package language.project.convertSima ;
 		}
 		
 		
-		public static function extractImport(_sPath:String, _oSClass:SClass, _nLineNum:UInt, _oSlib:SLib = null) : Bool { //Ugly lib import TODO
+		public static function extractImport(_sPath:String, _oPckg:SPackage, _nLineNum:UInt, _oSlib:SLib = null, _bTestIfIsReallyOverPlace : Bool = false) : Bool { //Ugly lib import TODO
 			
 			var _oImport : FileImport;
 			
@@ -262,7 +271,7 @@ package language.project.convertSima ;
 			*/
 			
 			if (_oSlib == null ) {
-				_oSlib = _oSClass.oSProject.fFindLibIdName(_sLib, _sPath);
+				_oSlib = _oPckg.oSProject.fFindLibIdName(_sLib, _sPath);
 				if (_oSlib == null) {
 					return false;
 				}
@@ -286,7 +295,7 @@ package language.project.convertSima ;
 			var _nType : UInt;
 			
 
-			_oImport = _oSClass.newSImport();
+			_oImport = _oPckg.newSImport();
 
 			//Push value
 			_oImport.sPath = _sPath.split("\\").join("/");
@@ -315,9 +324,16 @@ package language.project.convertSima ;
 			var _bIsAtomic: Bool = false;
 			var _bIsPod: Bool = false;
 			
+			
+		var _eClassType: EuClassType = EuClassType.Invalid;
 			var _nIndex : Int = Text.search(_sLine, cStartPublic); //Start class
 			if (_nIndex >= 0) {
+				
+		
+				
 				var _sClassType: String = Text.between3(_sLine, _nIndex +  cStartPublic.length,EuBetween.Word);
+				
+			
 				
 				_nIndex = Text.nCurrentIndex;
 				switch(_sClassType) {
@@ -325,35 +341,43 @@ package language.project.convertSima ;
 					case "pod":
 						_bIsFound = true;
 						_bIsPod = true;
+						_eClassType = EuClassType.Pod;
 					//break; 
 					
 					case "class":
 						_bIsFound = true;
+						_eClassType = EuClassType.Class;
 					//break; 
 					case "overclass":
 						_bIsFound = true;
 						_bIsOverClass = true;
+						_eClassType = EuClassType.Overclass;
 					//break; 
 
 					case "extension":
 						_bIsFound = true;
 						_bIsExtension = true;
+						_eClassType = EuClassType.Extension;
 					//break; 
 					case "thread":
 						_bIsFound = true;
 						_bIsThead = true;
+						_eClassType = EuClassType.Thread;
 					//break; 
 					case "atomic":
 						_bIsFound = true;
 						_bIsAtomic = true;
+						_eClassType = EuClassType.Atomic;
 					//break; 
 					
 					
 				}
+				// oCurrSClass.eClassType = _eClassType;
 			}
 			
+			
 			if (_bIsFound) {
-				fClassFrame(_sLine, _nIndex, _nLineNum,_bIsExtension, _bIsThead , _bIsOverClass, _bIsAtomic, _bIsPod);
+				fClassFrame(_sLine, _nIndex, _nLineNum,_bIsExtension, _bIsThead , _bIsOverClass, _bIsAtomic, _bIsPod, _eClassType);
 				
 				return true;
 			}
@@ -417,30 +441,41 @@ package language.project.convertSima ;
 			return false;
 		}
 		
-		public function fClassFrame(_sLine:String, _nIndex : Int, _nLineNum : UInt, _bIsExtension :Bool = false, _bIsThead : Bool = false, _bIsOverclass : Bool = false, _bIsAtomic:Bool = false, _bIsPod:Bool = false ) :Void {
+		public function fClassFrame(_sLine:String, _nIndex : Int, _nLineNum : UInt, _bIsExtension :Bool , _bIsThead : Bool , _bIsOverclass : Bool , _bIsAtomic:Bool , _bIsPod:Bool  ,  _eClassType : EuClassType ) :Void {
 			var sExtend : String;
 			var sOverplace : String;
-			
-			oSClass.bThread = _bIsThead;
-			oSClass.bExtension = _bIsExtension;
-			oSClass.bOverclass = _bIsOverclass;
-			oSClass.bAtomic = _bIsAtomic;
-			oSClass.bIsPod = _bIsPod;
-			
+			var _sThreadClass : String = "";
 			
 			if (_bIsThead) {
 				if (_sLine.charAt(_nIndex) == "<") {
-					 oSClass.sThreadClass = Text.between3(_sLine,  _nIndex + 1, EuBetween.Template);
+					_sThreadClass = Text.between3(_sLine,  _nIndex + 1, EuBetween.Template);
 					 _nIndex = Text.nCurrentIndex;
 				}
 			}
 			
 			//Name
-			oSClass.sName = Text.between3(_sLine, _nIndex,EuBetween.Word);
+			var _sName : String = Text.between3(_sLine, _nIndex, EuBetween.Word);
+			
+			
+			oCurrSClass = oSPackage.fAddClass(_sName); //TODO name is set after
+			
+			oCurrSClass.eClassType = _eClassType;
+			
+			
+			 oCurrSClass.sThreadClass = _sThreadClass;
+				
+			
+			
+			oCurrSClass.bThread = _bIsThead;
+			oCurrSClass.bExtension = _bIsExtension;
+			oCurrSClass.bOverclass = _bIsOverclass;
+			oCurrSClass.bAtomic = _bIsAtomic;
+			oCurrSClass.bIsPod = _bIsPod;
+			
 			
 			//Array<Dynamic> of name to class for quick find
 			//oSProject.aClassName[ oSClass.sName ] = oSClass;
-			oSClass.nLine = _nLineNum;
+			oCurrSClass.nLine = _nLineNum;
 			
 
 			
@@ -450,12 +485,12 @@ package language.project.convertSima ;
 			if (sExtend != null || sOverplace != null) {
 				
 				if (sOverplace != null) {
-					oSClass.bHaveOverplace = true; //TODO mix extens / overplace
+					oCurrSClass.bHaveOverplace = true; //TODO mix extens / overplace
 					sExtend = sOverplace;
 				}
 				
-				oSClass.bHaveExtend = true;
-				oSClass.sExtendNotIni = sExtend;
+				oCurrSClass.bHaveExtend = true;
+				oCurrSClass.sExtendNotIni = sExtend;
 			}
 			
 		
@@ -512,11 +547,11 @@ package language.project.convertSima ;
 				var _sThirdWord : String = Text.between3(_sLine, Text.nCurrentIndex + 1, EuBetween.EndString ) ;
 				
 				if(_sThirdWord.charAt(0) == "u"){
-					oSClass.aUseUnitIniStringFirst.push( _sSecondWord  );
-					oSClass.aUseUnitIniStringAfter.push( _sThirdWord );
+					oCurrSClass.aUseUnitIniStringFirst.push( _sSecondWord  );
+					oCurrSClass.aUseUnitIniStringAfter.push( _sThirdWord );
 				}else if (_sThirdWord.charAt(0) == "e") {
-					oSClass.aUseEnumIniStringFirst.push( _sSecondWord  );
-					oSClass.aUseEnumIniStringAfter.push( _sThirdWord );
+					oCurrSClass.aUseEnumIniStringFirst.push( _sSecondWord  );
+					oCurrSClass.aUseEnumIniStringAfter.push( _sThirdWord );
 				}else {
 					Debug.fError("unknow use var : " + _sThirdWord);
 					Debug.fStop();
@@ -527,7 +562,7 @@ package language.project.convertSima ;
 			
 			//New type using for casting or TODO
 			if (_sFirstWord == "typedef") {
-				oSClass.oSLib.addTypeDef(_sSecondWord);
+				oCurrSClass.oSLib.addTypeDef(_sSecondWord);
 				return true;
 			}	
 
@@ -562,7 +597,7 @@ package language.project.convertSima ;
 			
 			//var _eReadType : UInt = TextType.stringToType(_sType);
 	
-			var _oVar : CommonVar = TypeResolve.createVarWithType(oSClass, _sType, _sLine, Text.nCurrentIndex);
+			var _oVar : CommonVar = TypeResolve.createVarWithType(oCurrSClass, _sType, _sLine, Text.nCurrentIndex);
 			if (_nIndex - 5 >= 0 && _sLine.charAt(_nIndex - 5) == "w") { //"wvar "(-5) Detect WeakVar * TODO more strict check
 				_oVar.bWeak = true;
 			}
@@ -597,35 +632,36 @@ package language.project.convertSima ;
 				_oVar.bStatic = true;
 				if (_sNextWord == "atomic" ){
 					_oVar.bAtomic = true;
-					oSClass.pushAtomicVar(_oVar, _sInitialistion);
+					oCurrSClass.pushAtomicVar(_oVar, _sInitialistion);
 				}else{
-					oSClass.pushStaticVar(_oVar, _sInitialistion);
+					oCurrSClass.pushStaticVar(_oVar, _sInitialistion);
 				}
 			} else if (_sNextWord == "ease") {	  ///TODO static var 
-				var _oEaseOut: EaseOut = new EaseOut(oSClass);
+				var _oEaseOut: EaseOut = new EaseOut(oCurrSClass);
 				_oVar.oAssociate = _oEaseOut;
 				_oEaseOut.oAssociate = _oVar;
 				_oVar.bStatic = false;  ///TODO static var 
-				oSClass.pushGlobalVar(_oVar, _sInitialistion);
-				oSClass.pushAssociateVar(_oEaseOut);
+				oCurrSClass.pushGlobalVar(_oVar, _sInitialistion);
+				oCurrSClass.pushAssociateVar(_oEaseOut);
 				
 			}else {
 				_oVar.bStatic = false;
-				oSClass.pushGlobalVar(_oVar,_sInitialistion);
+				oCurrSClass.pushGlobalVar(_oVar,_sInitialistion);
 			}
 			
 			
 			
 			if (_oVar.bEmbed == true) {
 				if (_oVar.eType == EuVarType._CallClass) {
-					//_oVar.oSBloc.oSClass.fAddImportFullDefinition(VarCallClass(_oVar).oCallRef);
-					_oVar.oSBloc.oSClass.fAddEmbedVar(cast(_oVar,VarCallClass));
+				
+					_oVar.oSBloc.oSClass.fAddEmbedVar(cast(_oVar,VarCallClass)); 
+					Debug.fWarning("TODO embed  : " + _oVar.sName );
 				}else {
 					Debug.fError("embed var must be a Class Type : " + _oVar.sName );
 				}
 			}
 			
-			LineVarIni.fCheckIfNewVarIsValidScope(oSClass,_oVar);
+			LineVarIni.fCheckIfNewVarIsValidScope(oCurrSClass,_oVar);
 			
 		}
 		
@@ -642,9 +678,9 @@ package language.project.convertSima ;
 			var _nFound : Int = Text.search(_sLine, ":");
 			if (_nFound >= 0) {
 				var _sVarListType : String = Text.between3(_sLine, _nFound + 1, EuBetween.Word);
-				_oEnum.oVarsType = TypeResolve.createVarWithType(oSClass, _sVarListType, _sLine, Text.nCurrentIndex); //TODO create only one vartype and reuseit
+				_oEnum.oVarsType = TypeResolve.createVarWithType(oCurrSClass, _sVarListType, _sLine, Text.nCurrentIndex); //TODO create only one vartype and reuseit
 			}else {
-				Debug.fError("Error enum must have type : " + _oEnum.sName + " in " + oSClass.sName);
+				Debug.fError("Error enum must have type : " + _oEnum.sName + " in " + oCurrSClass.sName);
 				Debug.fStop();
 			}
 			
@@ -654,8 +690,8 @@ package language.project.convertSima ;
 			
 			_oEnum.nLine = _nLineNum;
 			
-			oSClass.pushEnum(_oEnum);
-			if (oSClass.bCpp) {
+			oCurrSClass.pushEnum(_oEnum);
+			if (oCurrSClass.bCpp) {
 				_oEnum.bCpp = true;
 			}
 		}
@@ -674,8 +710,8 @@ package language.project.convertSima ;
 			
 			_oUnit.nLine = _nLineNum;
 			
-			oSClass.pushUnit(_oUnit);
-			if (oSClass.bCpp) {
+			oCurrSClass.pushUnit(_oUnit);
+			if (oCurrSClass.bCpp) {
 				_oUnit.bCpp = true;
 			}
 			
@@ -689,13 +725,13 @@ package language.project.convertSima ;
 			
 			var _nIndex : Int = Text.search(_sLine, cStartFunction);
 			if (_nIndex >= 0) {
-				if(extractFunction(oSClass, _nIndex + cStartFunction.length, _sLine, _nLineNum)){
+				if(extractFunction(oCurrSClass, _nIndex + cStartFunction.length, _sLine, _nLineNum)){
 					return true;
 				}
 			}
 			 _nIndex  = Text.search(_sLine, "destructor");
 			if (_nIndex >= 0) {
-				if(extractFunction(oSClass, _nIndex + cStartFunction.length, _sLine, _nLineNum)){
+				if(extractFunction(oCurrSClass, _nIndex + cStartFunction.length, _sLine, _nLineNum)){
 					return true;
 				}
 			}

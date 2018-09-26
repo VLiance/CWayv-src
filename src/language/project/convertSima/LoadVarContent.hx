@@ -36,14 +36,12 @@ package language.project.convertSima ;
 	{
 		
 			//Step 3 --> load all content var
-		public static function loadClassVarContent(_oSProject : SProject, _aClass:Array<Dynamic>):Void {
+		public static function loadClassVarContent(_oSProject : SProject, _aPackage:Array<SPackage>):Void {
 			var _oSClass : SClass;
 			var _i:UInt;
 			var i:Int;
-
-			_i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
@@ -51,19 +49,15 @@ package language.project.convertSima ;
 				//if ( _oSClass.bHaveExtend ) { Always have class
 					_oSClass.getClassExtends(); //String to extend obj
 				//}
-			}
+			}}
 			
 			//Create default constructors
-			 _i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				fCreateDefaultConstructor(_oSClass);
-			}
+			}}
 			
 			
-			_i = _aClass.length;
-			for (i in 0  ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
@@ -71,13 +65,11 @@ package language.project.convertSima ;
 				//if ( _oSClass.bHaveExtend ) {
 					_oSClass.loadAllExtended();  //Regroup all extend recursivly
 				//}
-			}
+			}}
 			
 
 			
-			_i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
@@ -86,60 +78,64 @@ package language.project.convertSima ;
 					fVerifyCollisionNameExtended(_oSClass);
 					
 			//	}
-			}
+			}}
 			
 				
 			//Extract all enum sub var of all class
-			 _i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				extractAllEnumSubVar( _oSClass);
-			}
+			}}
 			
 				//	Debug.fBreak();
 	
-
+Debug.fTrace("!!Load var " );
 			//Load all global var initilisation 
 			//In extractVariable();
 			//private var nExample : Int = _aCurrentVar[cVarListIniInString];
-			_i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
-				
+				//Debug.fTrace("IniiniGlobalVar " +_oSClass.sName );
 				iniThreadTemplate(_oSClass);
 				iniUseUnit(_oSClass);
 				iniUseEnum(_oSClass);
-				iniClassVar(_oSClass, _oSClass.aSImportList, EuVarType._StaticClass);
+				iniClassVar(_oSClass, _oSClass.oPackage.aSImportList, EuVarType._StaticClass);
 				//iniClassVar(_oSClass, _oSClass.aCppImportList, EuVarType._CppStaticClass);
 				iniGlobalVar(_oSClass, _oSClass.aAtomicVarList, _oSClass.aAtomicVarListIniString);
 				iniGlobalVar(_oSClass, _oSClass.aStaticVarList, _oSClass.aStaticVarListIniString); //Static before make global (sometime global depend on static)
 				iniGlobalVar(_oSClass, _oSClass.aGlobalVarList, _oSClass.aGlobalVarListIniString);
+				
 	
-			}
+			}}
+			
+			//Ini Embed (oCallRef from _CallClass must be initialised, maybe initiale this before iniGlobalVar????)
+			for (_oSPck in _aPackage){for (_oSClass in _oSPck.aClassList){
+				for (_oVar in _oSClass.aEmbedVarList){
+					if(_oVar.eType == EuVarType._CallClass){
+						if (cast(_oVar,VarCallClass).bEmbed){
+							_oSPck.fAddImportFullDefinition(_oVar.oCallRef);
+						}
+					}
+				}
+			}}		
 
 			
-			_i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				extractFunctionInfo( _oSClass);
-			}
+			}}
 			
-			_i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				extractAllDelegate(_oSClass);
-			}
+			}}
 			
 			
 			/*
@@ -155,25 +151,23 @@ package language.project.convertSima ;
 			
 	
 			//Extract all unit sub var of all class
-			 _i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				extractAllUnitUnitSubVar( _oSClass);
-			}
+			}}
 			
 			
 			
 	
 			
 			//Create default constructors
-			 _i = _aClass.length;
-			for (i in 0 ... _i) {
-				_oSClass = _aClass[i];
+			for (_oSPck in _aPackage){for (_oSClass in _oSPck.aClassList){
+					ExtractBlocs.oCurrSClass = _oSClass;
+				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				fLoadDefaultConstructorLine(_oSClass);
-			}
+			}}
 			
 			
 			
@@ -263,8 +257,10 @@ package language.project.convertSima ;
 		
 		
 		public static function fLoadDefaultConstructorLine(_oSClass:SClass):Void {
-			if(_oSClass.sConstructLineToExtract != ""){
+			if (_oSClass.sConstructLineToExtract != ""){
+				ExtractBlocs.oCurrSFunc = _oSClass.oFuncConstructor;
 				ExtractBlocs.extractLine( _oSClass.oFuncConstructor,  _oSClass.sConstructLineToExtract, _oSClass.oFuncConstructor.nLine + 1);
+				ExtractBlocs.oCurrSFunc = null;
 			}
 		}
 		
@@ -323,7 +319,10 @@ package language.project.convertSima ;
 			for (i in 0 ..._i) {
 				var _oImport : FileImport =	_aImport[i];
 				//if(_eType == EuVarType._StaticClass){
-					_oSClass.pushClassVar(new VarStaticClass(_oSClass, _oImport));
+				
+				for(_oRefClass in _oImport.oRefPackage.aClassList){
+					_oSClass.pushClassVar(new VarStaticClass(_oSClass, _oImport,_oRefClass));
+				}
 				//}else { // EuVarType._CppStaticClass
 				//	_oSClass.pushClassVar(new VarCppStaticClass(_oSClass, _oImport));
 				//}
@@ -334,7 +333,7 @@ package language.project.convertSima ;
 		//Set in extractVariable();
 		//private var nExample : Int = _aCurrentVar[cVarListIniInString];
 		private static function iniGlobalVar(_oSClass:SClass,  _aVarList: Array<Dynamic>,  _aIniList: Array<Dynamic>):Void {
-				
+		
 			//Check all var
 			var _i:UInt = _aVarList.length ;
 			for (i in 0 ..._i) {
@@ -352,12 +351,16 @@ package language.project.convertSima ;
 			
 			//if ( Text.stringNotEmpty(_sIniType)) { //Or test null
 				//var _sIniType : String = _oVar.sIniInString;
+				ExtractBlocs.nCurrLine = _oVar.nLine;
+				
 				
 				switch(_oVar.eType) {
 					
 					
 					
 					case EuVarType._CallClass : 
+						
+					
 						cast(_oVar,VarCallClass).applyCallClass();
 						if(_bClassPush){
 							if(cast(_oVar,VarCallClass).bStatic){
@@ -754,8 +757,10 @@ package language.project.convertSima ;
 			var _i:UInt = _aFuncList.length;
 			for (i in 0 ..._i) {
 				var _oSFunction : SFunction =  _aFuncList[i];
+				ExtractBlocs.oCurrSFunc = _oSFunction;
 				extractFunctionInfoParam(_oSFunction);
 				extractFunctionInfoReturn(_oSFunction);
+				ExtractBlocs.oCurrSFunc = null;
 			}
 			
 		}
@@ -793,7 +798,10 @@ package language.project.convertSima ;
 		
 		
 		public static function newVarParam(_oSBloc : SBloc,  _sLine: String, _nLineNum : UInt, _bForceParamInput : Bool = false):VarObj {
-
+			
+		
+			ExtractBlocs.nCurrLine = _nLineNum;
+			
 			var _eConstant : EuConstant = EuConstant.Normal;
 			var _sName : String;
 			var _sType : String;
@@ -878,7 +886,7 @@ package language.project.convertSima ;
 		
 		public static function iniThreadTemplate(_oSClass:SClass):Void { 
 			//Debug.trace3("---Load Thread Template");
-			if( _oSClass.sThreadClass != null){
+			if( _oSClass.sThreadClass != ""){
 				_oSClass.oThreadClass = SFind.findClass(_oSClass, _oSClass.sThreadClass);
 			}
 			

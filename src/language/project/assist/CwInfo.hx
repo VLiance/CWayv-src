@@ -17,6 +17,7 @@ package language.project.assist;
 	import language.project.convertSima.SFunction;
 	import language.project.convertSima.SGlobal;
 	import language.project.SProject;
+	import language.project.convertSima.SPackage;
 	import language.vars.special.SNatAttribut;
 	import language.vars.varObj.CommonVar;
 	import language.vars.varObj.FuncCall;
@@ -96,12 +97,12 @@ package language.project.assist;
 		}
 		
 		
-		public static function fGetClassFromFile(_oProject: SProject,  _sSClass:String):SClass {
-			if (_oProject.aImportCreated[_sSClass.split("\\").join("/")] == null) {
+		public static function fGetClassFromFile(_oProject: SProject,  _sSPackage:String):SPackage {
+			if (_oProject.aImportCreated[_sSPackage.split("\\").join("/")] == null) {
 			//	Debug.fError("Class not found : " + _sSClass.split("\\").join("/"));
 			}
 
-			return 	_oProject.aImportCreated[_sSClass.split("\\").join("/")];
+			return 	_oProject.aImportCreated[_sSPackage.split("\\").join("/")];
 		}
 		
 		
@@ -120,19 +121,23 @@ package language.project.assist;
 		
 				
 		public static function fGetClassPath(_oSClass:SClass):String {
+			/* TODO
 			var _sPath : String  = _oSClass.sPath; 
 			_sPath = _sPath.split("\\").join(".");  
-			return _sPath;
+			return _sPath; */ return "";
 		}
 		
 		public static function fGetFullClassPath(_oSClass:SClass):String {
+			
+			/* TODO 
 			var _sPath : String  = _oSClass.sPath; 
 			_sPath = _sPath.split("\\").join(".");  
 			var _sFilePath : String =   _oSClass.oSLib.sReadPath + _sPath;
 			_sFilePath = _sFilePath.split("\\").join("/");
 			_sFilePath = _sFilePath.split(".").join("/");
 			_sFilePath += _oSClass.sName + Setting.sFileExtention;
-			return _sFilePath;
+			return _sFilePath;*/return "";
+			
 		}
 		
 			
@@ -194,7 +199,7 @@ package language.project.assist;
 		
 		public static function fGetClassImport(_oSClass:SClass):String {
 			var _sResult : String = "";
-			var _aList : Array<Dynamic> = _oSClass.aSImportList;		
+			var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList;		
 			
 			for (i in 0 ...  _aList.length) {
 				var _oImport : FileImport  = _aList[i];
@@ -207,7 +212,8 @@ package language.project.assist;
 				_sFilePath = _sFilePath.split(".").join("/");
 				_sFilePath += _oImport.sName + Setting.sFileExtention;
 				
-				_sResult +=  _oImport.oSLib.sName + "." + _sPath + _oImport.sName + ","  + _oImport.oRefClass.nLine + "," + _sFilePath + ";";
+				//_sResult +=  _oImport.oSLib.sName + "." + _sPath + _oImport.sName + ","  + _oImport.oRefClass.nLine + "," + _sFilePath + ";";
+				_sResult +=  _oImport.oSLib.sName + "." + _sPath + _oImport.sName + ","  + "0" + "," + _sFilePath + ";"; //TODO _oImport.oRefClass.nLine 
 			}
 			return _sResult + "#";
 		}

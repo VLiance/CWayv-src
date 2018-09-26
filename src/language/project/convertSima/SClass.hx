@@ -1,6 +1,8 @@
 package language.project.convertSima;
+
 	import language._system.FileSys;
 	import language.enumeration.EuBetween;
+	import language.enumeration.EuClassType;
 	import language.enumeration.EuConstant;
 	import language.enumeration.EuCppLineType;
 	import language.enumeration.EuSharing;
@@ -33,37 +35,44 @@ package language.project.convertSima;
 
 
 	class SClass extends SBloc {
-			
-		public var isImport : FileImport;
+
+		
+		public var sNamespace : String;
+		public var sEndNamespace : String;
+		public var sNsAccess : String; 
+		public var sCNamespace : String;
+		public var sCEndNamespace : String; 
+		
+		
+		
+		public var eClassType : EuClassType = EuClassType.Invalid;
 				
 		public var bDefaultConstrutorAnalysed : Bool = false;
 		public var sConstructLineToExtract : String = "";
 		
-		public var bGenerated : Bool = false;
-		public var sGenerateTag : String = "";
+
+
 		
 		public var bExtension : Bool = false;
 		public var bOverclass : Bool = false;
 		public var bAtomic : Bool = false;
 		public var bIsPod : Bool = false;
 		public var bThread : Bool = false;
-		public var sThreadClass : String;
+		public var sThreadClass : String = "";
 		public var oThreadClass : SClass;
 		public var bCpp : Bool = false;
-		public var bDefHeader : Bool = false;
-		public var oDefHeader : DefHeaderFile;
-		public var oSFrame : SFrame;
+
+		//public var oSFrame : SFrame;
 	
 		public var sName : String;
 		public var oSLib : SLib;
-		public var sPath : String;
+	//	public var sPath : String;
 		public var nBeginLine : UInt;
 		public var oStaticClass : VarStaticClass;
 		
 		
-		
-		public var aSImportList : Array<Dynamic> = [];
-		public var aSImportListRequireFullDefinition : Array<Dynamic> = [];
+	//	public var aSImportList : Array<Dynamic> = [];
+		//public var aSImportListRequireFullDefinition : Array<Dynamic> = [];
 	
 
 		public var aDelegateList: Array<Dynamic> = [];
@@ -126,9 +135,14 @@ package language.project.convertSima;
 		public var aUseUnitList: Array<Dynamic> = [];
 		public var aUseEnumList: Array<Dynamic> = [];
 		
-		public var aExtendList: Array<Dynamic> = [];
-		public var aExtendAllClassList: Array<Dynamic> = [];
+		public var aExtendVarList: Array<Dynamic> = [];
+
 		public var aExClassList: Array<Dynamic> = [];
+		
+		
+		public var sExtendNotIni : String = "";
+		public var aExtendClass : Array<SClass> = []; //Current class extend
+		public var aExtendAllClassList: Array<Dynamic> = []; //Full extend list of currnent class
 		
 		public var sPathBack : String;
 		public var nNbFolder : UInt;
@@ -136,43 +150,34 @@ package language.project.convertSima;
 
 		public var bHaveExtend : Bool = false;
 		public var bHaveOverplace : Bool = false;
-		public var sExtendNotIni : String = "";
-		public var aExtendClass : Array<Dynamic> = [];
+
+		
+		
 		public var aWhoExtendClass : Array<Dynamic> = [];
 		
 		public var oExtend : SClass;
+
 	
 		public var oFuncConstructor : SFunction;
 		public var oFuncDestrutor : SFunction;
-		
-		public var aFile : Array<Dynamic>;
 		
 		public var oHeaderFile : HeaderFile;
 		
 		public var oSProject : SProject;
 
-		public var nPackageLine : UInt;
 		
-		public var sCppModTime : String = "";
-		public var sCppGetTime : String = "";
-		
+
 		public var bFuncExtracted : Bool = false;
 		
-		public var oDebugImport : FileImport;
-		public var oClassImport : FileImport;
-		public var oThreadMsgImport : FileImport;
-		
-		public var sHeaderName : String;
+		//public var sHeaderName : String;
 		public var sFilePath : String;
 		public var aFolderList : Array<Dynamic>; //<String>
 		
-		public var sCNamespace : String;
-		public var sCEndNamespace : String; 
+
+//		public var sNamespace : String;
+//		public var sEndNamespace : String;
 		
-		public var sNamespace : String;
-		public var sEndNamespace : String;
-		
-		public var sNsAccess : String; 
+//		public var sNsAccess : String; 
 		
 		
 		public var aCppLineListNormal : Array<Dynamic> = [];
@@ -188,19 +193,42 @@ package language.project.convertSima;
 		public var aCppLineListStatic : Array<Dynamic> = [];
 		public var aCppLineListStatic_H : Array<Dynamic> = [];
 		
+		
+		public var oPackage : SPackage;
 
+		
+		public var aFile : Array<Dynamic>;				
+		public var isImport : FileImport;
 		
 	//	public var aCppLineListClassStatic : Array<Dynamic> = [];
 		
 	//	public var oOverplace : SClass; 
 		
-
-		public function new(_Main:Root, _oSProject : SProject, _aFile:Array<Dynamic>, _oSLib:SLib, _sPath:String, _sName:String) {
+	//	public var sReadedFilePath:String = ""; //Todo useless?
+	//	public function new(_Main:Root, _oSProject : SProject, _aFile:Array<Dynamic>, _oSLib:SLib, _sPath:String, _sName:String, _sReadedFilePath:String) {
+		public function new(_Main:Root, _oSProject : SProject, _oPackage: SPackage, _sName:String) {
+			super(null);
 			oSProject = _oSProject;
-	
+		//	sReadedFilePath = _sReadedFilePath;
+			oPackage = _oPackage;
+			
+			eType = EuVarType._SClass;
+			sName = _sName;
+			
 			oSClass = this;
-			if (_aFile != null) {
-
+			oSLib = _oPackage.oSLib;
+			
+			
+			sNamespace = fGetNamespace();
+			sEndNamespace = fGetEndNamespace();
+			sCNamespace = fGetCNamespace();
+			sCEndNamespace = fGetCEndNamespace();
+			sNsAccess = fGetNsAccess();
+			
+			
+			
+		//	if (_aFile != null) {
+/*
 				sName = _sName;
 				sPath = _sPath;
 				aFile = _aFile;
@@ -211,28 +239,28 @@ package language.project.convertSima;
 					bCpp = true;
 				}
 				super(null);
-				oSFrame = new SFrame(_Main, _oSProject, this, _aFile, _sPath);	
+				//oSFrame = new SFrame(_Main, _oSProject, this, _aFile, _sPath);	
 				//if (oSFrame.bSkipFile){
 				//	return;
 				//}
 				
 				oSLib.aClass.push(this);
-				
-				eType = EuVarType._SClass;
+				*/
+
 			
-		
+/*
 				//Default itself import
 				isImport = newSImport();
 				isImport.sPath = _sPath;
 				isImport.sName = _sName;
 				isImport.nLine = 0;
 				isImport.oSLib = _oSLib;
-				isImport.oRefClass = this;
-				
-				oStaticClass = new VarStaticClass(this, isImport);//itself
+				isImport.oRefPackage = oPackage;
+	*/			
+				oStaticClass = new VarStaticClass(this, oPackage.isImport, this);//itself
 				pushClassVar(oStaticClass); //itself
 
-		
+				/*
 				
 				
 				sHeaderName = oSLib.sWriteName + "_" + sPath.split("/").join("_") + sName;
@@ -245,13 +273,14 @@ package language.project.convertSima;
 				sCEndNamespace = fEndNamespace();
 				sNsAccess = fGetNsAccess();
 				//sFilePath = "Lib_" + sFilePath;
-				
-			}
-			
+				*/
+		//	}
+			/*
 			if (oSProject.oGzLib == null) {
 				Debug.fError("Lib null!");	
-			}
+			}*/
 			
+			/*
 			oDebugImport = newSImport();
 			oDebugImport.sPath = "Sys/";
 			oDebugImport.sName = "Debug";
@@ -273,9 +302,9 @@ package language.project.convertSima;
 			oThreadMsgImport.nLine = 0;
 		//	oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
 			oThreadMsgImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+			*/
 			
 			
-	
 		}
 		
 		
@@ -291,10 +320,10 @@ package language.project.convertSima;
 			}
 			aSubClassUsedList.push(_oSClass);
 			
-			var _j : Int = aSImportList.length;
-			for (j in 0 ... _j) {
-			
-				if (_oSClass == cast(aSImportList[j],FileImport).oRefClass) {
+
+			for (_oFileImport in oPackage.aSImportList) {
+				
+				if ( _oFileImport.oRefPackage.fHaveClass(_oSClass) ) {
 					return false;
 				}
 			}
@@ -423,7 +452,7 @@ package language.project.convertSima;
 			}
 		}
 	
-			
+			/*
 		public function newSImport() : FileImport {
 			var _oImport : FileImport = new FileImport();
 			aSImportList.push(_oImport );
@@ -431,7 +460,7 @@ package language.project.convertSima;
 			_oImport.bCpp = false;
 			return _oImport;
 		}
-
+*/
 		
 		
 		
@@ -509,7 +538,7 @@ package language.project.convertSima;
 			var _i:UInt = aExtendAllClassList.length;
 			for (i in 0 ..._i) {
 				var _oSClass : SClass = aExtendAllClassList[i];
-				aExClassList.push(new  VarExClass(this, _oSClass)); 
+				aExClassList.push(new VarExClass(this, _oSClass)); 
 				loadExtendedClassVar(_oSClass);
 				loadExtendedClassFunction(_oSClass);
 			}
@@ -518,7 +547,7 @@ package language.project.convertSima;
 		
 		
 		private function loadExtended(_oSourceClass : SClass):Void {
-			var _aExtend : Array<Dynamic> = _oSourceClass.aExtendClass;
+			var _aExtend : Array<SClass> = _oSourceClass.aExtendClass;
 
 			var _i:UInt = _aExtend.length;
 			for (i in 0 ..._i) {
@@ -539,7 +568,7 @@ package language.project.convertSima;
 				if (_oVar.eSharing == EuSharing.Public) {
 					var _oExtend : ExtendVar = new ExtendVar(this, _oVar); //TODO check subextend
 					aAllVarList.push(_oExtend);
-					aExtendList.push(_oExtend);
+					aExtendVarList.push(_oExtend);
 						
 
 				}
@@ -569,17 +598,18 @@ package language.project.convertSima;
 			aInlineIndex.push(_oBloc.aLineList.length);
 		}
 		
-		
+		/*
 		public function fIsClassImport(_oSClass:SClass):Bool {
 			var _i:UInt = aSImportList.length;
 			for (i in 0 ..._i) {
 				var _oFileImport : FileImport  = aSImportList[i];
-				if (_oFileImport.oRefClass == _oSClass) {
+			//	if (_oFileImport.oRefClass == _oSClass) {
+				if (_oFileImport.oRefPackage.fHaveClass(_oSClass)) {
 					return true;
 				}
 			}
 			return false;
-		}
+		}*/
 		
 		public function fIsBackwardHeritage(_oBackClass:SClass):Bool {
 			var _aList : Array<Dynamic> = _oBackClass.aExtendClass;
@@ -597,37 +627,46 @@ package language.project.convertSima;
 		}
 		
 		public function fAddEmbedVar(_oVar : VarCallClass):Void {
+			
 			aEmbedVarList.push(_oVar);
-			fAddImportFullDefinition(_oVar.oCallRef);
+		//	oPackage.fAddImportFullDefinition(_oVar.oCallRef);
 		}
 		
-		public function fAddImportFullDefinition(_oSClass:SClass):Void {
-			for (i in 0 ... aSImportList.length) {
-				var _oImport : FileImport = aSImportList[i];
-				if (_oImport.oRefClass == _oSClass) {
-					aSImportListRequireFullDefinition[i] = true; //TODO break?
-				}
-			}
-		}
+
 		
 			
 		public function fReload():Void {
+			
+			//TODO
 			oSProject.bClassLoaded = false;
 			fRemoveClassData();
+			
+			/* TODO
 			aSImportList.push(oDebugImport);
 			aSImportList.push(oClassImport);
 			aSImportList.push(oThreadMsgImport);
+			*/
 			
 			fIniBloc(); //Useless?
-			pushClassVar(new VarStaticClass(this, isImport)); //itself
+			pushClassVar(new VarStaticClass(this, isImport, this)); //itself
 				
+/*			TODO
+			
+			
+			
 			var _sReadFilePath : String  = oSLib.sReadPath + sPath + sName + Setting.sFileExtention;
 			_sReadFilePath = _sReadFilePath.split("\\").join("/");
 		//	var _aRead : Array<Dynamic> = mFile.readFile(_sReadFilePath);
 			var _aRead : Array<Dynamic> = FileSys.fGetContent(_sReadFilePath).split("\n"); // .readFile(_sReadFilePath);
 			
+			
+*/	
+			
+			
+			
+			
 		//	try{
-				oSFrame = new SFrame(oSFrame.Main, oSProject, this, _aRead, sPath);
+		//TODO		oSFrame = new SFrame(oSFrame.Main, oSProject, this, _aRead, sPath);
 			
 				/*	
 			 }catch(err:Error){
@@ -635,19 +674,26 @@ package language.project.convertSima;
 			}	*/
 				
 				
-			oSProject.loadFileImport(aSImportList);
+			
 			//SGlobal.iniGlobal(oSFrame.Main, this); //useless?
 			
 			oSProject.bClassLoaded = true;
 			
-			var _aClassList : Array<Dynamic> = [];
+			var _aClassList : Array<SClass> = [];
 			_aClassList.push(this);
 			
 			try{
-				LoadVarContent.loadClassVarContent(oSProject, _aClassList);
 				
-			 }catch(err:String){
-					Debug.fError("Reload Error: " + err);
+	//TODO			LoadVarContent.loadClassVarContent(oSProject, _aClassList);
+				
+				
+			} catch (err:String) {
+				
+				if (err.charAt(0) == ":") { //My errors
+					Debug.fError("Internal Error: " + err);
+				}else {
+					throw err; //throw away
+				}
 			}
 					
 			
@@ -685,10 +731,8 @@ package language.project.convertSima;
 			aCppLineListStatic = [];
 			aCppLineListStatic_H  = [];
 			
-			aSImportList  = [];
-
-			
-			aSImportListRequireFullDefinition  = [];
+		//	aSImportList  = [];
+		//	aSImportListRequireFullDefinition  = [];
 			
 			aEmbedVarList  = [];
 
@@ -748,7 +792,7 @@ package language.project.convertSima;
 			aUseUnitList = [];
 			aUseEnumList = [];
 
-			aExtendList = [];
+			aExtendVarList = [];
 			aExtendAllClassList = [];
 			aExClassList = [];
 
@@ -757,32 +801,24 @@ package language.project.convertSima;
 		}
 		
 		public function fGetNsAccess() :String {
-		//	var _sNamespace : String = "::";
-			//var _sNamespace : String = "Lib_";
-			var _sNamespace : String = "";
-			for ( _sFolder in aFolderList) {
-				_sNamespace +=  _sFolder + "::";
-			}
-			return _sNamespace;
+			return oPackage.sNsAccess; //TODO Class different name
 		}
 		
 		public function fGetNamespace() :String {
-			var _sNamespace : String = "";
-			//var _sFirstIsLib: String = "Lib_";
-			
-			for ( _sFolder  in aFolderList) {
-				_sNamespace += "namespace "  + _sFolder + "{";
-			//	_sFirstIsLib = "";
-			}
-			return _sNamespace;
+			return oPackage.sNamespace; //TODO Class different name
 		}
-		public function fEndNamespace() :String {
-			var _sNamespace : String = "";
-			for ( _sFolder in aFolderList) {
-				_sNamespace += "}";
-			}
-			return _sNamespace;
+		public function fGetEndNamespace() :String {
+			return oPackage.sEndNamespace; //TODO Class different name
 		}
+		
+		
+		public function fGetCNamespace() :String {
+			return oPackage.sCNamespace; //TODO Class different name
+		}
+		public function fGetCEndNamespace() :String {
+			return oPackage.sCEndNamespace; //TODO Class different name
+		}
+		
 		public function fPushCppLine(_sCppLine : String, _eCppLineType : EuCppLineType) :Void {
 				var _oCpp : VarCppLine = new VarCppLine(null, _sCppLine, _eCppLineType);
 				switch(_eCppLineType) {

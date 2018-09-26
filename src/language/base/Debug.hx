@@ -91,8 +91,10 @@ import language.project.convertSima.ExtractBlocs;
 			
 			var _sPath : String = "";
 			if(ExtractBlocs.oCurrSClass != null){
-				_sPath = ExtractBlocs.oCurrSClass.sPath + ExtractBlocs.oCurrSClass.sName + Setting.sFileExtention;
-				_sPath = ExtractBlocs.oCurrSClass.oSLib.sReadPath + _sPath;
+				//_sPath = ExtractBlocs.oCurrSClass.sPath + ExtractBlocs.oCurrSClass.sName + Setting.sFileExtention;
+				//_sPath = ExtractBlocs.oCurrSClass.oSLib.sReadPath + _sPath;
+				_sPath = ExtractBlocs.oCurrSClass.oPackage.sReadedFilePath;
+				
 				_sPath = _sPath.split("\\").join("/");
 				
 				//_sPath += ":" + (ExtractBlocs.nCurrLine + 1) + ": error: ";
@@ -135,8 +137,9 @@ import language.project.convertSima.ExtractBlocs;
 			}*/
 		}
 		
+
 		public static function fFatal(_oText:Dynamic):Void {
-			System.fPrint(_oText);
+			System.fFatal(_oText);
 			//Sys.println(_oText);
 			/*
 			if(CWaveArg.bManaged){
@@ -146,7 +149,12 @@ import language.project.convertSima.ExtractBlocs;
 			}*/
 			//var _aStopExecution 
 			//fTrace("Fatal error : " +_oText );
-			throw  "Fatal error : " +  _oText  + " : ";
+			#if !js
+				throw  "Fatal error : " +  _oText  + " : ";
+			#else
+				throw  "Fatal: execution stopped";
+			#end
+			
 		}
 		
 		

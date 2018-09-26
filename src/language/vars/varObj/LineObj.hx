@@ -27,7 +27,7 @@ package language.vars.varObj ;
 		//public var nId : UInt;
 		
 		
-		public var nLine  : UInt;
+	//	public var nLine  : UInt;
 		
 		
 		public var aConvertInTypeList  : Array<Dynamic> = [];	

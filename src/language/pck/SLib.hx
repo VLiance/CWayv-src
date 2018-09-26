@@ -2,6 +2,7 @@ package language.pck ;
 	import language.CwmLib;
 	import language._system.FileSys;
 	import language.project.convertSima.SClass;
+	import language.project.convertSima.SPackage;
 	import language.project.run.ArrayLocation;
 	import language.vars.special.TypeDef;
 	import language.base.Debug;
@@ -14,6 +15,9 @@ package language.pck ;
 
 	class SLib  {
 
+		public var bPackMe  	: Bool = false; 
+		public var bSkipLibContent : Bool = false; 
+		
 		public var oCwmLib  	: CwmLib;
 		
 		public var sName  	: String;
@@ -24,7 +28,10 @@ package language.pck ;
 		public var sWritePath  	: String = "LibOut/"; //TODO
 		public var bReadOnly  	: Bool;
 		public var aTypeDef  	: Array<Dynamic> = [];
-		public var aClass	  	: Array<Dynamic> = [];
+	//	public var aClass	  	: Array<Dynamic> = [];
+		public var aPackage	  	: Array<SPackage> = [];
+		
+		
 		//public var aMerge  		: Array<Dynamic> = []; //List of Slib with same result path
 		//public var oMergeSource : SLib;  //Of wicth is merge from
 		public var bDynLink  	: Bool = true;
@@ -32,7 +39,7 @@ package language.pck ;
 		//public var sCompModTime : String = "";
 		public var sCompGetTime : String = "";
 		
-		public var aFileList  	: Array<String> = [];
+		public var aFileList  	: Array<FileProperty> = [];
 		public var aFileListKey : Map<String,Bool> = [""=>false];
 		
 		public var sPlatform  	: String = "";
@@ -42,6 +49,7 @@ package language.pck ;
 		
 		public var oGroup : GroupSLib ;
 		
+		public var bForceLoadAll : Bool = false;
 
 		
 		public function new() {
@@ -60,7 +68,7 @@ package language.pck ;
 			fGetFolderFileList(sReadPath);
 			
 			for ( i in 0 ...  aFileList.length) {
-				aFileListKey[aFileList[i]] = true;
+				aFileListKey[aFileList[i].sCwPath] = true;
 			}
 			
 			//Debug.trace3("List "+ sIdName + ": " + aFileList );
@@ -80,14 +88,8 @@ package language.pck ;
 					
 				}else{ //It's a file
 					
-					//Remove extention
-					var _nIndex : Int = _sFile.indexOf(".");
-					if (_nIndex > -1) {
-						_sPath = _sRelative +  _sFile.substring( 0 , _nIndex);
-					}
-					/////
+					aFileList.push(new FileProperty(this, _sPath));
 					
-					aFileList.push(_sPath.split("/").join("."));//Cw?
 	
 				}
 			}

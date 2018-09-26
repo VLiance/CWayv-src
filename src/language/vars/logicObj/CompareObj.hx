@@ -24,7 +24,7 @@ package language.vars.logicObj ;
 		public var oConvertRight  : VarObj;
 		public var oSFunction : SFunction;	
 
-		public var nLine  : UInt;
+	//	public var nLine  : UInt;
 			
 		
 		public function new():Void {

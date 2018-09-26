@@ -147,6 +147,9 @@ package language.project.convertSima
 				}
 			}
 			
+			Debug.fError("can't find unit : " + _sVar + " in class: " + _oSBloc.oSClass.sName );
+			Debug.fStop();
+
 			return null;
 		}
 		
@@ -584,7 +587,8 @@ package language.project.convertSima
 			}
 			
 			
-			Debug.fError("Var not found : " + _sVar + " in class : "  + _oClass.sName);
+			Debug.fFatal("Var not found : " + _sVar + " in class : "  + _oClass.sName);
+		//	Debug.fError("Var not found : " + _sVar + " in class : "  + _oClass.sName);
 			Debug.fStop();
 			return null;
 		}
@@ -626,18 +630,24 @@ package language.project.convertSima
 		//	var _oSProject :SProject = _oSClass.oSProject;
 		//	var _aList : Array<Dynamic> = _oSProject.aClass;
 			
-			var _aList : Array<Dynamic> = _oSClass.aSImportList;
+			var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList;
 			
 			
 			var _i:UInt = _aList.length;
 			for (i in 0 ..._i) {
 				
 				var _oImport : FileImport = _aList[i];
-				
+				/*
 				var _oSClass : SClass = _oImport.oRefClass;
 				if (_oSClass.sName == _sSearch) {
 					return _oSClass;
+				}*/
+				var _oSClass : SClass = _oImport.oRefPackage.fGetClassName(_sSearch);
+				if(_oSClass != null){
+					return _oSClass;
+					
 				}
+				
 			}
 			
 			Debug.fError("Class not found : " + _sSearch + " in " + _oSClass.sName + " on line " + ExtractBlocs.nCurrLine );

@@ -20,7 +20,7 @@ package language.vars.varObj ;
 		}
 		
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
+		override public function fGetType():String {
 			if(bUnsigned){
 				return "UInt" + EuBit_.getStringBit(this);
 			}else {

@@ -8,6 +8,7 @@ package language.project.convertCpp ;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.Text;
+	import language.project.convertSima.SPackage;
 	import language.vars.special.EnumObj;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
@@ -27,9 +28,9 @@ package language.project.convertCpp ;
 
 		private var bUseDefineIN : Bool = false;
 		
-		public function new(_Main:Root, _oCppProject : CppProject, _oSClass : SClass) { 
+		public function new(_Main:Root, _oCppProject : CppProject, _oSPackage : SPackage) { 
 	
-			super(_Main,_oCppProject, _oSClass);
+			super(_Main,_oCppProject, _oSPackage);
 			
 			convertOverPlaceFile();		
 		}

@@ -30,7 +30,9 @@ package language.project.convertSima ;
 	 */
 	class ExtractBlocs
 	{
+		public static var oCurrPackage : SPackage = null;
 		public static var oCurrSClass : SClass = null;
+		public static var oCurrSFunc : SFunction = null;
 		public static var nCurrLine : Int = 0;
 		
 		//Select all function of one class to extract each lines
@@ -101,8 +103,10 @@ package language.project.convertSima ;
 		
 		
 		private static function allLineInFunction(_oSClass:SClass, _oFunction : SFunction):Void {
-			
-			if (_oSClass.oSFrame.bSkipContent){ //Make Not implemented Debug print
+			ExtractBlocs.oCurrSFunc = _oFunction;
+				
+				
+			if (_oSClass.oPackage.oSFrame.bSkipContent || _oSClass.oSLib.bSkipLibContent){ //Make Not implemented Debug print
 				return;
 			}
 			
@@ -119,9 +123,9 @@ package language.project.convertSima ;
 						trace("bbb:" + err);
 						Debug.fError("Func Internal Error: " + err);
 					}else {
-						
-						trace("aaa:" + err);
-						//throw err; //throw away
+						//
+						//trace("aaa:" + err);
+						throw err; //throw away
 					}
 				}
 				
@@ -129,6 +133,8 @@ package language.project.convertSima ;
 				
 				allLineInFunctionTry(_oSClass, _oFunction);
 			}
+			
+			ExtractBlocs.oCurrSFunc = null;
 		}
 		
 		

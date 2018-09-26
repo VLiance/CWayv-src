@@ -11,7 +11,7 @@ package language.vars.varObj ;
 			super(_oSBloc, EuVarType._Null);
 		}
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
+		override public function fGetType():String {
 			return "Null";
 		}
 		

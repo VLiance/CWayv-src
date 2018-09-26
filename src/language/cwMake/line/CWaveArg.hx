@@ -15,10 +15,16 @@ package language.cwMake.line;
 		public var sRootPath : String = "";
 		public var sCurrentDir : String = "";
 		public var sCurrentFile : String = "";
+		
 		public static var nHandleID : Int = 0;
 		public static var bManaged : Bool = false;
 		public static var nAssist : UInt = 0;
 		public static var nAssistHandle : UInt = 0;
+		
+		
+						
+		public static var bHaveToCompileFile : Bool = false;
+		public static var bHavePackingLib : Bool = false;
 		
 
 		
@@ -95,15 +101,21 @@ Debug.fTrace("---------------------- : " );
 					case "-E"   //Compile enyty file & dependances
 						| "-e" :
 						oModule.fAddCompileEntry(_sInput);
+						bHaveToCompileFile = true;
 						
 					case "-C"   //Compile one file
 						| "-c" :
 						oModule.fAddCompileEntry(_sInput);
+						bHaveToCompileFile = true;
 						
 					case "-O"   //Output
 						| "-o" :
 						oModule.fSetExportPath(_sInput);
 					
+					case "-P"   //Pack lib
+						| "-p" :
+						oModule.fAddPackingLib(_sInput);
+						bHavePackingLib = true;
 						
 				}
 				

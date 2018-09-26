@@ -14,7 +14,7 @@ package language.vars.varObj ;
 		public var bEmpty  : Bool = false;
 		
 		public var oSBloc : SBloc;
-		public var nLine  : UInt;
+	//	public var nLine  : UInt;
 	
 		public function new(_oSBloc : SBloc, _oVar:VarObj):Void {
 			super();

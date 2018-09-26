@@ -32,10 +32,13 @@ package language.vars.varObj ;
 			
 			var _oVaObj : VarObj = SFind.findVarObj(oSBloc, sTypeNotIni);
 			if (_oVaObj.eType == EuVarType._StaticClass) {
-				oCallRef = cast(_oVaObj,VarStaticClass).oRefClass;
+				oCallRef = cast(_oVaObj, VarStaticClass).oRefClass;
+				if (oCallRef == null){
+					Debug.fFatal("oCallRef is null");
+				}
 				
 			}else if (_oVaObj.eType == EuVarType._CppStaticClass) {
-				
+		
 			}else {
 				Debug.fError("Error, class not found : " + sTypeNotIni);
 			}
@@ -43,7 +46,7 @@ package language.vars.varObj ;
 
 		}
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
+		override public function fGetType():String {
 			if (oCallRef == null) {
 				return "ClassRefNull";
 			}

@@ -8,6 +8,7 @@ package language.project.convertCpp ;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.Text;
+	import language.project.convertSima.SPackage;
 	import language.vars.special.EnumObj;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
@@ -26,12 +27,13 @@ package language.project.convertCpp ;
 
 		private var bUseDefineIN : Bool = false;
 		
-		public function new(_Main:Root, _oCppProject : CppProject, _oSClass : SClass) { 
+		public function new(_Main:Root, _oCppProject : CppProject, _oSPck : SPackage) { 
 	
-			super(_Main,_oCppProject, _oSClass);
+			super(_Main,_oCppProject, _oSPck);
 			
-			convertGpuFunctions();
-			
+			for(_oSClass in _oSPck.aClassList){
+				convertGpuFunctions(_oSClass);
+			}
 		//	convertClass(); already called in extended
 			
 		}
@@ -58,7 +60,7 @@ package language.project.convertCpp ;
 		}
 		*/
 		
-		private function convertGpuFunctions():Void {
+		private function convertGpuFunctions(_oSClass:SClass):Void {
 		
 			pushLine(fAddLicence());
 			pushLine("#include \"Lib_GZ_OpenGL/OpenGL.h\"");
@@ -116,7 +118,7 @@ package language.project.convertCpp ;
 			
 			pushLine("#if !( defined GZ_tWeb_Emsc ||  defined GZ_tCpcDos  ||  defined GZ_tLite ) ");
 				pushLine("FUNC_fGetError glCall_fGetError = 0;");
-				gpuFunctionToConvert(oSClass);
+				gpuFunctionToConvert(_oSClass);
 								
 				addSpace();
 				pushLine("gzBool Lib_GZ_OpenGL::SysGpuFunc::fGetGpuFunctions(){");
@@ -125,7 +127,7 @@ package language.project.convertCpp ;
 
 				pushLine("using namespace SysGpuFunc;");
 				pushLine("glCall_fGetError = (FUNC_fGetError)fGetFuncGL(\"glGetError\");");
-				gpuFunctionToAssign(oSClass);
+				gpuFunctionToAssign(_oSClass);
 				pushLine("return true;");
 				
 
@@ -134,7 +136,7 @@ package language.project.convertCpp ;
 				pushLine("}");
 
 				addSpace();
-				gpuCreateDbg(oSClass);
+				gpuCreateDbg(_oSClass);
 			pushLine("#else");
 				pushLine("gzBool Lib_GZ_OpenGL::SysGpuFunc::fGetGpuFunctions(){return false;}");
 			pushLine("#endif");

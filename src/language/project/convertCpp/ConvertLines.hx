@@ -1465,7 +1465,14 @@ package language.project.convertCpp ;
 								//_sReturn += "::"  ; //Normal
 								//_sReturn += "->" ; //??
 								//_sReturn += "::Get(thread)->";
-								_sReturn += "::GetInst(thread)->";
+								if ( (TypeResolve.isVarCommon( _oNextVar) && cast(_oNextVar,CommonVar ).bStatic)){
+									_sReturn += "::Get(thread)->";
+								}else{
+									_sReturn += "::GetInst(thread)->";
+									
+								}
+							
+								
 							}
 						}
 						

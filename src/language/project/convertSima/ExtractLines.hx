@@ -324,7 +324,8 @@ import haxe.crypto.BaseCode;
 				//break;
 				
 				case EuVarType._ParamInput : 
-					_oLine = new ParamInput();
+					_oLine = new ParamInput(_sLine);
+					
 					cast(_oLine,ParamInput).oVarInput = cast(_oVarSetObj,CommonVar);
 				//break;
 				

@@ -36,12 +36,11 @@ package language;
 		public var sLibCppName : String = "";
 		public var aRequire : Array<Dynamic> = [];
 		public var sPlatform : String = "";
-		
-
 		*/
 		
-				public var bLoadAll : Bool = false;
 		
+		
+		public var bLoadAll : Bool = false;
 		public var oLib : SLib;
 		
 

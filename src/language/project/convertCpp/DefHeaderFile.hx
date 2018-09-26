@@ -10,6 +10,7 @@ package language.project.convertCpp ;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.Text;
+	import language.project.convertSima.SPackage;
 	import language.vars.special.EnumObj;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
@@ -28,30 +29,32 @@ package language.project.convertCpp ;
 
 		private var bUseDefineIN : Bool = false;
 		
-		public function new(_Main:Root, _oCppProject : CppProject, _oSClass : SClass) { 
+		public function new(_Main:Root, _oCppProject : CppProject, _oSPackage: SPackage) { 
 	
-			super(_Main,_oCppProject, _oSClass);
+			super(_Main,_oCppProject, _oSPackage);
 			
-			convertDefHeader();		
+			for(_oSClass in _oSPackage.aClassList){
+				convertDefHeader(_oSClass);		
+			}
 		}
 		
 		
-		private function convertDefHeader():Void {
-			if(oSClass.oSLib.sName == "GZ"){
+		private function convertDefHeader(_oSClass:SClass):Void {
+			if(_oSClass.oSLib.sName == "GZ"){
 				pushLine(fAddLicence());
-			}else if(oSClass.oSLib.sName == "SimaCode"){
+			}else if(_oSClass.oSLib.sName == "SimaCode"){
 				pushLine("//GroundZero Engine Demo File -- An example to show the capabilities of GZE, modify this file as you like --");
 			}
 			
-			pushLine(oSClass.sCNamespace + "class c"  + oSClass.sName +";" + oSClass.sCEndNamespace );
+			pushLine(_oSClass.sCNamespace + "class c"  + _oSClass.sName +";" + _oSClass.sCEndNamespace );
 			
 
-			pushHeaderDefine();
+			pushHeaderDefine(_oSClass);
 			
 			pushLine("#include \"Lib_GZ/Base/GzTypes.h\"");
 			
 			/*
-			pushLine("namespace " +  oSClass.oSLib.sWriteName + "{namespace _" +  oSClass.sName  + "{");
+			pushLine("namespace " +  _oSClass.oSLib.sWriteName + "{namespace _" +  _oSClass.sName  + "{");
 			getUnitDefinition(); //TODO Only local
 			pushLine("}}");
 					listDelegateTypeDef();
@@ -63,25 +66,25 @@ package language.project.convertCpp ;
 			includeClass();
 			/////////////////////////////
 				*/
-						//pushLine("class " + oSClass.oSLib.sWriteName + "_"  + oSClass.sName + _sExtend +" {");
-		//	pushLine("namespace " +  oSClass.oSLib.sWriteName + "{");
-			//pushLine("namespace " +  oSClass.sName  + "{");
-			pushLine(oSClass.sNamespace);
+						//pushLine("class " + _oSClass.oSLib.sWriteName + "_"  + _oSClass.sName + _sExtend +" {");
+		//	pushLine("namespace " +  _oSClass.oSLib.sWriteName + "{");
+			//pushLine("namespace " +  _oSClass.sName  + "{");
+			pushLine(_oSClass.sNamespace);
 			
 			addTab();
 			addSpace();	
 					
 			//Get constant		
 			pushLine("//Public var"); //Only public
-			getVarToConvert(oSClass.aIniConstVarList, EuSharing.Public, false, false, EuConstant.Constant);
+			getVarToConvert(_oSClass.aIniConstVarList, EuSharing.Public, false, false, EuConstant.Constant);
 	
 			pushLine("//Private var");
-			getVarToConvert(oSClass.aIniConstVarList, EuSharing.Private, false, false, EuConstant.Constant);
+			getVarToConvert(_oSClass.aIniConstVarList, EuSharing.Private, false, false, EuConstant.Constant);
 			
-			getEnumDefinition();
+			getEnumDefinition(_oSClass);
 			
 			subTab();
-			pushLine(oSClass.sEndNamespace);
+			pushLine(_oSClass.sEndNamespace);
 			//pushLine("}");
 			//pushLine("}")
 			
@@ -90,12 +93,12 @@ package language.project.convertCpp ;
 		
 		//#ifndef tHDef_LibName_Example
 		//#define tHDef_LibName_Example
-		private function pushHeaderDefine():Void {
+		private function pushHeaderDefine(_oSClass:SClass):Void {
 
-			pushLine("#ifndef tHDef_HH_" +  oSClass.sHeaderName); //Resolve problem of recursive extented class linking !Very important!
+			pushLine("#ifndef tHDef_HH_" +  _oSClass.oPackage.sHeaderName); //Resolve problem of recursive extented class linking !Very important!
 			
-			//pushLine("#ifndef tHDef_" + oSClass.oSLib.sName + "_" + oSClass.sName);
-			pushLine("#define tHDef_HH_" +  oSClass.sHeaderName);
+			//pushLine("#ifndef tHDef_" + _oSClass.oSLib.sName + "_" + _oSClass.sName);
+			pushLine("#define tHDef_HH_" +  _oSClass.oPackage.sHeaderName);
 		}
 		
 
@@ -112,11 +115,11 @@ package language.project.convertCpp ;
 		 */
 
 		
-		private function getEnumDefinition():Void {
+		private function getEnumDefinition(_oSClass:SClass):Void {
 
 			addSpace();
 			pushLine("//Enum");
-			var _aEnumList:Array<Dynamic> = oSClass.aEnumList;
+			var _aEnumList:Array<Dynamic> = _oSClass.aEnumList;
 			var _i : UInt = _aEnumList.length;
 			for (i in 0 ...  _i) {
 				var _oEnum : EnumObj = _aEnumList[i];
@@ -162,7 +165,7 @@ package language.project.convertCpp ;
 			
 			addSpace();
 			pushLine("//Structure Definition");
-			var _aUnitList:Array<Dynamic> = oSClass.aUnitList;
+			var _aUnitList:Array<Dynamic> = _oSClass.aUnitList;
 			var _i : UInt = _aUnitList.length;
 			for (i in 0 ...  _i) {
 				var _oUnit : UnitObj = _aUnitList[i];
@@ -178,9 +181,9 @@ package language.project.convertCpp ;
 		}
 		
 		
-		private function listUnit(_oSClass : SClass):String {
+		private function listUnit(__oSClass : SClass):String {
 			var _sLine : String = "";
-			var _aUnitList:Array<Dynamic> = _oSClass.aUnitList;
+			var _aUnitList:Array<Dynamic> = __oSClass.aUnitList;
 			var _i : UInt = _aUnitList.length;
 			for (i in 0 ...  _i) {
 				var _oUnit : UnitObj = _aUnitList[i];
@@ -198,7 +201,7 @@ package language.project.convertCpp ;
 
 			addSpace();
 			pushLine("//Structure Implementation");
-			var _aUnitList:Array<Dynamic> = oSClass.aUnitList;
+			var _aUnitList:Array<Dynamic> = _oSClass.aUnitList;
 			var _i : UInt = _aUnitList.length;
 			for (i in 0 ...  _i) {
 				var _oUnit : UnitObj = _aUnitList[i];
@@ -244,7 +247,7 @@ package language.project.convertCpp ;
 		/*
 		public static var sPrefix : String = "_d";
 		public function listDelegateTypeDef():Void {
-			var _aList: Array<Dynamic> = oSClass.aDelegateList;
+			var _aList: Array<Dynamic> = _oSClass.aDelegateList;
 			var _i : Int = _aList.length;
 			for (i in 0 ..._i) {
 				var _oFunc : SFunction = _aList[i];

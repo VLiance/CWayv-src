@@ -16,7 +16,7 @@ package language.vars.varObj ;
 		public var oNewRef  : VarObj;
 
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
+		override public function fGetType():String {
 			return "New";
 		}
 		

@@ -48,9 +48,10 @@ package language.project.convertCpp ;
 		//	pushLine("//GroundZero Engine Demo File -- An example to show the capabilities of GZE, modify this file as you like --");
 			pushLine("#include \"" + oLib.sWriteName + "/" + oLib.sWriteName + ".h\"");
 			
-			for( _oSClass in oLib.aClass ) {//SClass
+		
+			for (_oPckg in oLib.aPackage) {for (_oSClass in  _oPckg.aClassList) {
 				pushLine("//#include \"" + _oSClass.sFilePath + ".h\"");
-			}
+			}}
 			
 			//pushLine("class uLib;");//Temp?
 			pushLine("extern \"C\" Lib_GZ::uLib* IniLib_" +  oLib.sWriteName  +"(){");
@@ -60,9 +61,9 @@ package language.project.convertCpp ;
   			
 		//	pushLine(oLib.sWriteName + "::zpLib = " +  oLib.sWriteName  +"::NewLib();");
 			
-			for( _oSClass in oLib.aClass ) {//SClass
+			for (_oPckg in oLib.aPackage) {for (_oSClass in  _oPckg.aClassList) {
 				pushLine("//" + _oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
-			}
+			}}
 			
 			pushLine("}");
 		

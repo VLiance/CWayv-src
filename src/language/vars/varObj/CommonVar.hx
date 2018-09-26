@@ -12,7 +12,7 @@ package language.vars.varObj ;
 		
 		public var eConstant    : EuConstant;
 		public var sName	  	: String;
-		public var nLine	  	: UInt;
+	
 		public var oSBloc    	: SBloc;
 		//public var oExtendClass : SClass;
 		public var eSharing 	: EuSharing;
@@ -37,7 +37,13 @@ package language.vars.varObj ;
 			eType = _eType;
 		}
 		
+		
+		
+	
 
+		override function fGetName():String {
+			return sName;
+		}
 		
 		
 		/*
@@ -49,14 +55,7 @@ package language.vars.varObj ;
 		}
 		*/
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
-			if (eType == EuVarType._Void) {
-				return "void";
-			}
-			
-			return "NI";
-		}
-		
+
 		override public function copy(_oSBloc:SBloc):VarObj {
 			return null; //Not possible -->
 			//return copyCommonVar(new CommonVar(oSBloc, eType));

@@ -64,7 +64,7 @@ package language.vars.special ;
 		
 		
 		
-		override public function fGetType(_eOpt:UInt = 0):String {
+		override public function fGetType():String {
 			return "Array<Dynamic>";
 		}
 		

@@ -9,6 +9,7 @@ package language.project.convertCpp ;
 	import language.pck.SLib;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
+	import language.project.convertSima.SPackage;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
 	import language.vars.varObj.Delegate;
@@ -27,12 +28,13 @@ package language.project.convertCpp ;
 	class CommonCpp extends FileForm
 	{
 		public var oCppProject : CppProject;
-		public var oSClass : SClass;
+		//public var oSClass : SClass;
+		public var oSPackage : SPackage;
 		
-		public function new(_Main:Root, _oCppProject : CppProject, _oSClass : SClass) {
+		public function new(_Main:Root, _oCppProject : CppProject, _oSPackage : SPackage) {
 			super(_Main);
 			oCppProject = _oCppProject;
-			oSClass = _oSClass;
+			oSPackage = _oSPackage;
 		}
 		
 		
@@ -94,7 +96,7 @@ package language.project.convertCpp ;
 			var _sLib: String = "";
 			if (_bAddLib) {
 				//_sLib = oSClass.oSLib.sWriteName + "::" + oSClass.sName + "::";
-				_sLib = oSClass.sNsAccess;
+				_sLib = oSPackage.sNsAccess;
 			}
 			
 	
@@ -486,10 +488,10 @@ package language.project.convertCpp ;
 			//Special case for class extension type  //X Now -> Always
 			//if (oSClass.bExtension  && _oSFunction.eFuncType == EuFuncType.Main ) {  
 			if ( _oSFunction.eFuncType == EuFuncType.Main ) {  
-				if(!oSClass.bIsPod){
+				if(!_oSClass.bIsPod){
 					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent);");
 					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
-					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)"));
+					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
 				
 					
 					fGetInitializerList(_oSFunction);
@@ -582,7 +584,7 @@ package language.project.convertCpp ;
 		}
 	
 		public function fAddCppLines(_aSource:Array<Dynamic>) :Void {
-			if(!oSClass.oSFrame.bSkipContent){ //TODO only when we are in function (not outside?)
+			if(!oSPackage.oSFrame.bSkipContent && !oSPackage.oSLib.bSkipLibContent){ //TODO only when we are in function (not outside?)
 					if (_aSource.length > 0) {
 						pushLine("// ------  Cpp section  ------ //");
 						for (  _oLine  in _aSource) {//VarCppLine

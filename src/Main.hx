@@ -2,6 +2,8 @@ package;
 
 
 import language.FileManager;
+import language._system.FileSys;
+import language._system.System;
 
 import arguable.ArgParser;//haxelib install arguable
 import language.base.Root;
@@ -16,36 +18,37 @@ import language.ProjectData;
  */
 class Main 
 {
-	
-	
-	//Vérifier les vrai break;
-	//Vérifier les lopp avec i initiliser au début
-	//var i : Int  = _i;//???CW
-	
-	//Repace split("\\").join("/") to replace
-	
-	static function main()
-    {
-
-			var _oRoot :Root = new Root(null);
-		
-			var	oFileManager =  new FileManager(_oRoot);
-			
-		
-			//var	oProjectData =  new ProjectData(_oRoot);
-		/*
-		  for (arg in Sys.args()){
-			Sys.println(arg);
-		  }*/
-			
-
-
-		//Out.fDebug("Finish !");
-		
-	//	File.saveContent("Test.txt","HELLO");
+	static function main(){
+		#if !js
+			fCreateCompilo();
+		#end	
 		
 	}
 	
-	
-	
+	 public static function fCreateCompilo() {
+		var _oRoot :Root = new Root(null);
+		var	oFileManager =  new FileManager(_oRoot);
+	 }
+
 }
+
+
+ 
+#if js
+	
+	@:expose  // <- makes the class reachable from plain JavaScript
+	@:keep    // <- avoids accidental removal by dead code elimination
+	class CWayv {
+	  public function new() { }
+	  public function fStart(_sArg:String) {
+		 System.sFullArg = _sArg;
+		 System.fPrint("CWayv Started! : " + _sArg);
+		 
+		Main.fCreateCompilo();
+		 
+	  }
+	}
+	
+#end
+
+	

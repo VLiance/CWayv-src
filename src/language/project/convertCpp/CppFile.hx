@@ -5,6 +5,7 @@ package language.project.convertCpp ;
 	import language.enumeration.EuFuncType;
 	import language.enumeration.EuSharing;
 	import language.enumeration.EuVarType;
+	import language.project.convertSima.SPackage;
 	import language.vars.varObj.VarRc;
 	import language.MyFile;
 	import language.project.convertSima.ExtractBlocs;
@@ -44,18 +45,41 @@ package language.project.convertCpp ;
 		public var nTest : Int;
 		public var aClassIncluded : Map<String, Bool>;
 	
-		public function new(_Main:Root, _oCppProject : CppProject, _oSClass : SClass) { 
+		public function new(_Main:Root, _oCppProject : CppProject, _oSPackage : SPackage) { 
 	
-			super(_Main,_oCppProject, _oSClass);
+			super(_Main,_oCppProject, _oSPackage);
 			
 			try{
-				ExtractBlocs.oCurrSClass = _oSClass;
-				ExtractBlocs.nCurrLine = _oSClass.nLine;
-				convertClass();
-			
+				ExtractBlocs.oCurrPackage = _oSPackage;
+				
+				
+				aClassIncluded = new Map<String, Bool>(); 
+				
+				//include Header {
+				if(_oSPackage.oSLib.sName == "GZ"){
+					pushLine(fAddLicence());
+				}else if(_oSPackage.oSLib.sName == "SimaCode"){
+					pushLine("//GroundZero Engine Demo File -- An example to show the capabilities of GZE, modify this file as you like --");
+				}
+				//pushLine("//GroundZero Engine");   //First line cause wrong recompile state  Prevent non view file change
+				//pushLine("#include \""  + _oSPackage.sFilePath + ".h\"");
+				//aClassIncluded[_oSPackage.sFilePath] = true;
+				addSpace();
+				//////////////////////////////
+				includeClass(_oSPackage);
+				
+				
+				
+				for (_oSClass in _oSPackage.aClassList){
+					ExtractBlocs.oCurrSClass = _oSClass;
+					ExtractBlocs.nCurrLine = _oSClass.nLine;
+					convertClass(_oSClass);
+				}
+				
+				
 			} catch (err:String) {
 				
-					if (err.charCodeAt(0) == ":".code) { //My errors
+					if (err.charAt(0) == ":") { //My errors
 						//trace("Er");
 						Debug.fError("Internal Error: " + err);
 					}else {
@@ -65,29 +89,15 @@ package language.project.convertCpp ;
 			
 		}
 		
-		public function convertClass():Void {
+		public function convertClass(_oSClass:SClass):Void {
 			
-			aClassIncluded = new Map<String, Bool>(); 
-			
-			//include Header {
-			if(oSClass.oSLib.sName == "GZ"){
-				pushLine(fAddLicence());
-			}else if(oSClass.oSLib.sName == "SimaCode"){
-				pushLine("//GroundZero Engine Demo File -- An example to show the capabilities of GZE, modify this file as you like --");
-			}
-			//pushLine("//GroundZero Engine");   //First line cause wrong recompile state  Prevent non view file change
-			pushLine("#include \""  + oSClass.sFilePath + ".h\"");
-			aClassIncluded[oSClass.sFilePath] = true;
-			addSpace();
-			//////////////////////////////
-			includeClass(oSClass);
-			
+
 			//Include Extendclass
-			includeExtendImportClass(oSClass);
+			includeExtendImportClass(_oSClass);
 			
-			includeSubClass();
+			includeSubClass(_oSClass);
 			/////////////////////////////
-			listEmbedFilesInclude();
+			listEmbedFilesInclude(_oSClass);
 			
 			//addSpace();
 			//Backward heritage
@@ -100,34 +110,34 @@ package language.project.convertCpp ;
 				addSpace();
 			}*/
 			addSpace();
-			getDefHeaderDefinition();
+			getDefHeaderDefinition(_oSClass);
 			
 			
-			fAddThreadFonction();
+			fAddThreadFonction(_oSClass);
 			addSpace();
 			
 
 			//AddCppCode
-			fAddCppLines(oSClass.aCppLineListNormal);
+			fAddCppLines(_oSClass.aCppLineListNormal);
 			
 		
-			fAddEntryPoint();
+			fAddEntryPoint(_oSClass);
 			
 			//ClassId
-			pushLine(oSClass.sNamespace);
+			pushLine(_oSClass.sNamespace);
 		//	pushLine("gzUInt _nId = Lib_GZ::Lib::nClass++;");
 			//getGateList(oSClass);
-			getVarToConvert(oSClass.aAtomicVarList, EuSharing.Public ,false,false,EuConstant.Normal);
-			getVarToConvert(oSClass.aAtomicVarList, EuSharing.Private,false,false,EuConstant.Normal);
+			getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Public ,false,false,EuConstant.Normal);
+			getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Private,false,false,EuConstant.Normal);
 
 			pushLine("////// Current Lib Access  ////");
 			//pushLine("namespace " + oSClass.oSLib.sWriteName + "{"); 
 			//pushLine("using namespace _" + oSClass.sName + "; //Current Class Access"); 
 			pushLine("//// Current Static Access ////");
 			pushLine("#undef _");
-			pushLine("#define _ " + oSClass.sName);
-			fAddIniClass(oSClass);
-			fAddFunctionName(oSClass);
+			pushLine("#define _ " + _oSClass.sName);
+			fAddIniClass(_oSClass);
+			fAddFunctionName(_oSClass);
 			pushLine("///////////////////////////////");
 				
 			//pushLine("using namespace _" + oSClass.sName + ";");
@@ -137,7 +147,7 @@ package language.project.convertCpp ;
 
 			
 			//Add class cpp
-			fAddCppLines(oSClass.aCppLineListNamespace);
+			fAddCppLines(_oSClass.aCppLineListNamespace);
 			
 			pushLine("}");
 			addSpace();
@@ -148,7 +158,7 @@ package language.project.convertCpp ;
 			
 			//if(oSClass.bHaveOverplace == false){
 				//pushLine("GZ_mCppClass(::" + oSClass.oSLib.sWriteName + ", "  + oSClass.sName + ")");
-				pushLine("GZ_mCppClass("  + oSClass.sName + ")");
+				pushLine("GZ_mCppClass("  + _oSClass.sName + ")");
 			//}else{
 			//	var _oSClassOp : SClass =  SClass(oSClass.aExtendClass[0]);
 			//	pushLine("GZ_mCppClassExt(::" + oSClass.oSLib.sWriteName + ", " + oSClass.sName + ", " + _oSClassOp.sNsAccess + _oSClassOp.sName + ");");
@@ -156,12 +166,12 @@ package language.project.convertCpp ;
 			
 			addSpace();
 
-			fAddCppLines(oSClass.aCppLineListClass);
-			fAddCppLines(oSClass.aCppLineListStatic);
+			fAddCppLines(_oSClass.aCppLineListClass);
+			fAddCppLines(_oSClass.aCppLineListStatic);
 		
 
 			//Get all function
-			var _aFunctionList : Array<Dynamic> = oSClass.aFunctionList;
+			var _aFunctionList : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i : UInt =   _aFunctionList.length;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunctionList[i];
@@ -171,15 +181,15 @@ package language.project.convertCpp ;
 				}
 			}
 			
-			fDefaultCopyFunc(oSClass);
+			fDefaultCopyFunc(_oSClass);
 
 			
-			if(!oSClass.bIsPod){
+			if(!_oSClass.bIsPod){
 				//Destructor
 				//pushLine(oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "::~" + oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "(){")
-				pushLine( "c" + oSClass.sName + "::~" +  "c" + oSClass.sName + "(){");
-				extractDestructor();
-				freeAll(oSClass);
+				pushLine( "c" + _oSClass.sName + "::~" +  "c" + _oSClass.sName + "(){");
+				extractDestructor(_oSClass);
+				freeAll(_oSClass);
 				pushLine("}");
 			}
 			addSpace();
@@ -189,17 +199,17 @@ package language.project.convertCpp ;
 			addSpace();
 			
 		//	convertUnitFunction(); //TODO UNIT??
-			pushLine(oSClass.sCEndNamespace);
+			pushLine(_oSClass.sCEndNamespace);
 			//pushLine("}");
 			
 		}
 		
 		
-		public function 	fAddEntryPoint(){
-			if ( oSClass.oSProject.oEntryPoint == oSClass){
-				pushLine("extern \"C\" Lib_GZ::uLib* IniLib_Lib_" + oSClass.oSLib.sIdName + "();");
-				var _sEntry : String = "new " + oSClass.sNsAccess + "c"  + oSClass.sName  + "(NULL)";
-				var _sIniLib : String = "Lib_GZ::uLib* _rLib =  IniLib_Lib_" + oSClass.oSLib.sIdName + "();if(_rLib != NULL){Lib_GZ::Lib::fAllClass(*_rLib->_rLastClass);}";
+		public function 	fAddEntryPoint(_oSClass:SClass){
+			if ( _oSClass.oSProject.oEntryPoint == _oSClass){
+				pushLine("extern \"C\" Lib_GZ::uLib* IniLib_Lib_" + _oSClass.oSLib.sIdName + "();");
+				var _sEntry : String = "new " + _oSClass.sNsAccess + "c"  + _oSClass.sName  + "(NULL)";
+				var _sIniLib : String = "Lib_GZ::uLib* _rLib =  IniLib_Lib_" + _oSClass.oSLib.sIdName + "();if(_rLib != NULL){Lib_GZ::Lib::fAllClass(*_rLib->_rLastClass);}";
 				pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ " +   _sIniLib +  "  return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
 		
 				//pushLine("Lib_GZ::cEntryPoint*  GZ_CreateEntryPointClass(){ return (Lib_GZ::cEntryPoint*)" + _sEntry + ";}");
@@ -207,26 +217,26 @@ package language.project.convertCpp ;
 			}
 		}
 		
-		private function extractDestructor():Void {
-			if (oSClass.oFuncDestrutor != null) {
-				ConvertLines.convertBlocLines(this, oSClass.oFuncDestrutor);
+		private function extractDestructor(_oSClass:SClass):Void {
+			if (_oSClass.oFuncDestrutor != null) {
+				ConvertLines.convertBlocLines(this, _oSClass.oFuncDestrutor);
 			}
 		}
 		
 		
-		private function includeClass(_oSClass:SClass):Void {
+		private function includeClass(_oSPck:SPackage):Void {
 			
 			 var _oImport : FileImport;
 			 var _sPath : String;
 			 var _sLib : String;
 			 var _sName : String;
-			 var _sClassPath : String = _oSClass.sPath;
-			 var _sClassLib : String = _oSClass.oSLib.sWritePath;
+			 var _sClassPath : String = _oSPck.sPath;
+			 var _sClassLib : String = _oSPck.oSLib.sWritePath;
 			
 			// addSpace();
 			var i:Int;
 							
-			var _i:UInt = _oSClass.aSImportList.length;
+			var _i:UInt = _oSPck.aSImportList.length;
 			
 			/*
 			if (_i > 0) { //Some include
@@ -235,7 +245,7 @@ package language.project.convertCpp ;
 
 			//Normal class
 			for ( i in 0 ... _i) {
-				_oImport = 	_oSClass.aSImportList[i];
+				_oImport = 	_oSPck.aSImportList[i];
 				
 				_sName = _oImport.sName;
 				_sPath = _oImport.sPath; 
@@ -255,7 +265,7 @@ package language.project.convertCpp ;
 
 		}
 		
-		private function includeSubClass():Void {
+		private function includeSubClass(_oSClass:SClass):Void {
 	
 			 var _sPath : String;
 			 var _sLib : String;
@@ -264,7 +274,7 @@ package language.project.convertCpp ;
 		
 			var i:Int;
 							
-			var _i:UInt = oSClass.aSubClassUsedListNotImport.length;
+			var _i:UInt = _oSClass.aSubClassUsedListNotImport.length;
 			
 			
 			if (_i > 0) { //Some include
@@ -274,7 +284,7 @@ package language.project.convertCpp ;
 
 			//Normal class
 			for ( i in 0 ... _i) {
-				var _oSubClass : SClass = oSClass.aSubClassUsedListNotImport[i];
+				var _oSubClass : SClass = _oSClass.aSubClassUsedListNotImport[i];
 				/*
 				_sName = _oSubClass.sName;
 				_sPath = _oSubClass.sPath; 
@@ -284,12 +294,13 @@ package language.project.convertCpp ;
 				
 				_sPath = _sPath.split("\\").join("/");  
 				*/
-				pushLine("#include \"" + _oSubClass.sFilePath + ".h\"");
+				pushLine("#include \"" + _oSubClass.oPackage.sFilePath + ".h\"");
 			}
 		}
 		
 		
 		private function convertFunctionClass(_oSFunction : SFunction, _nFuncIndex : Int ):Void {
+				var _oSClass : SClass = _oSFunction.oSClass;
 			ExtractBlocs.oCurrSClass = _oSFunction.oSClass;
 			ExtractBlocs.nCurrLine = _oSFunction.nLine;
 			//Return
@@ -301,11 +312,11 @@ package language.project.convertCpp ;
 			var _sReturn : String;
 			var _sIni : String;
 			
-			var _sLib : String = oSClass.oSLib.sWriteName;
+			var _sLib : String = _oSClass.oSLib.sWriteName;
 			//var _sExtendClass : String = "";
 	
 			//var _sClass : String = _sLib + "_" +  oSClass.sName + "::";
-			var _sClass : String =    oSClass.sName + "::";
+			var _sClass : String =    _oSClass.sName + "::";
 			
 			
 			
@@ -350,7 +361,7 @@ package language.project.convertCpp ;
 		
 			if ( _oSFunction.eFuncType == EuFuncType.Pure){
 				_sStatic = "p";
-				pushLine("#ifndef tFDef_" + _oSFunction.oSClass.sHeaderName + "_" + _oSFunction.sName);
+				pushLine("#ifndef tFDef_" + _oSFunction.oSClass.oPackage.sHeaderName + "_" + _oSFunction.sName);
 			}else if (_oSFunction.bStatic ) {
 				//_sStatic = "cs";
 				_sStatic = "c"; //Now auto sigleton, mabe make pure static?
@@ -418,7 +429,7 @@ package language.project.convertCpp ;
 				//ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
 			
 				//}
-				iniEmbedVar();
+				iniEmbedVar(_oSClass);
 			}
 			//addSpace();
 			
@@ -498,8 +509,8 @@ package language.project.convertCpp ;
 		
 		
 		
-		private function iniEmbedVar():Void {
-			var _aList : Array<Dynamic> = oSClass.aEmbedVarList;
+		private function iniEmbedVar(_oSClass:SClass):Void {
+			var _aList : Array<Dynamic> = _oSClass.aEmbedVarList;
 			var _i : UInt = _aList.length;
 			var _sIni : String = "";
 			for (i in 0 ...  _i) {
@@ -529,9 +540,9 @@ package language.project.convertCpp ;
 		}
 		
 	
-		private function iniGlobalVar():Void {
+		private function iniGlobalVar(_oSClass:SClass):Void {
 					
-			var _aList : Array<Dynamic> = oSClass.aNotIniGlobalVarList;
+			var _aList : Array<Dynamic> = _oSClass.aNotIniGlobalVarList;
 			var _i : UInt = _aList.length;
 			var _sIni : String = "";
 			for (i in 0 ...  _i) {
@@ -566,11 +577,11 @@ package language.project.convertCpp ;
 				 pushLine(_sIni + " = 0;");
 			}*/
 		
-		private function convertUnitFunction():Void {
+		private function convertUnitFunction(_oSClass:SClass):Void {
 			addSpace();
 	
 			var _oUnit : UnitObj;
-			var _aUnitList:Array<Dynamic> = oSClass.aUnitList;
+			var _aUnitList:Array<Dynamic> = _oSClass.aUnitList;
 			var _i : UInt = _aUnitList.length;
 			if (_i > 0) {
 				pushLine("//Unit creation");
@@ -604,10 +615,10 @@ package language.project.convertCpp ;
 		}
 		
 	
-		override function createUnitFunction(_oUnit : UnitObj):Void {
+		override function createUnitFunction( _oUnit : UnitObj):Void {
 			var  _sBaseName : String = "_oRtu";
 			//var _sClassDef :String = oSClass.oSLib.sWriteName + "_" + oSClass.sName + "::";
-			var _sClassDef :String = oSClass.sName + "::";
+			var _sClassDef :String = _oUnit.oSClass.sName + "::";
 			//pushLine( _sClassDef + _oUnit.sName + "* " + _sClassDef + "u_" + _oUnit.sName + "(){"); //TODO MAYbe for local unit
 			pushLine( _oUnit.getCppName() + "* " + _sClassDef + "tNew_" + _oUnit.sName + "(){");
 			
@@ -634,7 +645,7 @@ package language.project.convertCpp ;
 		override function createUnitFunctionDestruction(_oUnit : UnitObj):Void {
 			
 			var  _sBaseName : String = "((" + _oUnit.sName + "*)_oRtu)";
-			var _sClassDef :String =  oSClass.sName + "::";
+			var _sClassDef :String =  _oUnit.oSClass.sName + "::";
 			//pushLine( _sClassDef + _oUnit.sName + "* " + _sClassDef + "u_" + _oUnit.sName + "(){"); //TODO MAYbe for local unit
 			pushLine(  "void " + _sClassDef + "tDel_" + _oUnit.sName + "(void* _oRtu){");
 			addTab();
@@ -658,7 +669,7 @@ package language.project.convertCpp ;
 		}
 		
 		override function createUnitFunctionArrayWrite(_oUnit : UnitObj):Void {
-			var _sClassDef :String =  oSClass.sName + "::";
+			var _sClassDef :String =  _oUnit.oSClass.sName + "::";
 			//pushLine( _sClassDef + _oUnit.sName + "* " + _sClassDef + "GZ_tAw_" + _oUnit.sName + "(ArrayPtr* _aArray, unsigned Int _nIndex){"); //TODO MAYbe for local unit
 			pushLine(  _oUnit.getCppName() + "* " + _sClassDef + "tAw_" + _oUnit.sName + "(ArrayPtr* _aArray, unsigned int _nIndex){");
 			addTab();
@@ -701,12 +712,12 @@ package language.project.convertCpp ;
 		
 		
 		
-		private function iniAssociateVar():Void {
+		private function iniAssociateVar(_oSClass:SClass):Void {
 			
-			if(oSClass.aAssociateVarList.length > 0 ){
+			if(_oSClass.aAssociateVarList.length > 0 ){
 				addSpace();
 				pushLine("//Associate:");
-				var _aAssociate:Array<Dynamic> = oSClass.aAssociateVarList;
+				var _aAssociate:Array<Dynamic> = _oSClass.aAssociateVarList;
 				var _i : UInt = _aAssociate.length;
 				for (i in 0 ...  _i) {
 					var _oAssociate : VarObj = _aAssociate[i];
@@ -736,9 +747,9 @@ package language.project.convertCpp ;
 		}
 		
 		
-		private function listEmbedFilesInclude():Void {
+		private function listEmbedFilesInclude(_oSClass:SClass):Void {
 		
-			var _aList:Array<Dynamic> = oSClass.aEmbedFileList;
+			var _aList:Array<Dynamic> = _oSClass.aEmbedFileList;
 			var _i : UInt = _aList.length;
 			for (i in 0 ...  _i) {
 				var _oRc : VarRc = _aList[i];
@@ -760,19 +771,22 @@ package language.project.convertCpp ;
 		
 		private function listBackwardHeritage(_oSClass:SClass):Void {
 			var _bOne  : Bool = false;
-			var _aList : Array<Dynamic> =  _oSClass.aSImportList;
+			var _aList : Array<Dynamic> =  _oSClass.oPackage.aSImportList;
 			var _i:UInt = _aList.length;
 			if ( _i > 0) {
 			
 				for (i in 0 ..._i) {
 					var _oFileImport : FileImport  = _aList[i];
-					var _oBackwardTest : SClass =  _oFileImport.oRefClass;
-					if (_oSClass.fIsBackwardHeritage(_oBackwardTest)) {
-						if (!_bOne) {
-							pushLine("//Backward heritage");
-							_bOne = true;
-						}
-						pushLine("#include \"" +  _oBackwardTest.oSLib.sWriteName + "/" + _oBackwardTest.sPath    + _oBackwardTest.sName + ".h\"") ;
+					var _oSPackage : SPackage  =  _oFileImport.oRefPackage;
+					for(_oBackwardTest in _oSPackage.aClassList){
+							//var _oBackwardTest : SClass =  _oFileImport.oRefClass;
+							if (_oSClass.fIsBackwardHeritage(_oBackwardTest)) {
+								if (!_bOne) {
+									pushLine("//Backward heritage");
+									_bOne = true;
+								}
+								pushLine("#include \"" +  _oBackwardTest.oSLib.sWriteName + "/" + _oBackwardTest.oPackage.sPath    + _oBackwardTest.oPackage.sName + ".h\"") ;
+							}
 					}
 				}
 				if(_bOne){
@@ -788,7 +802,7 @@ package language.project.convertCpp ;
 
 				for (i in 0 ..._i) {
 					var _oSCurr : SClass  = _aList[i];
-					var _sPath : String = "#include \"" + _oSCurr.oSLib.sWriteName + "/" + _oSCurr.sPath  + _oSCurr.sName + ".h\"";
+					var _sPath : String = "#include \"" + _oSCurr.oSLib.sWriteName + "/" + _oSCurr.oPackage.sPath  + _oSCurr.oPackage.sName + ".h\"";
 					_sPath = _sPath.split("\\").join("/");  
 					pushLine(_sPath);
 					listHeritage(_oSCurr);
@@ -806,7 +820,7 @@ package language.project.convertCpp ;
 					//var _sPath : String = "#include \"" + _oSCurr.oSLib.sWriteName + "/" + _oSCurr.sPath  + _oSCurr.sName + ".h\"";
 				
 					//pushLine(_sPath);
-					includeClass(_oSCurr);
+					includeClass(_oSCurr.oPackage);
 					includeExtendImportClass(_oSCurr);
 				}
 		}
@@ -823,24 +837,24 @@ package language.project.convertCpp ;
 		
 		
 		
-		private function getDefHeaderDefinition() {
-			if (oSClass.aEnumList.length > 0) {
+		private function getDefHeaderDefinition(_oSClass:SClass) {
+			if (_oSClass.aEnumList.length > 0) {
 				//pushLine("namespace " +  oSClass.oSLib.sWriteName + "{namespace " +  oSClass.sName  + "{");
-				pushLine(oSClass.sNamespace);
+				pushLine(_oSClass.sNamespace);
 				
 				addTab();
 				//pushLine("//Enum");
 				//listEnumDefinition();
 				subTab();
-				pushLine(oSClass.sEndNamespace);
+				pushLine(_oSClass.sEndNamespace);
 				//pushLine("}}");
 				addSpace();
 			}
 		}
 		
 		
-		private function listEnumDefinition() {
-			var _aEnumList:Array<Dynamic> = oSClass.aEnumList;
+		private function listEnumDefinition(_oSClass:SClass) {
+			var _aEnumList:Array<Dynamic> = _oSClass.aEnumList;
 			var _i : UInt = _aEnumList.length;
 			for (i in 0 ...  _i) {
 				var _oEnum : EnumObj = _aEnumList[i];
@@ -875,12 +889,12 @@ package language.project.convertCpp ;
 			
 		}
 		
-		public function fAddThreadFonction():Void {
-			if ( oSClass.bThread ) {
-				if(oSClass.oThreadClass != null){
-					pushLine("GZ_mNewThreadCpp(" + oSClass.oSLib.sWriteName  +  ", " +  oSClass.sName + ", " + oSClass.oThreadClass.sNsAccess.substring(0, oSClass.oThreadClass.sNsAccess.length-2) + ", " + oSClass.oThreadClass.sName + ");");
+		public function fAddThreadFonction(_oSClass:SClass):Void {
+			if ( _oSClass.bThread ) {
+				if(_oSClass.oThreadClass != null){
+					pushLine("GZ_mNewThreadCpp(" + _oSClass.oSLib.sWriteName  +  ", " +  _oSClass.sName + ", " + _oSClass.oThreadClass.sNsAccess.substring(0, _oSClass.oThreadClass.sNsAccess.length-2) + ", " + _oSClass.oThreadClass.sName + ");");
 				}else {
-					pushLine("GZ_mNewThreadCpp(" + oSClass.oSLib.sWriteName  +  ", " +  oSClass.sName + ");");
+					pushLine("GZ_mNewThreadCpp(" + _oSClass.oSLib.sWriteName  +  ", " +  _oSClass.sName + ");");
 				}
 			}
 		}
@@ -905,13 +919,13 @@ package language.project.convertCpp ;
 		public function fDefaultCopyFunc(_oSClass : SClass) :Void { 
 			if (!_oSClass.bExtension && !_oSClass.bIsPod) {
 				
-				pushLine( "gzAny c" + oSClass.sName + "::MemCopy(){");
+				pushLine( "gzAny c" + _oSClass.sName + "::MemCopy(){");
 			///	pushLine( "printf( \"Copy :"  + oSClass.sName + "\" );");
 				
 				if(_oSClass.bAtomic){
 					pushLine( "return (gzAny)this;"); //Todo inline
 				}else {
-					pushLine( "return (gzAny)new c" +  oSClass.sName  + "(*this);");		
+					pushLine( "return (gzAny)new c" +  _oSClass.sName  + "(*this);");		
 				}
 				
 				//pushLine( "return (gzAny)0;");

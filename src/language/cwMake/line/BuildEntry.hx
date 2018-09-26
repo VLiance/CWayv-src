@@ -42,6 +42,9 @@ package language.cwMake.line;
 		public function new( _oCwmFile: CwmFile, _sLine:String ) {
 			oCwmFile = _oCwmFile;
 			
+			Debug.fTrace("new CwmFile: " +_sLine );
+			
+			
 			_sLine = StringTools.replace(_sLine, "\\", "/");
 			sFile = _sLine;
 			
@@ -54,6 +57,13 @@ package language.cwMake.line;
 				sFolder = _sSubPath.substring(_sSubPath.lastIndexOf("/") + 1, _sSubPath.length);
 			}
 			
+			//Debug.fTrace("sFileName: " +sFileName );
+			//Debug.fTrace("sPath: " +sPath );
+			if (sFolder == ""){
+				Debug.fFatal("Entry must have a Folder specifying the lib name: " + sFileName);
+			//	Debug.fTrace("Entry must have a Folder specifying the lib name: " + sFileName);
+			}
+
 			
 			sLib_IdName = sFolder.substring(sFolder.indexOf("_") + 1,sFolder.length);
 					/*

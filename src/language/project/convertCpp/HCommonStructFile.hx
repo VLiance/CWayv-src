@@ -23,7 +23,7 @@ package language.project.convertCpp ;
 		
 		private var oSProject : SProject;
 		private var oSDelegate : SDelegate;
-		public var aClassList : Array<Dynamic>;
+//		public var aClassList : Array<Dynamic>; TODO ?
 		public var oLib : SLib;
 		public static var sPrefix : String = "_d";
 		//public static var sName : String = "CommonStruct";
@@ -53,7 +53,10 @@ package language.project.convertCpp ;
 			
 			sHeader = sName + ".h";
 			
-			aClassList = _oLib.aClass;
+//			aClassList = _oLib.aClass;
+			
+			
+			
 			/*
 			if(oLib.aMerge.length == 0){
 				aClassList = _oLib.aClass;

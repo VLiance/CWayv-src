@@ -10,9 +10,11 @@ package language.vars.varObj ;
 	class ParamInput extends LineObj {
 		
 		public var oVarInput  : CommonVar;
+		public var sOriLine  : String = ""; //Just to get prototype headers
 
-		public function new():Void {
+		public function new(_sOriLine : String):Void {
 			super();
+			sOriLine = _sOriLine;
 			eType = EuVarType._ParamInput;
 		}
 			

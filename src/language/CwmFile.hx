@@ -33,6 +33,7 @@ package language;
 	 */	
 	class CwmFile extends InObject {
 		
+
 		
 		public var bReadOnly : Bool = true;
 		public var oMake : CWaveMake;
@@ -40,12 +41,14 @@ package language;
 		//public var sLibPath : String;
 		public var sName : String;
 		public var sExportPath : String = ""; //Not used?
+		public var sPackLib : String = ""; 
 		public var aFile : Array<Dynamic>;
 		public var aCwm : Array<Dynamic> = [];
 		
 		
 		
 		public var aLib : Array<Dynamic> = [];
+		public var aPackingLib : Array<CwmLib> = [];
 		public var aRc : Array<Dynamic> = [];
 		public var aImport : Array<Dynamic> = [];
 		public var aBuildEntry : Array<Dynamic> = [];
@@ -169,29 +172,47 @@ package language;
 		}
 		
 		
-		public function fAddLib(_sLine: String,  _bReadOnly : Bool = false) :Void {
+		public function fAddLib(_sLine: String,  _bReadOnly : Bool = false) :CwmLib {
 			var _oCwmLib : CwmLib = new CwmLib(this, _sLine, _bReadOnly);
 			
 			//Test if already exist, we cannot have 2 lib with same readpath
 			for (  _oCwLib in  aLib){
 				if (_oCwLib.oLib.sReadPath == _oCwmLib.oLib.sReadPath ){
-					return; //Already exist
+					return _oCwLib; //Already exist
 				}
 			}
-			
-		
+
 			aLib.push(_oCwmLib);
+			return _oCwmLib;
 			
 			//Debug.fTrace("AAAAAADDDD " + _sLine );
 			//oMake.aCwmLib.push(_oCwmLib);
 		}
+		
+		public function fAddPackingLib(_sLine: String) :Void {
+			var _oCwmLib : CwmLib = fAddLib(_sLine,true);//_bReadOnly?
+			for (  _oCwLib in  aPackingLib){
+				if (_oCwLib == _oCwmLib){
+					return; //Already exist
+				}
+			}
+			_oCwmLib.oLib.bSkipLibContent = true;
+			_oCwmLib.oLib.bPackMe = true;
+			//_oCwmLib.oLib.bForceLoadAll = true;
+			_oCwmLib.bLoadAll = true;
+			aPackingLib.push(_oCwmLib);
+		}
+		
+		
+		
+		
 		public function fSetExportPath(_sLine: String) :Void {
 			sExportPath = _sLine; //To remove??
 			oMake.sExportBasePath = _sLine;
 		}
 		
 		
-		
+
 		
 		
 		public function fFindFirstLibPath(_sSubPath: String) :String {

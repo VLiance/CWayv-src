@@ -8,6 +8,7 @@ package language.project.convertCpp ;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.Text;
+	import language.project.convertSima.SPackage;
 	import language.vars.special.EnumObj;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
@@ -26,29 +27,36 @@ package language.project.convertCpp ;
 
 	//	private var bUseDefineIN : Bool = false;
 		
-		public function new(_Main:Root, _oCppProject : CppProject, _oSClass : SClass) { 
+		public function new(_Main:Root, _oCppProject : CppProject, _oSPckg: SPackage) { 
 	
-			super(_Main,_oCppProject, _oSClass);
+			super(_Main,_oCppProject, _oSPckg);
 			
-			convertGpuFunctions();
+			
+				
+			pushLine(fAddLicence());
+		
+		
+			pushLine( "namespace " + _oSPckg.oSLib.sWriteName + "{class c"  + _oSPckg.sName +";}" );
+			pushHeaderDefine(_oSPckg);
+			
+			pushLine("#include \"Lib_GZ/GZ.h\"");
+			pushLine("#include \"Lib_GZ/SysUtils/glWin.h\"");
+			pushLine("#include \"Lib_GZ/Sys/Debug.h\"");
+			
+			
+			for(_oSClass in _oSPckg.aClassList){
+				convertGpuFunctions(_oSClass);
+			}
 			//convertHeader();already called in extended
 		}
 		
 		
-		private function convertGpuFunctions():Void {
+		private function convertGpuFunctions(_oSClass:SClass):Void {
 		
 			//Header must be converrt first
 	
-			
-			pushLine(fAddLicence());
 		
-		
-			pushLine( "namespace " + oSClass.oSLib.sWriteName + "{class c"  + oSClass.sName +";}" );
-			pushHeaderDefine();
 
-			pushLine("#include \"Lib_GZ/GZ.h\"");
-			pushLine("#include \"Lib_GZ/SysUtils/glWin.h\"");
-			pushLine("#include \"Lib_GZ/Sys/Debug.h\"");
 
 				/*
 			
@@ -58,8 +66,8 @@ package language.project.convertCpp ;
 				*/
 	
 				
-		//	pushLine( "namespace " + oSClass.oSLib.sWriteName + " {namespace "  + oSClass.sName +"{" );
-			pushLine( "namespace " + oSClass.oSLib.sWriteName + " {namespace SysGpuFunc"  +"{" ); //Temp
+		//	pushLine( "namespace " + _oSClass.oSLib.sWriteName + " {namespace "  + _oSClass.sName +"{" );
+			pushLine( "namespace " + _oSClass.oSLib.sWriteName + " {namespace SysGpuFunc"  +"{" ); //Temp
 			pushLine("void* fGetFuncGL(const char *_cName, gzBool _bRequired = true);");
 			pushLine("gzBool fGetGpuFunctions();");
 			pushLine( "}}");
@@ -78,11 +86,11 @@ package language.project.convertCpp ;
 			addSpace();	
 			
 			pushLine("#if !( defined GZ_tWeb_Emsc ||  defined GZ_tCpcDos  ||  defined GZ_tLite  ) ");
-			gpuFunctionToConvert(oSClass);
+			gpuFunctionToConvert(_oSClass);
 			pushLine("#endif");
 					
 			pushLine("#ifdef GZ_tWeb_Emsc");
-			gpuWebFunctionToConvert(oSClass);
+			gpuWebFunctionToConvert(_oSClass);
 			pushLine("#endif");
 			
 			pushLine("#if ( defined GZ_tCpcDos ||  defined GZ_tLite ) ");
@@ -93,7 +101,7 @@ package language.project.convertCpp ;
 		//	pushLine("gzFloat gzN(gzFloat _bVal){return 0.0;};");
 		
 		///	pushLine("#inl fGetGpuFunctions() false");
-			gpuEmptyFunctionToConvert(oSClass);
+			gpuEmptyFunctionToConvert(_oSClass);
 			pushLine("#endif");
 			
 			
@@ -113,12 +121,12 @@ package language.project.convertCpp ;
 		
 		//#ifndef tHDef_LibName_Example
 		//#define tHDef_LibName_Example
-		override function pushHeaderDefine():Void {
+		override function pushHeaderDefine(_oSPck:SPackage):Void {
 
-			pushLine("#ifndef tHDef_Generate_OpenGL_" + oSClass.oSLib.sWriteName + "_" + oSClass.sName); //Resolve problem of recursive extented class linking !Very important!
+			pushLine("#ifndef tHDef_Generate_OpenGL_" + _oSPck.oSLib.sWriteName + "_" + _oSPck.sName); //Resolve problem of recursive extented class linking !Very important!
 			
-			//pushLine("#ifndef tHDef_" + oSClass.oSLib.sName + "_" + oSClass.sName);
-			pushLine("#define tHDef_Generate_OpenGL_" +  oSClass.oSLib.sWriteName + "_" + oSClass.sName);
+			//pushLine("#ifndef tHDef_" + _oSClass.oSLib.sName + "_" + _oSClass.sName);
+			pushLine("#define tHDef_Generate_OpenGL_" +  _oSPck.oSLib.sWriteName + "_" + _oSPck.sName);
 		}
 		
 
@@ -175,7 +183,7 @@ package language.project.convertCpp ;
 			}*/
 		
 			//Virtual function (extend class)
-			if (oSClass.bExtension  && _oSFunction.eFuncType !=  EuFuncType.Main  ) { // _nFuncId != 0  
+			if (_oSClass.bExtension  && _oSFunction.eFuncType !=  EuFuncType.Main  ) { // _nFuncId != 0  
 				_sReturn = "virtual " + _sReturn;
 			}
 			

@@ -11,6 +11,7 @@ package language.project ;
 	import language.project.convertSima.SDelegate;
 	import language.project.convertSima.SFrame;
 	import language.project.convertSima.SGlobal;
+	import language.project.convertSima.SPackage;
 	import language.project.optimization.Optimize;
 	//import language.projectData;
 	import language.vars.varObj.CommonVar;
@@ -45,8 +46,9 @@ package language.project ;
 		public var sMainFile : String;
 		public var bClassLoaded : Bool = false;
 		public var oSDelegate : SDelegate;
-		public var oMainSClass : SClass;
-		public var aClass : Array<Dynamic> = [];
+		public var oMainSPackage : SPackage;
+	//	public var aClass : Array<Dynamic> = [];
+		public var aPackage : Array<SPackage> = [];
 	
 		public var aClassName : Array<Dynamic> = [];
 		
@@ -58,7 +60,7 @@ package language.project ;
 		//public var oGzSysLib : SLib;
 		
 		//public var sProjectFile : String;
-		public var aLibList : Array<Dynamic> = [];
+		public var aLibList : Array<SLib> = [];
 		public var aGroupLib : Array<GroupSLib> = [];
 		//public var aGroup : Array<Dynamic> = [];
 		
@@ -67,8 +69,8 @@ package language.project ;
 		public var aGroupLibObj  : Map<String,GroupSLib> = [""=>null];
 		
 		public var aLibLoadAllList : Array<SLib> = [];
-		public var aImportCreated : Map<String,SClass> = [""=>null];
-		public var aImportCppLoc : Map<String,SClass> = [""=>null];
+		public var aImportCreated : Map<String,SPackage> = [""=>null];
+		public var aImportCppLoc : Map<String,SPackage> = [""=>null];
 		
 		public var oProjectData : ProjectData;
 		
@@ -124,6 +126,8 @@ package language.project ;
 
 		
 		public function extract():Void {
+			
+			Debug.fTrace("eXTRACT");
 			/*
 			switch(nStringType) {
 				case EuBit.n8:
@@ -138,32 +142,47 @@ package language.project ;
 			}*/
 			//oProjectData.sRootPath
 			//Read
-			//var _aRead : Array<Dynamic> = mFile.readFile(oProjectData.sRootPath + sProjectFile + sMainFile + ".as");
-			var _aRead : Array<Dynamic> = MyFile.readFile( oMainLib.sReadPath + sMainFile + Setting.sFileExtention);
-			oMainSClass = insertFile(_aRead, oMainLib, "", sMainFile); //Load first file of the project Test.as  //Todo change test
-			var _sMainFile : String = oMainLib.sReadPath + sMainFile + Setting.sFileExtention;
-			_sMainFile = _sMainFile.split("\\").join("/");
-			aImportCreated[_sMainFile] = oMainSClass;    //Don't reload first file of the project Test.as	
 			
-			aImportCppLoc[oMainLib.sIdName + "/" +  sMainFile + ".cpp"] = oMainSClass; //TODO Import?
-
-
-			//Load first one then it will import all other
-			loadFileImport(oMainSClass.aSImportList);
-			//loadFileImport(oMainSClass.aCppImportList, true); //Cpp
-		
+			
+			
+			if(oMainLib != null){
+				//var _aRead : Array<Dynamic> = mFile.readFile(oProjectData.sRootPath + sProjectFile + sMainFile + ".as");
+				var _sReadFile : String =  oMainLib.sReadPath + sMainFile + Setting.sFileExtention;
+				var _aRead : Array<Dynamic> = MyFile.readFile(_sReadFile);
+				
+				oMainSPackage = insertFile(_aRead, oMainLib, "", sMainFile, _sReadFile); //Load first file of the project Test.as  //Todo change test
+				var _sMainFile : String = oMainLib.sReadPath + sMainFile + Setting.sFileExtention;
+				_sMainFile = _sMainFile.split("\\").join("/");
+				aImportCreated[_sMainFile] = oMainSPackage;    //Don't reload first file of the project Test.as	
+				aImportCppLoc[oMainLib.sIdName + "/" +  sMainFile + ".cpp"] = oMainSPackage; //TODO Import?
+			
+			
+				//Load first one then it will import all other
+				loadFileImport(oMainSPackage.aSImportList);
+				//loadFileImport(oMainSClass.aCppImportList, true); //Cpp
+			}
 			bClassLoaded = true;
 		
 			////////////////////////////
 			//After all class loaded////  See SClass fReload same?
 			///////////////////////////
-			
-			SGlobal.iniGlobal(Main, this);
-			LoadVarContent.loadClassVarContent(this, aClass);
 		
+			SGlobal.iniGlobal(Main, this);
+			Debug.fTrace("loadClassVarContent");
+			LoadVarContent.loadClassVarContent(this, aPackage);
+			
 			
 			extractAllFunctionLine();
 			optimizeAll(); //TODO desactivate?
+		}
+		
+		
+		
+		public function setGZE_lib():Void {
+			
+			oGzLib = fFindLib("Engine_(GZ)");
+			
+			oGzCppLib = fFindLib("Wrapper_(GZ)");
 		}
 		
 		public function setMainLib(_oMainLib:SLib, _oSLib:SLib, _oSysLib:SLib, _sMainFile : String):Void {	
@@ -171,21 +190,19 @@ package language.project ;
 			
 			//Search for GZ lib
 			//oGzLib = fFindLibId("GzCw");
-			oGzLib = fFindLib("Engine_(GZ)");
 			
-			oGzCppLib = fFindLib("Wrapper_(GZ)");
 			//oGzSysLib = fFindLibId("GZsys");
 			
 			//sProjectFile = _oMainLib.sReadPath;
 			sMainFile = _sMainFile;
 			//sCppBaseLibName = oCppLib.sName;
 			
-			fTestAddOpImport();
+		
 			
 		}
 			
-		public function fTestAddOpImport():Void {	 //Add all files
-
+		public function fTestAddFullImport():Void {	 //Add all files
+/*
 			for( _oLib  in aLibLoadAllList) {
 				var _oTempClass : SClass = new SClass(Main, this, null,_oLib, "", "LibClass");
 				for ( _sPath  in _oLib.aFileList  ) {
@@ -194,6 +211,30 @@ package language.project ;
 				
 				loadFileImport( _oTempClass.aSImportList );
 			}
+*/
+			
+			for( _oLib  in aLibList) {
+				var _oTempPackage : SPackage = new SPackage(Main, this, null,_oLib, "", "LibClass", "TempClass");
+				for ( _oFile  in _oLib.aFileList  ) {
+				//	Debug.fTrace(_oFile.sPath);
+					
+					/*
+					var _bIsProbablyOverPlace : Bool = false;
+					var _nIndexOp : Int = _sPath.lastIndexOf(".") + 1;
+					if (_nIndexOp + 2 < _sPath.length && _sPath.charAt(_nIndexOp) == "O" && _sPath.charAt(_nIndexOp+1) == "p" && _sPath.charAt(_nIndexOp+2) >= "A"  && _sPath.charAt(_nIndexOp+2) <= "Z" ){
+						_bIsProbablyOverPlace = true; //TODO  verify if this is really an overplace class
+					}*/
+					//Debug.fTrace("aa " + _sPath.substring(_sPath.lastIndexOf(".")+1));
+					if (_oLib.bForceLoadAll || _oFile.bIsProbablyOverPlace){
+					//	Debug.fTrace("bForceLoadAll ");
+						SFrame.extractImport(_oLib.sName + "." + _oFile.sCwPath, _oTempPackage, 0, _oLib, _oFile.bIsProbablyOverPlace); //Focre create a import from itself file to include all file, Ugly lib import TODO
+					}
+				}
+				
+				loadFileImport( _oTempPackage.aSImportList );
+			}
+
+
 
 
 			/*
@@ -217,7 +258,7 @@ package language.project ;
 					return _oSLib;
 				}
 			}
-			Debug.fError("" + _sLib_Name + " lib not found");
+			Debug.fError("\"" + _sLib_Name + "\" lib not found");
 			Debug.fStop();
 			return null;
 		}
@@ -231,7 +272,7 @@ package language.project ;
 			var _oSLib : SLib = _oCWMLib.oLib;
 			aLibList.push(_oSLib);
 
-			
+		
 			/////** Group List **//////
 			if (aGroupLibObj[_oSLib.sName] == null) {
 				var _oGroup : GroupSLib = new GroupSLib();
@@ -250,6 +291,8 @@ package language.project ;
 			
 			
 			if (_oCWMLib.bLoadAll) {
+				Debug.fTrace("bLoadAll");
+				_oSLib.bForceLoadAll = true;
 				aLibLoadAllList.push(_oSLib);
 			}
 			
@@ -280,13 +323,19 @@ package language.project ;
 		}
 		
 		
-		private function insertFile(_aFile:Array<Dynamic>, _oLib:SLib, _sPath:String, _sName:String):SClass {
+		private function insertFile(_aFile:Array<Dynamic>, _oLib:SLib, _sPath:String, _sName:String, _sFilePath:String):SPackage {
 			
-			var _oSClass : SClass = new SClass(Main, this, _aFile, _oLib, _sPath, _sName);
+			
+			
+			var _oPackage : SPackage = new SPackage(Main, this, _aFile, _oLib, _sPath, _sName, _sFilePath);
+			aPackage.push(_oPackage);
+			//var _oSClass : SClass = new SClass(Main, this, _aFile, _oLib, _sPath, _sName, _sFilePath);
 			//if (!_oSClass.oSFrame.bSkipFile){
-				aClass.push(_oSClass);
+			//	aClass.push(_oSClass);
 			//}
-			return _oSClass;
+			return _oPackage;
+			
+
 		}
 		
 		
@@ -297,6 +346,10 @@ package language.project ;
 			var _i:UInt = _aImport.length;
 			for (i in 0 ..._i) {
 				var _oImport : FileImport = _aImport[i];
+				
+				if (_oImport.bVirtual){
+					continue;
+				}
 				
 				var _oSLib : SLib = _oImport.oSLib;
 				var _sLibPath : String  = _oSLib.sReadPath;
@@ -317,18 +370,20 @@ package language.project ;
 					
 					
 					//var _aRead : Array<Dynamic> = mFile.readFile(_sFilePath);
-					var _oSClass : SClass = insertFile(_aRead, _oSLib, _sPath, _sName); //aCurrentImport reseted
+				//	var _oSClass : SClass = insertFile(_aRead, _oSLib, _sPath, _sName, _sFilePath); //aCurrentImport reseted
+					var _oSPck : SPackage = insertFile(_aRead, _oSLib, _sPath, _sName, _sFilePath); //aCurrentImport reseted
 				//	if(!_oSClass.oSFrame.bSkipFile){
-						aImportCreated[_sFilePath] = _oSClass; //No repeat
-						_oImport.oRefClass = _oSClass; 
-						loadFileImport( _oSClass.aSImportList ); //Recursive import load
+						aImportCreated[_sFilePath] = _oSPck; //No repeat
+						_oImport.oRefPackage = _oSPck; 
+					//	loadFileImport( _oSClass.aSImportList ); //Recursive import load
+						loadFileImport( _oSPck.aSImportList ); //Recursive import load
 						
-						aImportCppLoc[_oSLib.sIdName + "/" + _sPath + _sName + ".cpp"] = _oSClass;
+						aImportCppLoc[_oSLib.sIdName + "/" + _sPath + _sName + ".cpp"] = _oSPck;
 				//	}
 
 				
 				}else {
-					_oImport.oRefClass = aImportCreated[_sFilePath]; 
+					_oImport.oRefPackage = aImportCreated[_sFilePath]; 
 				}
 			}
 		}
@@ -341,9 +396,7 @@ package language.project ;
 			
 			//Debug.trace3("---Begin extract line in function---");
 			//Extract all line in each function of all class 
-			 var _i : UInt = aClass.length;
-			for (i in 0 ...  _i) {
-				var _oSClass : SClass = aClass[i];
+	//			for(_oPck in aPackage){for(_oSClass in _oPck.aClassList){
 				/*
 				if(!_oSClass.oSLib.bReadOnly){ //Optimisation don't extract useless fonction
 					Debug.trace3("--------------------------");
@@ -354,7 +407,7 @@ package language.project ;
 					Debug.trace3("--------------------------");
 				}*/
 				
-			}
+			///}}
 			
 			//Debug.fTrace("---FinishImport----");
 		}
@@ -364,10 +417,8 @@ package language.project ;
 		private function optimizeAll():Void {
 		//	Debug.fTrace("---Begin optimize line in function---");
 			//Extract all line in each function of all class 
-			 var _i : UInt = aClass.length;
-			for (i in 0 ...  _i) {
-				var _oSClass : SClass = aClass[i];
-				
+			for(_oPck in aPackage){for(_oSClass in _oPck.aClassList){
+
 				//Debug.trace3("--------------------------");
 				//Debug.trace3("In class : " + _oSClass.sName);
 	
@@ -375,10 +426,12 @@ package language.project ;
 				
 				//Optimize.optimizeClassFunctions(_oSClass);
 			//	Debug.trace3("--------------------------");
-			}
+			}}
 			
 			//Debug.fTrace("---FinishOptimisation----");
 		}
 		
+		
 	}
+	
 

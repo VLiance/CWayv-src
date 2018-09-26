@@ -14,9 +14,15 @@ package language.vars.varObj ;
 		
 		//public var eType : UInt;
 		public var eType : EuVarType;
+		public var nLine	  	: UInt = 0;
+			
 		
-		public function fGetType(_eOpt:UInt = 0):String {
+		public function fGetName():String {
 			return "NI";
+		}
+		
+		public function fGetType():String {
+			return EuVarType_.fGetName(eType);
 		}
 		
 		 //Override

@@ -19,7 +19,7 @@ package language.vars.logicObj ;
 		public var oSFunction : SFunction;
 		public var oSClass : SClass;	
 		
-		public var nLine  : UInt;
+	//	public var nLine  : UInt;
 		
 		//public function LineObj():Void {
 		public function new():Void {

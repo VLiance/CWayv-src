@@ -22,7 +22,7 @@ package language.project.convertSima ;
 		public var oSClass     : SClass;
 		
 		
-		public var nLine : UInt;
+	//	public var nLine : UInt;
 		public var nLastLine : UInt;
 		
 		public var aBlocList : Array<Dynamic> = [];

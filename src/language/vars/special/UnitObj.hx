@@ -10,7 +10,7 @@ package language.vars.special;
 	class UnitObj extends VarObj {
 		
 		public var sName	    : String;
-		public var nLine	    : UInt;
+	//	public var nLine	    : UInt;
 		public var oSClass       : SClass;
 		public var oSExtendClass : SClass;
 		public var eSharing     : EuSharing;
