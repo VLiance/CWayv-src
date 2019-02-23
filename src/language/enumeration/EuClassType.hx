@@ -9,6 +9,7 @@ package language.enumeration ;
 			 Extension ;
 			 Thread ;
 			 Atomic ;
+			 Vector;
 		}
 		
 			
@@ -34,6 +35,9 @@ package language.enumeration ;
 
 					case Atomic:
 						return "atomic";
+						
+					case Vector :
+						return "vector";
 						
 					case Invalid:
 						return "Invalid";

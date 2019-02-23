@@ -25,6 +25,10 @@ package language.vars.varObj ;
 			fCheckIfNewVarIsValidScope(_oSBloc, _oVar);
 		}
 		
+		override function fGetName():String {
+			return oVarToIni.fGetName();
+		}
+		
 		public static function fCheckIfNewVarIsValidScope(_oSBloc : SBloc, _oVar:VarObj):Bool {
 			var _nStart : Int = 0;
 			//if(_oVar is CommonVar){		//Always Commun Var ?
@@ -152,7 +156,8 @@ package language.vars.varObj ;
 				
 				case EuVarType._Float
 				| EuVarType._Int
-				| EuVarType._UInt:
+				| EuVarType._UInt
+				| EuVarType._Number:
 					return "n";
 				//break;
 		

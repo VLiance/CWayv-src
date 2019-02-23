@@ -39,6 +39,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.VarString;
 	import language.vars.varObj.VarThis;
 	import language.base.Debug;
+	import language.vars.varObj.VarVector;
 	/**
 	 * ...
 	 * @author ...
@@ -158,9 +159,11 @@ package language.project.convertCpp ;
 				case EuVarType._CallClass : //Not sure
 					var _oCallClass : VarCallClass  = cast(_oVar);
 					
-				
-					//if (_bFuncParam) { //Not used&
-					if ((_oCallClass.bScopeOwner &&  !_bNotScopeOwner) || _bFunReturn) {
+					if (_oCallClass.oCallRef.bIsVector){
+						return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "<gzFloat>";
+						//if (_bFuncParam) { //Not used&
+					
+					}else if ((_oCallClass.bScopeOwner &&  !_bNotScopeOwner) || _bFunReturn) {
 						if(_oCallClass.bWeak){
 							return "gzWp<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 						}else if(_oCallClass.oCallRef.bIsPod){
@@ -168,6 +171,9 @@ package language.project.convertCpp ;
 						}else if(_oCallClass.bEmbed){
 							//return "gzEmbed<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 							return "gzPod<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
+							
+						}else if (_oCallClass.oCallRef.bIsVector){
+							return   _oCallClass.oCallRef.sNsAccess +  "gzVec" + _oCallClass.oCallRef.sName ;
 						}else{
 							return "gzSp<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 						}
@@ -179,6 +185,7 @@ package language.project.convertCpp ;
 							return _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + "*";
 						}
 					}
+					
 					
 				//break;
 				
@@ -302,7 +309,8 @@ package language.project.convertCpp ;
 				
 				case EuVarType._Delegate :
 					var _oDelegate : Delegate  = cast(_oVar);
-					return   _oDelegate.oSFunc.oSClass.sName + "::" + _oDelegate.sDelegateStringFull + "::Dlg";
+					//return   _oDelegate.oSFunc.oSClass.sName + "::" + _oDelegate.sDelegateStringFull + "::Dlg";
+					return   _oDelegate.oSFunc.oSClass.sNsAccess + _oDelegate.oSFunc.oSClass.sName + "::" + _oDelegate.sDelegateStringFull + "::Dlg";
 				//break;
 				
 				case EuVarType._String:
@@ -333,6 +341,11 @@ package language.project.convertCpp ;
 					var _oVarFloat : VarFloat  = cast(_oVar);
 					return "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit);
 					
+					
+				case EuVarType._Vector :
+					var _oVarVector : VarVector  = cast(_oVar);
+					return "gzVec" + _oVarVector.sSize;	
+					
 					//return _sStatic + "gzUInt32";
 	
 				//break;
@@ -343,6 +356,8 @@ package language.project.convertCpp ;
 				//break;
 				*/
 				default:
+				//	return "unknowType(" + _eType.getName + ")";
+			
 			}
 			
 			
@@ -641,7 +656,7 @@ package language.project.convertCpp ;
 						}*/
 						//return "(gzStr*)" + getStringFunc(_oResultType, _sVar);
 						//return typeToCPP(_oConvertInType, false, true) + "(" + getStringFunc(_oResultType, _sVar) + ")";
-						return getStringFunc(_oResultType, _sVar);
+						return getStringFunc(_oResultType, _sVar, _oContainer);
 						/*
 						var _sReslut : String = getStringFunc(_oResultType);
 						if (_sReslut != "") {
@@ -733,6 +748,13 @@ package language.project.convertCpp ;
 					
 					case EuVarType._ResultModifier :
 							var _oMod : VarResultModifier = cast(_oConvertInType);
+							
+							//var _oSClass : SClass  = cast(_oConvertInType);
+							if (_oMod.oRef.eType == EuVarType._CallClass && cast(_oMod.oRef, VarCallClass).oCallRef.bIsVector ){
+								return  getConvertFunc(_sVar, _oMod.oRef, _oResultType, null, _oContainer) ; //Not sure -> "Add ( )"
+								//return  _sVar; //Not sure
+							}
+							
 							if (_oMod.bScopeExtract) {
 								return  getConvertFunc(_sVar + ".get()", _oMod.oRef, _oResultType, _oMod, _oContainer);
 							}else if (_oMod.bScopeConvert) {
@@ -741,6 +763,8 @@ package language.project.convertCpp ;
 							}else{
 								return  "!(" + getConvertFunc(_sVar, _oMod.oRef, _oResultType, null, _oContainer) +")!";
 							}
+							
+							
 					//break;
 					
 					case EuVarType._DataArr:
@@ -807,7 +831,7 @@ package language.project.convertCpp ;
 			
 			if (_oMod != null && _oMod.bScopeConvert) {
 				if (_oMod.bNewCreation) {
-					if (_oSClass.bIsPod) {
+					if (_oSClass.bIsPod || _oSClass.bIsVector) {
 						//return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName  + ")" +  "(" + _sVar + ")"; //?
 						return  "(" + _sVar + ")"; 
 					}else{	
@@ -830,8 +854,14 @@ package language.project.convertCpp ;
 
 			}else {
 				// if (_oConvertInType.eType == EuVarType._CallClass && VarCallClass(_oConvertInType).oCallRef.bIsPod) { //POD
-				 if (_oSClass.bIsPod) { //POD
+				 if (_oSClass.bIsPod ) { //POD
 						return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName  + "*)" +  "(" + _sVar + ")"; //Work?
+				}else if ( _oSClass.bIsVector) {
+			
+					//return "(" +_oSClass.sNsAccess + "gzVec" +   _oSClass.sName  + "&)" +  "(" + _sVar + ")"; //TODO test if UpCast is legal
+					//return "(" + _sVar + ")"; //TODO test if UpCast is legal
+					return  _sVar ; //TODO test if UpCast is legal
+				
 				}else if (_oConvertInType.eType == EuVarType._CallClass && cast(_oConvertInType,VarCallClass).bScopeOwner) {
 					return  "gzSCast<" + _oSClass.sNsAccess + "c" +   _oSClass.sName + ">(" + _sVar + ")";
 				}else {
@@ -954,12 +984,24 @@ package language.project.convertCpp ;
 		
 		
 		
-			public static function getStringFunc(_oString : VarObj, _sVar:String):String {
+	public static function getStringFunc(_oString : VarObj, _sVar:String, _oContainer:VarObj ):String {
 			
+			var _eType : EuVarType = _oString.eType;
+			if (_eType == EuVarType._Number){
+				if (_oContainer != null && _oContainer.eType == EuVarType._LineLoc){
+			
+					var _oLoc : LineLoc =  cast(_oContainer, LineLoc);
+					var _oPecedentVar : VarObj = _oLoc.aVarList[_oLoc.aVarList.length -2]; // -1 itself, -2 precedent
+					
+					if(_oPecedentVar.eType == EuVarType._CallClass){
+						_eType = cast(_oPecedentVar, VarCallClass).eTemplateType;
+					}
+				
+				}
+			}
 				
 				
-
-			switch (_oString.eType) {
+			switch (_eType) {
 				case EuVarType._None:
 					return  _sVar ;
 				//break;
@@ -982,6 +1024,9 @@ package language.project.convertCpp ;
 					return   "gzStrB(" + _sVar + ")";
 				//break;
 					
+					
+				case EuVarType._Number:
+					return   "gzStrN(" + _sVar + ")";
 				
 				case EuVarType._Float:
 					return   "gzStrF(" + _sVar + ")";
@@ -1002,14 +1047,14 @@ package language.project.convertCpp ;
 				
 				case EuVarType._QElement:
 					var _oQElement : VarQElement = cast(_oString);
-					return   getStringFunc( _oQElement.oResultVarsType , _sVar  +  "->Val");
+					return   getStringFunc( _oQElement.oResultVarsType , _sVar  +  "->Val",_oContainer);
 				//break;
 				default:
 				
 			}
 			
 			//var aBug : Array<Dynamic> = aBug[6];
-			return "S!" + _oString.eType + "!" ;
+			return "S!" + _eType + "!" ;
 			
 		}
 		

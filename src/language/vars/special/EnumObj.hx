@@ -3,6 +3,7 @@ package language.vars.special ;
 	import language.enumeration.EuSharing;
 	import language.project.convertSima.SClass;
 	import language.vars.varObj.CommonVar;
+	import language.vars.varObj.ParamInput;
 	import language.vars.varObj.VarObj;
 	/**
 	 * ...
@@ -40,6 +41,14 @@ package language.vars.special ;
 		public function getCppName():String {
 			//return oSClass.oSLib.sWriteName + "::" +  oSClass.sName + "::" + sName;
 			return oSClass.sNsAccess + oSClass.sName + "::" + sName;
+		}
+		
+		public function fGetCppDefaultVar(): String {
+		
+			if (aVarList.length > 0){
+				return getCppName() + "::" + cast(cast(aVarList[0], ParamInput).oVarInput, CommonVar).sName;
+			}
+			return "0";
 		}
 		
 		

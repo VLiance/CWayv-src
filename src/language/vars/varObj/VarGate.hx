@@ -12,7 +12,7 @@ package language.vars.varObj ;
 		
 		
 		public var oTemplate : VarObj;
-		public var oRslTemplate : VarObj;
+		public var oRslTemplate : SClass = null;
 			public var sTemplate : String;
 		
 		public function new(_oSBloc:SBloc, _sTemplate : String) {
@@ -27,9 +27,13 @@ package language.vars.varObj ;
 		
 		public function iniVarGate():Void {
 	
+			var _oRst :VarObj = TypeResolve.getResultingType(oTemplate);
+			if (Std.is(_oRst, VarCallClass)){
+				oRslTemplate = cast(TypeResolve.getResultingType(oTemplate),VarCallClass).oCallRef;  //Bulle maybe useless
+			}else{
+				Debug.fError("GATE parameter must be a class");
+			}
 			
-			
-			oRslTemplate = TypeResolve.getResultingType(oTemplate);  //Bulle maybe useless
 			/*
 			if (oRslTemplate.eType == EuVarType._CallClass) {
 				oRslTemplate = VarCallClass(oRslTemplate).oCallRef;
@@ -41,11 +45,14 @@ package language.vars.varObj ;
 		}
 		
 		public function getTemplateTypeString():String {
-			if (oRslTemplate.eType == EuVarType._CallClass) {
-				var _oClass : SClass = cast(oRslTemplate,VarCallClass).oCallRef;
-				return _oClass.sNsAccess + "c" +  _oClass.sName;
-			}
-			return "UnknowGateType";
+		//	if (oRslTemplate.eType == EuVarType._CallClass) {
+			//	var _oClass : SClass = cast(oRslTemplate,VarCallClass).oCallRef;
+			//	return _oClass.sNsAccess + "c" +  _oClass.sName;
+			
+				//return  oSBloc.oSClass.sNsAccess + "c" +  oSBloc.oSClass.sName  + ", Lib_GZ::cThreadMsg";
+				return  oRslTemplate.sNsAccess + "c" +  oRslTemplate.sName  + ", Lib_GZ::Base::Thread::cThreadMsg";
+		//	}
+			//return "UnknowGateType";
 			//return TypeText.typeToCPP(oRslTemplate);
 		}
 

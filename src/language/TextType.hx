@@ -109,6 +109,7 @@ package language;
 		
 		
 		public static var eTypeNbBit : EuBit ;
+		public static var nTypeNumVal : Int ;
 		public static var aLastClassLoc : Array<Dynamic>;
 		public static function stringToType(_sType:String, _sLine:String = "", _nCurrentIndex : UInt = 0):EuVarType {
 		
@@ -149,7 +150,8 @@ package language;
 				}
 				
 				if (_nTotal > 0) {
-					switch ( _sType.substring(i + 1, _sType.length) ) {
+					var _sNum : String = _sType.substring(i + 1, _sType.length);
+					switch ( _sNum ) {
 						
 						case "8":
 							eTypeNbBit = EuBit.n8;
@@ -170,7 +172,7 @@ package language;
 							eTypeNbBit = EuBit.nX;
 						//break;
 					}
-								
+					nTypeNumVal = Std.parseInt(_sNum);
 					_sType = _sType.substring(0, i + 1);
 				}
 			}
@@ -178,6 +180,11 @@ package language;
 			
 			
 			switch (_sType) {
+				
+						
+				case "Vec"  :
+					return EuVarType._Vector;
+				
 				
 				case "Gate"  :
 					return EuVarType._Gate;
@@ -207,6 +214,8 @@ package language;
 				case "Float"  :
 					return  EuVarType._Float;
 				//break;
+				case "Number"  :
+					return  EuVarType._Number;
 				
 				case "Bool"  :
 					return  EuVarType._Bool;
@@ -269,6 +278,8 @@ package language;
 			var _sChar : String = _sType.charAt(0);
 			
 			switch (_sChar) {
+		
+					
 				case "u":
 					return EuVarType._Rtu;
 				//break;

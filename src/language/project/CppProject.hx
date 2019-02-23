@@ -147,7 +147,7 @@ package language.project ;
 			//Create all class
 		//	var _i:UInt = oSProject.aClass.length;for (i in 0 ..._i) {var _oSClass : SClass =  oSProject.aClass[i];
 			for (_oPckg in  oSProject.aPackage) {
-				if(!_oPckg.oSLib.bReadOnly  && (_oPckg.oSLib.sPlatform == "" || _oPckg.oSLib.sPlatform == _sPlaformTarget)){
+				if(!_oPckg.oSLib.bReadOnly && !_oPckg.oSFrame.bWrapper  && (_oPckg.oSLib.sPlatform == "" || _oPckg.oSLib.sPlatform == _sPlaformTarget)){
 					
 					//Extract functions if not already
 					_oPckg.fExtractClasFunction();
@@ -301,6 +301,35 @@ package language.project ;
 			return	 _oCppInfo.dModTime + "|" + _oHInfo.dModTime;
 		}
 		
+	//W| _oCurrentPackage.sCppGetTime: 2018-12-28 23:08:30|2018-12-30 11:18:58|2018-12-30 11:18:58
+	//W| _oCurrentPackage.sCppModTime: 2018-12-28 23:08:30|2018-12-30 11:18:58|2018-12-30 11:09:59
+		public function fIsStrTimeMostRecent(_sIsGreater : String, _nCmp:String):Bool {
+			var _bMostRecent : Bool = false;
+		//	Debug.fWarning("fIsStrTimeMostRecent " + _sIsGreater.length + " "  + _nCmp.length);
+			if (_sIsGreater.length == _nCmp.length){
+				var i : Int = _sIsGreater.length;
+				while(i > 0) {
+					i--;
+						
+					var _sChar : String = _sIsGreater.charAt(i) ;
+					if ( _sChar == '|' ){
+							//		Debug.fWarning("| "+ i +" : " +  _bMostRecent);
+						if (_bMostRecent){
+							return true;
+						}
+					}else{
+						if (_sChar > _nCmp.charAt(i) ){
+							_bMostRecent = true;
+						}else if (_sChar < _nCmp.charAt(i) ){
+							_bMostRecent = false;
+						}
+						//Debug.fWarning(_sChar +" / " + _nCmp.charAt(i) + "  " + i +" : " +  _bMostRecent);
+					}
+				}
+			}
+			return _bMostRecent;
+		}
+		
 		
 		
 		var sCompilateurModInfo : String;
@@ -328,26 +357,39 @@ package language.project ;
 				//var _oOverPlaceFile : OverPlaceFile = aOverPlace[i];
 				
 				_oCurrentPackage = _oHeader.oSPackage;
-				if ( !_oCurrentPackage.oSLib.bReadOnly) { //not in readonly
+				if ( !_oCurrentPackage.oSLib.bReadOnly && !_oCurrentPackage.oSFrame.bWrapper) { //not in readonly
 					
 					_oCurrentPackage.sCppModTime = fGetModifiedFilesInfo(_oCurrentPackage);
 					if (_oCurrentPackage.sCppGetTime !=  _oCurrentPackage.sCppModTime || _oCurrentPackage.oSLib.sCompGetTime != sCompilateurModInfo) {
-						
-						//Debug.fError(_oCurrentClass.sName +  " sCppGetTime| " + _oCurrentClass.sCppGetTime + " sCppModTime " + _oCurrentClass.sCppModTime );
-						//Debug.fError(_oCurrentClass.sName +  " sCompGetTime| " + _oCurrentClass.oSLib.sCompGetTime + " sCompilateurModInfo " + sCompilateurModInfo );
-						aCppBuilList.push(sGenPath);
-						
-						if(!bNoBuild){
-							MyFile.fwritefile(sCppWritePathH, _oHeader.aFile);
-							MyFile.fwritefile(sCppWritePathCpp,  _oCppFile.aFile);
-							if (_oCurrentPackage.bDefHeader) {
-								MyFile.fwritefile(sCppWritePathDH, _oCurrentPackage.oDefHeader.aFile);
-							}
+						//Debug.fWarning("-------------------" );
+						//Debug.fWarning("_oCurrentPackage.sCppGetTime: " + _oCurrentPackage.sCppGetTime);
+						//Debug.fWarning("_oCurrentPackage.sCppModTime: " +  _oCurrentPackage.sCppModTime );
+						//Debug.fWarning("-------------------" );
 							
+						var bDebug : Bool = false; //TODO get compilation type !! not work  when remodify cw
+						if (bDebug &&  _oCurrentPackage.oSLib.sCompGetTime == sCompilateurModInfo && fIsStrTimeMostRecent( _oCurrentPackage.sCppModTime,  _oCurrentPackage.sCppGetTime) ){
+							Debug.fWarning("Generated Cpp file as been modified by user (allowed in debug): " + _oCurrentPackage.sFilePath);
+							//aVerifyCppBuildList.push(sGenPath);//not sure??
+							aCppBuilList.push(sGenPath);//not sure??
 							Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
 						}else{
 						
-							Debug.fAssist( "---| " + sCppWritePathCl.split("\\").join("/") );//?
+							//Debug.fError(_oCurrentClass.sName +  " sCppGetTime| " + _oCurrentClass.sCppGetTime + " sCppModTime " + _oCurrentClass.sCppModTime );
+							//Debug.fError(_oCurrentClass.sName +  " sCompGetTime| " + _oCurrentClass.oSLib.sCompGetTime + " sCompilateurModInfo " + sCompilateurModInfo );
+							aCppBuilList.push(sGenPath);
+							
+							if(!bNoBuild){
+								MyFile.fwritefile(sCppWritePathH, _oHeader.aFile);
+								MyFile.fwritefile(sCppWritePathCpp,  _oCppFile.aFile);
+								if (_oCurrentPackage.bDefHeader) {
+									MyFile.fwritefile(sCppWritePathDH, _oCurrentPackage.oDefHeader.aFile);
+								}
+								
+								Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
+							}else{
+							
+								Debug.fAssist( "---| " + sCppWritePathCl.split("\\").join("/") );//?
+							}
 						}
 						
 					//	Debug.fTrace("");
@@ -701,7 +743,7 @@ package language.project ;
 			}
 			for (_oPckg in _aPckg) {
 			//for (_oSClass in  _oPckg.aClassList) {
-				if ( !_oPckg.oSLib.bReadOnly) { //not in readonly
+				if ( !_oPckg.oSLib.bReadOnly &&  !_oPckg.oSFrame.bWrapper) { //not in readonly
 					_nCount++;
 					var _sClassName : String = _oPckg.sName; 
 					var _sClassPath : String = _oPckg.sPath; 

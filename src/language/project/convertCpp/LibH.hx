@@ -44,6 +44,8 @@ package language.project.convertCpp ;
 		
 		private function convertClass():Void {
 			
+			
+			pushLine("//This file was generated with C~ compiler, don't edit");
 			pushLine("#ifndef tHDef_" +  oLib.sWriteName);
 			pushLine("#define tHDef_" +  oLib.sWriteName);
 		//	pushLine("#include \"Lib_GZ/GZ.h\""); Recursive inlcude
@@ -60,8 +62,8 @@ package language.project.convertCpp ;
 	
 			//pushLine("namespace Lib_GZ{class uOverplace;}"); 
 			//pushLine("#include \"Lib_GZ/GzTypes.h\""); 
-			pushLine("#include \"Lib_GZ/GzOverplace.h\""); 
-			pushLine("#include \"Lib_GZ/Macro.h\""); 
+			pushLine("#include \"Lib_GZ/Base/GzOverplace.h\""); 
+			pushLine("#include \"Lib_GZ/Base/Macro.h\""); 
 			pushLine("GZ_mHLib(" + oLib.sWriteName  + ")");
 			pushLine("#endif"); 
 			

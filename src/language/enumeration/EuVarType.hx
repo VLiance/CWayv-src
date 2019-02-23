@@ -27,6 +27,9 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 		_Long 					;
 		_ULong 				; 
 		_Float 				;
+		_Number 				;
+		_Vector 				;
+		_Matrix 				;
 		_BeforeIsCommun 		;  //*Base types*	////////////////// BEF COMMUN  ///////////////////////////////////////
 		_DArray 				;	
 		_DataArr 				;	
@@ -69,7 +72,10 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 		_StaticVar 			;
 		_ExtendVar			;
 		_ExtendFunction		;
+		_GateFunction		;
+		_ArrayInitializer		;
 		_ExtendFuncCall		;
+		_GateFuncCall		;
 		_LineRtu 				;
 		_CppStaticClass		;
 		_CppClassCallFunction ;
@@ -163,6 +169,9 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 					case _Long : return "_Long";
 					case _ULong : return "_ULong"; 
 					case _Float : return "Float";
+					case _Number : return "Number";
+					case _Vector : return "Vector";
+					case _Matrix : return "Matrix";
 					case _BeforeIsCommun : return "";  //*Base types*////////////////// BEF COMMUN  ///////////////////////////////////////
 					case _DArray : return "DArray";
 					case _DataArr : return "DataArr";
@@ -205,7 +214,10 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 					case _StaticVar : return "StaticVar";
 					case _ExtendVar: return "ExtendVar";
 					case _ExtendFunction: return "ExtendFunction";
+					case _GateFunction: return "GateFunction";
 					case _ExtendFuncCall: return "ExtendFuncCall";
+					case _GateFuncCall: return "GateFuncCall";
+					case _ArrayInitializer: return "ArrayInitializer";
 					case _LineRtu : return "LineRtu";
 					case _CppStaticClass: return "CppStaticClass";
 					case _CppClassCallFunction : return "CppClassCallFunction";

@@ -19,9 +19,11 @@ package language.project.convertSima ;
 		public var bSpecialGenerate : Bool = false;
 		
 		public var bConstructor : Bool = false;
+		public var bCallExtendConstuctor : Bool = false;
 		public var bDefaultConstructor : Bool = false;
 		public var eSharing : EuSharing;
 		public var bOverable : Bool = true;
+		public var bAtomic : Bool = false;
 		public var eFuncType : EuFuncType;
 		public var bStatic : Bool = false;  //linked with EuFuncType.Static; better algo ==>	if (_bStatic == _oFunc.bStatic) {
 		public var bAddDlgWrapper : Bool = false;  
@@ -40,7 +42,7 @@ package language.project.convertSima ;
 		public var aAddRefParamU : Array<Dynamic> = [];
 
 		
-		public var aParamList : Array<Dynamic> = [];
+		public var aParamList : Array<VarObj> = [];
 		public var aParamTypeList : Array<Dynamic> = [];
 		public var aParamNotIni : Array<Dynamic> = [];
 		public var sReturnNotIni : String;

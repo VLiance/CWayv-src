@@ -1,0 +1,16 @@
+//Some idea to implement:
+
+Kotlin WHEN : https://kotlinlang.org/docs/reference/control-flow.html
+
+//IF in for...
+var _oSelectedUser : Array<User> = for(_oUser in _aUser if _oUser.age >= 20 && < 30);
+
+alias Scala:
+val twentySomethings = for (user <- userBase if (user.age >=20 && user.age < 30))
+  yield user.name
+  
+  
+//Custom operator:
+A.transpose().multiply(B)).convolve(C),
+  to
+A'*BxC

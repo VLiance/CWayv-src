@@ -8,21 +8,24 @@ package language.vars.varObj ;
 
 		public var oVar  : VarObj;
 		public var oSClass  : SClass;
+		public var oClassExtend  : SClass;
 
-		public function new(_oSClass:SClass, _oVar:VarObj) {
+		public function new(_oSClass:SClass, _oVar:VarObj, _oClassExtend:SClass) {
 			super();
 			eType =  EuVarType._ExtendVar;
 			oSClass = _oSClass;
 			oVar = _oVar;
+			oClassExtend = _oClassExtend;
 		}
 		
 		override public function copy(_oSBloc:SBloc):VarObj {
-			return copyExtendVar(new ExtendVar(oSClass, oVar) );
+			return copyExtendVar(new ExtendVar(oSClass, oVar,oClassExtend) );
 		}		
 					
 		private function copyExtendVar(_oCopy:ExtendVar):VarObj {
 			_oCopy.oVar = oVar; //Just to be sure
 			_oCopy.oSClass = oSClass; //Just to be sure
+			_oCopy.oClassExtend = oClassExtend; //Just to be sure
 			return _oCopy;
 		}
 		

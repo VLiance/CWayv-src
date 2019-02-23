@@ -51,22 +51,28 @@ package language.vars.varObj ;
 			}
 			
 		}
-		
+				
+	
 		
 		public function extractFuncParam(_sParam:String):Void {
+		
+						
 			var _oLookFunc  :SFunction = oFunction;
 			var _aLookParamList : Array<Dynamic> = _oLookFunc.aParamList; //TODO check same number of param
 			
 			//var _aParamList : Array<Dynamic> = _sParam.split(",");
+
 			var _aParamList : Array<Dynamic> = Text.surfaceSplit(_sParam, ",");
+			
+			if (_sParam == ""){return; } //TODO check if some param are required
 			
 			var _i:UInt = _aParamList.length;
 			for (i in 0 ..._i) {
 			
 				if (_aLookParamList[i] == null) {
-					Debug.fError("LookParam not correspond in : " + _oLookFunc.sName + " for "  +_sParam + " (Total : " + i + ")");
-
+					Debug.fError("LookParam not correspond in : " + _oLookFunc.sName + " for "  + _aParamList[i] + "-->["+ _sParam   + "]" +  " (Total : " + _aParamList.length + ")");
 				}
+				
 				////ParamGetType/// Maybe do direct
 				var _oLookParam : VarObj = _aLookParamList[i];
 				var _oLookType : VarObj = _oLookParam;
@@ -83,6 +89,7 @@ package language.vars.varObj ;
 				aResultTypeList[i] = _oReusltType;
 				
 				aConvertInTypeList[i] = TypeResolve.resolveVarConvertion(_oReusltType, _oLookType, false, oTemplateType);
+				
 				
 			}
 		}

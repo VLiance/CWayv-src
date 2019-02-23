@@ -153,9 +153,14 @@ package language.project.convertCpp ;
 			addSpace();
 			
 			
-		
+			if (_oSClass.bIsVector){
+				pushLine(_oSClass.sCEndNamespace);
+				return;
+			}
 			
-			
+			if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic){
+			//if (!_oSClass.oPackage.oSFrame.bSkipStatic){
+				
 			//if(oSClass.bHaveOverplace == false){
 				//pushLine("GZ_mCppClass(::" + oSClass.oSLib.sWriteName + ", "  + oSClass.sName + ")");
 				pushLine("GZ_mCppClass("  + _oSClass.sName + ")");
@@ -164,6 +169,7 @@ package language.project.convertCpp ;
 			//	pushLine("GZ_mCppClassExt(::" + oSClass.oSLib.sWriteName + ", " + oSClass.sName + ", " + _oSClassOp.sNsAccess + _oSClassOp.sName + ");");
 			//}
 			
+			}
 			addSpace();
 
 			fAddCppLines(_oSClass.aCppLineListClass);
@@ -176,7 +182,7 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunctionList[i];
 				
-				if(_oSFunction.eFuncType != EuFuncType.Extend){
+				if(_oSFunction.eFuncType != EuFuncType.Extend && _oSFunction.eSharing != EuSharing.Destructor){
 					convertFunctionClass(_oSFunction, i);
 				}
 			}
@@ -236,7 +242,7 @@ package language.project.convertCpp ;
 			// addSpace();
 			var i:Int;
 							
-			var _i:UInt = _oSPck.aSImportList.length;
+			var _i:UInt = _oSPck.aSImportList_Full.length;
 			
 			/*
 			if (_i > 0) { //Some include
@@ -245,7 +251,7 @@ package language.project.convertCpp ;
 
 			//Normal class
 			for ( i in 0 ... _i) {
-				_oImport = 	_oSPck.aSImportList[i];
+				_oImport = 	_oSPck.aSImportList_Full[i];
 				
 				_sName = _oImport.sName;
 				_sPath = _oImport.sPath; 
@@ -378,11 +384,11 @@ package language.project.convertCpp ;
 					//pushLine(_sReturn + _sClass + _sFuncName + "()" + _sIni + "{");
 
 					if(!fIsHaveStack(oSClass)){
-						//pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::cClass* _parent)" + getExtendClassToStringIni(oSClass) + _sEmbedIni +"{");
-						pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)") + _sEmbedIni +"{");
+						//pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getExtendClassToStringIni(oSClass) + _sEmbedIni +"{");
+						pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)") + _sEmbedIni +"{");
 					}else {
-						//pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::cClass* _parent)" + getExtendClassToStringIni(oSClass) + _sEmbedIni );
-						pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)") + _sEmbedIni );
+						//pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getExtendClassToStringIni(oSClass) + _sEmbedIni );
+						pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)") + _sEmbedIni );
 						//pushLine(":");
 						fGetStackIniAll(_oSFunction);
 						pushLine("{" + _sStack);
@@ -404,6 +410,7 @@ package language.project.convertCpp ;
 			
 	
 			if (_oSFunction.eFuncType == EuFuncType.Main) {
+		
 				//if(!oSClass.bIsPod){
 				
 			/* Use inline constructor instead for performances, TODO Verify  
@@ -423,11 +430,11 @@ package language.project.convertCpp ;
 			*/
 				
 				pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" + "{" + _sStack);
+
 				
 				addTab();
 				pushLine("//Special var ini");
-				//ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
-			
+					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
 				//}
 				iniEmbedVar(_oSClass);
 			}
@@ -630,7 +637,7 @@ package language.project.convertCpp ;
 			var _i : UInt = _oUnit.aVarList.length;
 			for (i in 0 ...  _i) {
 				var _oVar :VarObj =  _oUnit.aVarList[i];
-				ConvertLines.createSpecialVar(this, _oVar, _sLoc);
+				ConvertLines.createSpecialVar(this, _oVar, null, _sLoc);
 			}
 			subTab();
 			
@@ -771,7 +778,7 @@ package language.project.convertCpp ;
 		
 		private function listBackwardHeritage(_oSClass:SClass):Void {
 			var _bOne  : Bool = false;
-			var _aList : Array<Dynamic> =  _oSClass.oPackage.aSImportList;
+			var _aList : Array<Dynamic> =  _oSClass.oPackage.aSImportList_Full;
 			var _i:UInt = _aList.length;
 			if ( _i > 0) {
 			

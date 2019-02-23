@@ -72,8 +72,14 @@ package language.vars.varObj ;
 		
 		public function iniDelegate():Void {
 			var _oSClass : SClass = oIniSBloc.oSClass;
-			oSFunc = cast(SFind.findFuncObj( _oSClass, sIniDelegateString),SFunction);
-		
+			var _oGetFunc : VarObj = SFind.findFuncObj( _oSClass, sIniDelegateString);
+			if (Std.is(_oGetFunc, ExtendFunc)){
+				oSFunc = cast(_oGetFunc, ExtendFunc).oSFunc;
+			}else{
+				oSFunc = cast(_oGetFunc,SFunction);
+			}
+			//oSFunc = cast(SFind.findFuncObj( _oSClass, sIniDelegateString),SFunction);
+			
 			//loadVarContent.extractFunctionInfoParam(oSFunc);i
 			//loadVarContent.extractFunctionInfoReturn(oSFunc);
 			sDelegateString =  SDelegate.createDelegateString(oSFunc.oReturn, oSFunc.aParamList); 

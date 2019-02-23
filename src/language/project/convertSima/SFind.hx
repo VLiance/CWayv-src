@@ -20,12 +20,14 @@ package language.project.convertSima
 	import language.vars.varObj.ExtendFunc;
 	import language.vars.varObj.ExtendVar;
 	import language.vars.varObj.FuncCall;
+	import language.vars.varObj.GateFunc;
 	import language.vars.varObj.LineInput;
 	import language.vars.varObj.LineLoc;
 	import language.vars.varObj.ParamInput;
 	import language.vars.varObj.PtrFunc;
 	import language.vars.varObj.VarCallClass;
 	import language.vars.varObj.VarExClass;
+	import language.vars.varObj.VarGate;
 	import language.vars.varObj.VarHoldEnum;
 	import language.vars.varObj.VarObj;
 	import language.vars.varObj.VarStaticClass;
@@ -217,7 +219,7 @@ package language.project.convertSima
 		
 		
 		
-		public static function findFuncObj(_oSource: VarObj, _sFunc:String):VarObj {
+		public static function findFuncObj(_oSource: VarObj, _sFunc:String, _bDontFail :Bool = false):VarObj {
 		
 			var _oFunc : SFunction;
 			var _oSClass : SClass;
@@ -252,7 +254,7 @@ package language.project.convertSima
 				//break;
 				
 				case EuVarType._Gate:
-					return findNativeFunction(SGlobal.aNFGate, _sFunc);
+					return findGate(cast(_oSource), _sFunc);
 				//break;
 				
 				
@@ -280,23 +282,7 @@ package language.project.convertSima
 				
 				//Normal function
 				
-				//////////// Search ////////////////////////////
-				var _aFuncObjList : Array<Dynamic> = _oSClass.aFunctionList;
-				var _i:UInt = _aFuncObjList.length;
-				for (i in 0 ..._i) {
-					_oFunc = _aFuncObjList[i];
-					if (_oFunc.sName == _sFunc) {
-						if (_bStatic == _oFunc.bStatic) { //Same static/orNot loc
-							return _oFunc;
-						}else {
-							//Semi found Todo better error management
-							//Maybe a class call for non-overited fonction with same name
-							//return _oFunc;
-						}
-					}
-				}
-				//////////////////////////////////////////////////
-				
+				//Get Extend before (important for delegate ) //TODO check if this afect other things
 				//////////// Search in Entends function ////////////////
 				var _aFuncObjExt : Array<Dynamic> = _oSClass.aFunctionExtend;
 				var _j:UInt = _aFuncObjExt.length;
@@ -312,8 +298,34 @@ package language.project.convertSima
 					}
 				}
 				///////////////////////////////////////////////////////
+				
+				
+				//////////// Search ////////////////////////////
+				var _aFuncObjList : Array<Dynamic> = _oSClass.aFunctionList;
+				var _i:UInt = _aFuncObjList.length;
+				for (i in 0 ..._i) {
+					_oFunc = _aFuncObjList[i];
+					if (_oFunc.sName == _sFunc) {
+						
+						//return _oFunc;
+						
+					
+						if (_bStatic == _oFunc.bStatic) { //Same static/orNot loc
+							return _oFunc;
+						}else {
+							
+							//Semi found Todo better error management
+							//Maybe a class call for non-overited fonction with same name
+							return _oFunc;//	  "static_REMOVED" : //Disable static func because it break polymorphisme (sor return funct)
+						}
+					}
+				}
+				//////////////////////////////////////////////////
+				
 			
 			}
+			
+			if (_bDontFail){return null; };
 
 			//maybe a Function type
 			Debug.fError("can't find func obj for func : " + _sFunc + " in class " + _oSClass.sName );
@@ -524,6 +536,18 @@ package language.project.convertSima
 				}
 			}
 			
+			
+			//Search in atomic
+			_aVarObjList =  _oStaticClass.oRefClass.aAtomicVarList;
+			var _i:UInt = _aVarObjList.length;
+			for (i in 0 ..._i) {
+				var _oVar : VarObj = _aVarObjList[i];
+				if (cast(_oVar,CommonVar).sName == _sVar) {
+					return _oVar;
+				}
+			}
+			
+			
 			//Search in enum
 			_aVarObjList = _oStaticClass.oRefClass.aEnumList;
 			var _i:UInt = _aVarObjList.length;
@@ -586,6 +610,11 @@ package language.project.convertSima
 				}
 			}
 			
+						Debug.fTrace("----");
+			for ( _oVar in _oClass.aAllVarList){
+				Debug.fTrace(_oVar.fGetName());
+			}
+			
 			
 			Debug.fFatal("Var not found : " + _sVar + " in class : "  + _oClass.sName);
 		//	Debug.fError("Var not found : " + _sVar + " in class : "  + _oClass.sName);
@@ -607,8 +636,31 @@ package language.project.convertSima
 			return null;
 		}
 		
+			
+		//ex: 	MainThreadPlatformMsg.gMainThreadGate.fSend(new cfCreateForm(5,5)); 
+		//to
+		//ex: 	MainThreadPlatformMsg.gMainThreadGate.fCreateForm(5,5);
+		private static function findGate(_oGate: VarGate, _sSearch:String):VarObj {
 		
-		private static function findNativeFunction(_aLoc:Array<Dynamic>, _sSearch:String):VarObj {
+
+			
+		
+			var _oReturn =  findFuncObj( _oGate.oRslTemplate, _sSearch,true);
+			if (_oReturn != null && Std.is(_oReturn,SFunction)) {
+				return new GateFunc( _oGate.oRslTemplate,cast(_oReturn)); 
+			}
+			//if (_oReturn != null) {return _oReturn; }
+			
+
+			var _oResult : VarObj =  findNativeFunction(SGlobal.aNFGate, _sSearch,false); //Enable Send?
+			if (_oResult == null){
+				Debug.fError("Gate function not found : " + _sSearch + " in "  + _oGate.oRslTemplate.sName);
+			}
+			return _oResult;
+		}
+		
+		
+		private static function findNativeFunction(_aLoc:Array<Dynamic>, _sSearch:String, _bManageError:Bool = true ):VarObj {
 			
 			var _i:UInt = _aLoc.length;
 			for (i in 0 ..._i) {
@@ -618,8 +670,10 @@ package language.project.convertSima
 				}
 			}
 			
-			Debug.fError("Native func not found : " + _sSearch);
-			Debug.fStop();
+			if(_bManageError){
+				Debug.fError("Native func not found : " + _sSearch);
+				Debug.fStop();
+			}
 			return null;
 		
 		}
@@ -630,7 +684,8 @@ package language.project.convertSima
 		//	var _oSProject :SProject = _oSClass.oSProject;
 		//	var _aList : Array<Dynamic> = _oSProject.aClass;
 			
-			var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList;
+			var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList_Full;
+			//var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList;
 			
 			
 			var _i:UInt = _aList.length;

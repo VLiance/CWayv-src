@@ -5,7 +5,7 @@ package language.vars.varObj ;
 	import language.vars.special.VarFixeArray;
 	
 
-	class VarNewArraySquare extends VarObj {  //Maybe not commonvar
+	class VarNewArraySquare extends VarObj {  //Maybe not commonvar   ///Replaced by ArrayInitilizer
 
 		public var nSize   : UInt = 0;
 		

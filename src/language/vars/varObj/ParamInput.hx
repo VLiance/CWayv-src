@@ -17,7 +17,10 @@ package language.vars.varObj ;
 			sOriLine = _sOriLine;
 			eType = EuVarType._ParamInput;
 		}
-			
+		
+		override function fGetName():String {
+			return oVarInput.fGetName();
+		}
 	
 	}
 	

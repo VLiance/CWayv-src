@@ -1,5 +1,6 @@
 
 package language.base ;
+import haxe.CallStack;
 import language._system.System;
 import language.cwMake.line.CWaveArg;
 import language.project.assist.CwInfo;
@@ -68,7 +69,7 @@ import language.project.convertSima.ExtractBlocs;
 				System.sendStringMessage(CWaveArg.nAssistHandle, "A: " + _sMsg);
 				
 			}else {*/
-			fTrace("A: " + _sMsg);
+			fTrace("A| " + _sMsg);
 		//		debugTrace(oListBox3, "A: " + _sMsg, 0);
 		//	}
 			
@@ -117,7 +118,7 @@ import language.project.convertSima.ExtractBlocs;
 				}
 			}else {
 			
-				System.fPrint("E: " + _sPath + cast(_oText) + " ");
+				System.fPrint("E| " + _sPath + cast(_oText) + " ");
 			//	debugTrace(oListBox3, "E: " + _sPath + String(_oText), 0);
 			}
 			
@@ -128,7 +129,7 @@ import language.project.convertSima.ExtractBlocs;
 			
 		public static function fWarning(_oText:Dynamic):Void {
 			//	Sys.println("W: " +_oText);
-				System.fPrint("W: " +_oText);
+				System.fPrint("W| " +_oText);
 				/*
 			if(CWaveArg.bManaged){
 				System.sendStringMessage(CWaveArg.nHandleID, "W: " + String(_oText));
@@ -140,6 +141,7 @@ import language.project.convertSima.ExtractBlocs;
 
 		public static function fFatal(_oText:Dynamic):Void {
 			System.fFatal(_oText);
+			fError(_oText);
 			//Sys.println(_oText);
 			/*
 			if(CWaveArg.bManaged){
@@ -150,7 +152,7 @@ import language.project.convertSima.ExtractBlocs;
 			//var _aStopExecution 
 			//fTrace("Fatal error : " +_oText );
 			#if !js
-				throw  "Fatal error : " +  _oText  + " : ";
+				throw  "Fatal error : " +  _oText  + " : " + CallStack.callStack();
 			#else
 				throw  "Fatal: execution stopped";
 			#end

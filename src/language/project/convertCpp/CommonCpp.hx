@@ -10,13 +10,16 @@ package language.project.convertCpp ;
 	import language.project.convertSima.SFunction;
 	import language.project.CppProject;
 	import language.project.convertSima.SPackage;
+	import language.project.convertSima.TypeResolve;
 	import language.vars.special.UnitObj;
 	import language.vars.varObj.CommonVar;
 	import language.vars.varObj.Delegate;
 	import language.vars.varObj.EaseOut;
 	import language.vars.varObj.LineInput;
 	import language.vars.varObj.ParamInput;
+	import language.vars.varObj.VarCallClass;
 	import language.vars.varObj.VarCppLine;
+	import language.vars.varObj.VarHoldEnum;
 	import language.vars.varObj.VarObj;
 	import language.base.InObject;
 	import language.base.Root;
@@ -68,7 +71,7 @@ package language.project.convertCpp ;
 				
 				if (_oVar.eType == EuVarType._LineInput) {
 					var  _oLineInput :LineInput = cast(_oVar,LineInput);
-					_sIni = " = " + ConvertLines.convertInputLine(_oLineInput, EuOperator.None, true);//LineInput
+					_sIni = " = " + ConvertLines.convertInputLine(null, _oLineInput, EuOperator.None, true);//LineInput
 					_oVar = _oLineInput.oVarInput;
 				}
 					
@@ -150,7 +153,7 @@ package language.project.convertCpp ;
 					if(!_bOnlyVar){
 						_sInputVarString  =  TypeText.typeToCPP(_oParamInput.oVarInput, false,false,false,true) + " ";
 					}
-					 _sParam +=   _sInputVarString + ConvertLines.convertCppVarType( _oParamInput.oVarInput, _oSFunction.nLine);
+					 _sParam +=   _sInputVarString + ConvertLines.convertCppVarType( _oParamInput.oVarInput, _oSFunction.nLine,false,null, _oSFunction);
 					  
 					 if(_bHeader){ //line after =
 						 var _sParamInput : String = ConvertLines.convertCppVarType(_oParamInput, _oParamInput.nLine); 
@@ -163,9 +166,9 @@ package language.project.convertCpp ;
 					}
 					
 					if (_bWebGL) {
-						_sParam +=   fConvertWebGL(_sInputVarString + ConvertLines.convertCppVarType(_oParam,  _oSFunction.nLine), _oParam);
+						_sParam +=   fConvertWebGL(_sInputVarString + ConvertLines.convertCppVarType(_oParam,  _oSFunction.nLine,false,null, _oSFunction), _oParam);
 					}else {
-						_sParam +=   _sInputVarString + ConvertLines.convertCppVarType(_oParam,  _oSFunction.nLine);
+						_sParam +=   _sInputVarString + ConvertLines.convertCppVarType(_oParam,  _oSFunction.nLine,false,null, _oSFunction);
 					}
 				}
 			
@@ -268,8 +271,9 @@ package language.project.convertCpp ;
 			
 			if (i == 0) {
 
-				if (_oSClass.sName == "Class") {
-					_sExtend +=   "Lib_GZ::cClass" + _sCopy; //New delegate for all class
+				if (_oSClass.sName == "Class" && _oSClass.oSLib.sIdName == "Gz" ) { //TODO only in lib GZE
+					//_sExtend +=   "Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
+					_sExtend +=   ""; //New delegate for all class
 				}
 			}
 			if(_sExtend != ""){
@@ -301,10 +305,14 @@ package language.project.convertCpp ;
 				if(_sCopy == ""){
 					//return "";
 					//return  _sShared + "::" + _oSClass.oSProject.oSDelegate.sLib_Name + _sCopy; //New delegate for all class
-					if (_sShared != "" &&  _oSClass.sName == "Class") {
-						return  "public Lib_GZ::cClass" + _sCopy; //New delegate for all class
+					if (_sShared != "" &&  _oSClass.sName == "Class") { //!TODO only in lib GZE!!
+						
+						return  ""; //New delegate for all class
+							
+						//return  "public Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
+					
 					}else{
-						return  _sShared + "Lib_GZ::cClass" + _sCopy; //New delegate for all class
+						return " : " + _sShared + "Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
 					}
 				}
 			}
@@ -326,7 +334,7 @@ package language.project.convertCpp ;
 				
 			}
 
-			return  _sExtend;
+			return " : "+ _sExtend;
 		}	
 		
 		private  function getOverplaceString(_oSClass:SClass):String { //Execute
@@ -335,7 +343,7 @@ package language.project.convertCpp ;
 				var _i : UInt = _aList.length;
 				if (!_oSClass.bHaveOverplace ||  _i == 0) {//TODO, better way
 					//return " : public Lib_GZ::cStThread"; //New delegate for all class
-					return " : public Lib_GZ::csClass"; //New delegate for all class
+					return " : public Lib_GZ::Base::csClass"; //New delegate for all class
 				}
 				
 				var _sExtend : String = "";
@@ -489,13 +497,16 @@ package language.project.convertCpp ;
 			//if (oSClass.bExtension  && _oSFunction.eFuncType == EuFuncType.Main ) {  
 			if ( _oSFunction.eFuncType == EuFuncType.Main ) {  
 				if(!_oSClass.bIsPod){
-					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent);");
-					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
-					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
+					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent);");
+					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
+					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
 				
 					
 					fGetInitializerList(_oSFunction);
-					pushLine("{};");
+					fAddCppLines(_oSClass.aCppLineInitializerList_H);
+					pushLine("{");
+					fAddCppLines(_oSClass.aCppLineInitializer_H);
+					pushLine("};");
 					pushLine("virtual void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
 				}else {
 					pushLine(_sReturn + "c" + _sFuncName + "();"); //Default constructor only
@@ -596,12 +607,50 @@ package language.project.convertCpp ;
 			}
 		}
 		
-		
+
 		
 		public function fGetInitializerList(_oSFunction : SFunction):Void { 
-	
+			  preiniGlobalVar(_oSFunction.oSClass);
 			 convertDelegateIni(this, _oSFunction);
 		}
+		
+				
+		private function preiniGlobalVar(_oSClass:SClass):Void {
+					
+			var _aList : Array<Dynamic> = _oSClass.aNotIniGlobalVarList;
+			var _i : UInt = _aList.length;
+			//var _sIni : String = "";
+			for (i in 0 ...  _i) {
+				var _oVar : VarObj = _aList[i];
+				
+				switch(_oVar.eType){
+					
+					case EuVarType._Gate:
+						
+					case EuVarType._HoldEnum:
+						
+						pushLine(","+ cast(_oVar,CommonVar).sName + "(" + cast(_oVar,VarHoldEnum).oEnumRef.fGetCppDefaultVar() +")");
+						
+					case EuVarType._CallClass:
+						if(cast(_oVar, VarCallClass ).oCallRef.bIsVector ){
+							pushLine(","+ cast(_oVar,CommonVar).sName + "({0})");
+						}
+						
+					default:
+						if (Std.is(_oVar, CommonVar)) {
+							//_sIni += cast(_oVar,CommonVar).sName + ",(0)";
+							pushLine(","+ cast(_oVar,CommonVar).sName + "(0)");
+						}
+
+				}
+			}
+			/*
+			if(_i > 0){
+				pushLine(_sIni);
+			}*/
+		}
+	
+		
 		
 		public static function convertDelegateIni(_oFile:CommonCpp,  _oSBloc:SBloc) :Void {
 			var _oSClass : SClass = _oSBloc.oSClass;

@@ -22,6 +22,8 @@ package language.project.convertSima ;
 	import language.vars.varObj.ExtendFuncCall;
 	import language.vars.varObj.ExtendVar;
 	import language.vars.varObj.FuncCall;
+	import language.vars.varObj.GateFunc;
+	import language.vars.varObj.GateFuncCall;
 	import language.vars.varObj.LineArray;
 	import language.vars.varObj.LineDelete;
 	import language.vars.varObj.LineInput;
@@ -31,6 +33,7 @@ package language.project.convertSima ;
 	import language.vars.varObj.LineReturn;
 	import language.vars.varObj.LineVarIni;
 	import language.vars.varObj.ParamInput;
+	import language.vars.varObj.VarArrayInitializer;
 	import language.vars.varObj.VarBoolean;
 	import language.vars.varObj.VarCallClass;
 	import language.vars.varObj.VarDec;
@@ -309,7 +312,6 @@ import haxe.crypto.BaseCode;
 					}
 					cast(_oLine,LineInput).bVarCreation = _bVarCreation;
 					if (_bVarCreation) { //Todo make LineVarIni?aa
-						
 						LineVarIni.fCheckIfNewVarIsValidScope(_oSBloc, _oVarSetObj);
 					}
 				//break;
@@ -380,7 +382,7 @@ import haxe.crypto.BaseCode;
 					}else {
 						
 						if (_sResult == "new") {
-							linkNewClass(_oSBloc, _oLine, _sLine, _nCurrentIndex);
+							linkNewClass(_oSBloc, _oLine, _sLine, _nCurrentIndex, _oVarSetObj);
 							break;
 
 						}else {
@@ -514,7 +516,16 @@ import haxe.crypto.BaseCode;
 				 
 			case "[" :  //Transfore = [55] to (Int*)malloc(sizeof(Int)*55);
 					
-					
+					var  _sInsideBracket : String = Text.between3(_sLine, _nCurrentIndex, EuBetween.Square);
+		
+					_nCurrentIndex = Text.nCurrentIndex;
+					var _oVarArrayInitializer  : VarArrayInitializer = new VarArrayInitializer(_oSBloc, _sInsideBracket);
+					_oLine.pushVar(_oVarArrayInitializer);
+			
+				
+				
+				/*
+					//REMOVED ... TODO ?
 					var  _sSize : String = Text.between3(_sLine, _nCurrentIndex, EuBetween.Square);
 					if (Text.stringNotEmpty(_sSize)) { 
 						_nCurrentIndex = Text.nCurrentIndex;
@@ -523,7 +534,7 @@ import haxe.crypto.BaseCode;
 					}else {
 						Debug.fError("new array square size is empty");
 					}
-						
+						*/
 					
 				//break;
 				
@@ -535,9 +546,9 @@ import haxe.crypto.BaseCode;
 		
 		//The "new" keyword like
 		//oTest2 = new Test2();
-		private static function linkNewClass(_oSBloc:SBloc, _oLine:LineObj, _sLine:String, _nCurrentIndex:UInt):Void {
-			
-			var _oVarNew : VarNew = new VarNew(_oSBloc);
+		private static function linkNewClass(_oSBloc:SBloc, _oLine:LineObj, _sLine:String, _nCurrentIndex:UInt,  _oVarSetObj:VarObj = null):Void {
+				
+			var _oVarNew : VarNew = new VarNew(_oSBloc, _oVarSetObj);
 			_oLine.pushVar(_oVarNew);
 					
 			var _sClassName : String = Text.between3(_sLine, _nCurrentIndex,EuBetween.Word);
@@ -565,6 +576,16 @@ import haxe.crypto.BaseCode;
 			
 			_oLine.bNewCreation = true;
 			
+			//Test TEMPLATE
+			if(_sLine.charAt( _nCurrentIndex) == "<"){
+				var _sTemplate : String = Text.between3(_sLine, _nCurrentIndex+1, EuBetween.Template);
+				if (Text.stringNotEmpty(_sTemplate)) {
+					//extractFuncParam(_oVarNew, _sParam, _oVarNew.oFunction);
+					_oVarNew.extractTemplate(_sTemplate);
+				}
+				_nCurrentIndex = Text.nCurrentIndex;
+			}
+			
 			//TODO test if error if ( have a space ex :  oTest2 = new Test2 (10);
 			var _sParam : String = Text.between3(_sLine, _nCurrentIndex+1, EuBetween.Priority);
 			if (Text.stringNotEmpty(_sParam)) {
@@ -572,8 +593,11 @@ import haxe.crypto.BaseCode;
 				_oVarNew.extractFuncParam(_sParam);
 			}
 			
-
 		}
+		
+		
+		
+		
 		
 	
 		
@@ -857,19 +881,34 @@ import haxe.crypto.BaseCode;
 					
 				//break;
 				
+				case  EuVarType._GateFunction:
+				
+					var _oGate : GateFunc = cast(_oVar);
+				//	Debug.fError("FOUND GATE FUNC " + _oGate.oSClass.sName + " : " +_oGate.oSFunc.sName);
+					
+					//Debug.trace("ExtendFuncFoundParam : " + _oExt.oSFunc.sName);
+					var _oGateFuncCall : GateFuncCall = new GateFuncCall(_oSBloc, _oGate.oSClass, _oGate.oSFunc, _oSearchInBloc);
+					_oLine.pushVar(_oGateFuncCall);
+					_oGateFuncCall.extractFuncParam( _sParam);
+					
 					
 				case  EuVarType._ExtendFunction:
 					var _oExt : ExtendFunc = cast(_oVar);
+									
 					if (Text.stringNotEmpty(_sParam) ) {
 						//Debug.trace("ExtendFuncFoundParam : " + _oExt.oSFunc.sName);
 						var _oExtendFuncCall : ExtendFuncCall = new ExtendFuncCall(_oSBloc, _oExt.oSClass, _oExt.oSFunc, _oSearchInBloc);
 						_oLine.pushVar(_oExtendFuncCall);
 						_oExtendFuncCall.extractFuncParam( _sParam);
-					
+
 					}else {
 						_oLine.pushVar(_oExt);
 					}
 					
+					if (_oExt.oSFunc.bConstructor) {
+					//	Debug.fTrace("Found Constructor " +_oExt.oSFunc.sName + " "   + _oSBloc.oSFunction.sName );
+						_oSBloc.oSFunction.bCallExtendConstuctor = true;
+					}
 					
 					
 				//break;

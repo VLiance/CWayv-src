@@ -59,8 +59,8 @@ package language.project.convertCpp ;
 			pushLine("#include \"GZ/File/Embed.h\"");
 			pushLine("#include \"GZ/Debug.h\"");
 			
-			pushLine("#include \"" +   oCppProject.oSProject.oGzCppLib.sWriteName + "/Global.h\"");
-			pushLine("#include \"" +   oCppProject.oSProject.oGzCppLib.sWriteName + "/System.h\"");
+			pushLine("#include \"" +   oCppProject.oSProject.oGzLib.sWriteName + "/Global.h\"");
+			pushLine("#include \"" +   oCppProject.oSProject.oGzLib.sWriteName + "/System.h\"");
 			
 			addSpace();
 			
@@ -77,7 +77,7 @@ package language.project.convertCpp ;
 			//Make entry global
 			//pushLine(sCppBaseLib + "_Global::iniEntryVars(&_hInstance, _lpCmdLine, _nShowCmd, 0);")
 			//pushLine(oCppProject.oSProject.oCppLib.sWriteName + "_Global::iniEntryVars(_hInstance, _lpCmdLine, _nShowCmd, 0);")
-			pushLine(oCppProject.oSProject.oGzCppLib.sWriteName + "_System::fIni(_hInstance, _lpCmdLine, _nShowCmd);");
+			pushLine(oCppProject.oSProject.oGzLib.sWriteName + "_System::fIni(_hInstance, _lpCmdLine, _nShowCmd);");
 
 			addSpace();
 		
@@ -133,7 +133,7 @@ package language.project.convertCpp ;
 		*/
 			//Close function
 			addSpace();
-			pushLine("return " + oCppProject.oSProject.oGzCppLib.sWriteName  + "_Global::nAppReturn;");
+			pushLine("return " + oCppProject.oSProject.oGzLib.sWriteName  + "_Global::nAppReturn;");
 			subTab();
 			pushLine("}");
 		}

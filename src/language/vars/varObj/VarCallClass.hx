@@ -9,13 +9,20 @@ package language.vars.varObj ;
 	class VarCallClass extends CommonVar {
 
 		public var oCallRef  : SClass;
+		public var eTemplateType  : EuVarType = EuVarType._None;
 		public var sCallClassNotReady  : SClass;
 		public var sTypeNotIni  : String;
 		public var bScopeOwner  : Bool;
 		
-		public function new(_oSBloc:SBloc, _sType:String, _bScopeOwner:Bool = false, _bWeak:Bool = false) {
+		public function new(_oSBloc:SBloc, _sType:String, _bScopeOwner:Bool = false, _bWeak:Bool = false, _sTemplate : String =  "") {
 		
 			super(_oSBloc, EuVarType._CallClass);
+			
+			
+			if (_sTemplate != ""){
+				eTemplateType = TextType.stringToType(_sTemplate);
+			}
+			
 			bWeak = _bWeak;
 			bScopeOwner = _bScopeOwner;
 			if(_sType != null){ //Copy
@@ -24,7 +31,8 @@ package language.vars.varObj ;
 					applyCallClass();
 				}
 			}
-	
+			
+
 		}
 		
 		
@@ -43,6 +51,11 @@ package language.vars.varObj ;
 				Debug.fError("Error, class not found : " + sTypeNotIni);
 			}
 			sTypeNotIni = null; //Delete?
+			
+					
+			if (oCallRef.bIsVector && eTemplateType == EuVarType._None ){
+				Debug.fError("Vector type must specify a template type ex: '" + oCallRef.sName +  "<Float>'");
+			}
 
 		}
 		

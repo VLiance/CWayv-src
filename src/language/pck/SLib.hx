@@ -31,6 +31,8 @@ package language.pck ;
 	//	public var aClass	  	: Array<Dynamic> = [];
 		public var aPackage	  	: Array<SPackage> = [];
 		
+		public var oLibFileImport : FileImport = null;
+		
 		
 		//public var aMerge  		: Array<Dynamic> = []; //List of Slib with same result path
 		//public var oMergeSource : SLib;  //Of wicth is merge from
@@ -88,7 +90,7 @@ package language.pck ;
 					
 				}else{ //It's a file
 					
-					aFileList.push(new FileProperty(this, _sPath));
+					aFileList.push(new FileProperty(this, _sPath,_sRelative));
 					
 	
 				}

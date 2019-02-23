@@ -39,17 +39,26 @@ class PackLib  extends FileForm
 			//Create all class
 			//var _i:UInt = oSProject.aClass.length;
 			//for (i in 0 ..._i) {
-			for (_oPckg in oSProject.aPackage) {for (_oSClass in  _oPckg.aClassList) {
+			for (_oPckg in oSProject.aPackage) {
+				var _sCwPath : String = _oPckg.oSLib.sIdName + "." +  _oPckg.sPath.split("/").join(".");
+				_sCwPath = _sCwPath.substring(0, _sCwPath.length - 1); //Remove last dot
 				
-			//	var _oSClass : SClass =  oSProject.aClass[i];
-				var _sClassDef : String = "public " + EuClassType_.fGet(_oSClass.eClassType) + " " +  _oSClass.sName + " " + fGetExtendList(_oSClass) + "{"; //always public?
-				pushLine(_sClassDef);
-				addTab();
-				fGetFunctionList(_oSClass);
+				pushLine("package " + _sCwPath  + "{");
+					addTab();
+				for (_oSClass in  _oPckg.aClassList) {
+
+					//	var _oSClass : SClass =  oSProject.aClass[i];
+						var _sClassDef : String = "public " + EuClassType_.fGet(_oSClass.eClassType) + " " +  _oSClass.sName + " " + fGetExtendList(_oSClass) + "{"; //always public?
+						pushLine(_sClassDef);
+						addTab();
+						fGetFunctionList(_oSClass);
+						subTab();
+						pushLine("}");
+					//	Debug.fTrace(_oSClass.sName);
+				}
 				subTab();
 				pushLine("}");
-			//	Debug.fTrace(_oSClass.sName);
-			}}
+			}
 			
 			Debug.fTrace("output: "  + _oProject.oCWaveMake.sExportBasePath );
 			

@@ -27,11 +27,12 @@ package language;
 		public var sCWaveMakePath : String = "";
 		public var bReadOnly : Bool = true;
 		public var sExportPath : String = "";
+		public var bIncludeRecursive : Bool; //TODO ?
 		
-		public function new( _oCwmFile: CwmFile, _sLine:String ) {
+		public function new( _oCwmFile: CwmFile, _sLine:String , _bIncludeRecursive = false) {
 			oCwmFile = _oCwmFile;
 	
-			
+			bIncludeRecursive = _bIncludeRecursive;
 			var _nIndex : Int = Text.search(_sLine,  "(");
 			if (_nIndex > 0) {
 				fExtractParam(Text.between3(_sLine, _nIndex + 1, EuBetween.Priority));

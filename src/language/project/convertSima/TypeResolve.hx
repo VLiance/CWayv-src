@@ -40,6 +40,7 @@ package language.project.convertSima ;
 	import language.vars.varObj.VarLong;
 	import language.vars.varObj.VarNew;
 	import language.vars.varObj.VarNewArraySquare;
+	import language.vars.varObj.VarNumber;
 	import language.vars.varObj.VarParent;
 	import language.vars.varObj.VarRc;
 	import language.vars.varObj.VarResultModifier;
@@ -52,6 +53,7 @@ package language.project.convertSima ;
 	import language.vars.varObj.VarULong;
 	import language.vars.varObj.VarVal;
 	import language.base.Debug;
+	import language.vars.varObj.VarVector;
 	/**
 	 * ...
 	 * @author ...
@@ -63,6 +65,13 @@ package language.project.convertSima ;
 			var _eType : EuVarType = TextType.stringToType(_sType, _sLine, _nCurrentIndex); //Reset eTypeNbBit
 			
 			switch (_eType) {
+				
+				
+				case EuVarType._Vector :
+					var _oVarVec : VarVector =  new VarVector(_oSBloc,TextType.nTypeNumVal);
+					
+					return _oVarVec;
+				
 				
 				case EuVarType._Val :
 					var _oVarVal : VarVal =  new VarVal(_oSBloc);
@@ -98,6 +107,13 @@ package language.project.convertSima ;
 					var _oVarFloat: VarFloat =  new VarFloat(_oSBloc);
 					_oVarFloat.eBit = TextType.eTypeNbBit;
 					return  _oVarFloat;
+					
+					
+				case EuVarType._Number :
+					var _oVarNumber: VarNumber =  new VarNumber(_oSBloc);
+					//_oVarNumber.eBit = TextType.eTypeNbBit;
+					return  _oVarNumber;
+					
 				//break;
 				
 				case EuVarType._Bool :
@@ -121,7 +137,12 @@ package language.project.convertSima ;
 					return new VarAnyClass(_oSBloc, _sType, _bScopeOwner, _bWeak);
 				//break;
 				case EuVarType._CallClass :
-					return new VarCallClass(_oSBloc, _sType, _bScopeOwner, _bWeak);
+					var _sTemplate : String =  "";
+					if(_sLine.charAt(_nCurrentIndex) == "<"){
+						_sTemplate = Text.between3(_sLine, _nCurrentIndex + 1, EuBetween.Template  ); 
+					}
+					
+					return new VarCallClass(_oSBloc, _sType, _bScopeOwner, _bWeak, _sTemplate);
 				//break;
 				/*
 				case EuVarType._ExClass :

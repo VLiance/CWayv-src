@@ -39,7 +39,7 @@ package language.project.convertCpp ;
 			pushLine( "namespace " + _oSPckg.oSLib.sWriteName + "{class c"  + _oSPckg.sName +";}" );
 			pushHeaderDefine(_oSPckg);
 			
-			pushLine("#include \"Lib_GZ/GZ.h\"");
+			pushLine("#include \"Lib_GZ/GZ_inc.h\"");
 			pushLine("#include \"Lib_GZ/SysUtils/glWin.h\"");
 			pushLine("#include \"Lib_GZ/Sys/Debug.h\"");
 			

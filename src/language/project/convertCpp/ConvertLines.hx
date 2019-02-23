@@ -60,6 +60,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.LineVarIni;
 	import language.vars.varObj.ParamInput;
 	import language.vars.varObj.PtrFunc;
+	import language.vars.varObj.VarArrayInitializer;
 	import language.vars.varObj.VarBoolean;
 	import language.vars.varObj.VarCallClass;
 	import language.vars.varObj.VarComment;
@@ -75,6 +76,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.VarLong;
 	import language.vars.varObj.VarNew;
 	import language.vars.varObj.VarNewArraySquare;
+	import language.vars.varObj.VarNumber;
 	import language.vars.varObj.VarObj;
 	import language.vars.varObj.VarRc;
 	import language.vars.varObj.VarRtu;
@@ -83,6 +85,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.VarULong;
 	import language.vars.varObj.VarVal;
 	import language.base.Debug;
+	import language.vars.varObj.VarVector;
 	//import ssp.filesystem.File;
 	//import ssp.phone.Fax;
 	/**
@@ -97,7 +100,7 @@ package language.project.convertCpp ;
 				
 		public static function convertFunctionLines(_oFile:CommonCpp, _oSFunc:SFunction, _bTab:Bool = false):Void {
 		
-			if (_oSFunc.aLineList.length == 0 && !_oSFunc.bConstructor && !_oSFunc.oSClass.oSLib.bReadOnly) {
+			if (_oSFunc.aLineList.length == 0 && !_oSFunc.bConstructor && !_oSFunc.oSClass.oSLib.bReadOnly && !_oSFunc.oSClass.oPackage.oSFrame.bWrapper) {
 				_oFile.pushLine("GZ_mIsImplemented(\"" +  _oSFunc.oSClass.oSLib.sIdName + "::" +  _oSFunc.oSClass.sName +  "::" + _oSFunc.sName  + "\")");
 				/*
 				_oFile.pushLine("static gzBool bTraced = false;");
@@ -145,7 +148,7 @@ package language.project.convertCpp ;
 			var _j:UInt = _aLines.length;
 			for (j in 0 ... _j) {
 				var _oLine : VarObj = _aLines[j];
-				convertLineType(_oFile, _oLine);
+				convertLineType(_oFile, _oLine,_oSBloc);
 			}
 			
 			subBlocIntelliPtr(_oFile, _oSBloc);
@@ -156,13 +159,13 @@ package language.project.convertCpp ;
 		}
 		
 		
-		public static function convertLineType(_oFile:CommonCpp, _oLine : VarObj):Void {
+		public static function convertLineType(_oFile:CommonCpp, _oLine : VarObj, _oSBloc:SBloc):Void {
 			switch(_oLine.eType) {
 				
 		
 				case EuVarType._LineInput :  //Normal line
 
-					_oFile.pushLine( convertInputLine( cast(_oLine,LineInput), EuOperator.None) + ";");
+					_oFile.pushLine( convertInputLine(_oSBloc, cast(_oLine,LineInput), EuOperator.None) + ";");
 					
 				//break;
 				
@@ -182,7 +185,7 @@ package language.project.convertCpp ;
 
 				
 				case  EuVarType._LineInputMod :
-					_oFile.pushLine( convertInputLine( cast(_oLine,LineInput), cast(_oLine,LineInputMod).eOppType) + ";");
+					_oFile.pushLine( convertInputLine( _oSBloc , cast(_oLine,LineInput), cast(_oLine,LineInputMod).eOppType) + ";");
 				//break;
 					
 				case EuVarType._LogicIf :
@@ -204,7 +207,7 @@ package language.project.convertCpp ;
 					var _oLogicIfElse : LogicIf = cast(_oLine);
 					_oFile.pushLine("if (" + convertCppVarType(_oLogicIfElse.oObjIf, _oLogicIfElse.nLine) + "){");
 					convertBlocLines(_oFile, _oLogicIfElse , true);
-					convertLineType(_oFile, _oLogicIfElse.oBlocElse);
+					convertLineType(_oFile, _oLogicIfElse.oBlocElse,_oSBloc);
 					///------------------
 				//break;	
 				
@@ -214,7 +217,7 @@ package language.project.convertCpp ;
 					_oFile.pushLine("}else if (" + convertCppVarType(_oLogicElseIf.oObjIf, _oLogicElseIf.nLine) + "){");
 					convertBlocLines(_oFile, _oLogicElseIf , true);
 					if (_oLogicElseIf.oBlocElse != null) {
-						convertLineType(_oFile, _oLogicElseIf.oBlocElse);
+						convertLineType(_oFile, _oLogicElseIf.oBlocElse,_oSBloc);
 					}else {
 						_oFile.pushLine("}");
 					}
@@ -233,9 +236,9 @@ package language.project.convertCpp ;
 				
 				case EuVarType._LogicFor :
 					var _oLogicFor : LogicFor = cast(_oLine);
-					_oFile.pushLine("for(" + convertInputLine( _oLogicFor.oIni, EuOperator.None) + "; "
+					_oFile.pushLine("for(" + convertInputLine(_oSBloc, _oLogicFor.oIni, EuOperator.None) + "; "
 									+  convertCppVarType(_oLogicFor.oCond, _oLogicFor.nLine) + "; "
-									+ 	convertLineTypeLight(_oLogicFor.oIncDec) + "){");
+									+ 	convertLineTypeLight(_oSBloc, _oLogicFor.oIncDec) + "){");
 									
 					//pushLine(_sStart + "if (" + convertConditionnalLine(_aLine) + "){");
 					//convertLineList(_aLine[cLineList], true);
@@ -335,15 +338,15 @@ package language.project.convertCpp ;
 		}
 		
 		//Same as above (convertLineType) but return string intead (FOR statement and other ) ex: for (var i:Int = 0; _nBob < 40; THIS) {
-		private static function convertLineTypeLight(_oLine : VarObj):String {
+		private static function convertLineTypeLight(_oSBloc : SBloc,  _oLine : VarObj):String {
 			switch(_oLine.eType) {
 			
 				case  EuVarType._LineInputMod :
-						return convertInputLine( cast(_oLine,LineInputMod), cast(_oLine,LineInputMod).eOppType);
+						return convertInputLine(_oSBloc, cast(_oLine,LineInputMod), cast(_oLine,LineInputMod).eOppType);
 				//break;	
 				
 				case EuVarType._LineInput :  //Normal line
-					return convertInputLine( cast(_oLine,LineInput),EuOperator.None);
+					return convertInputLine(_oSBloc, cast(_oLine,LineInput),EuOperator.None);
 				//break;
 				
 				default : 	//Simple Normal line
@@ -356,7 +359,7 @@ package language.project.convertCpp ;
 			return null;
 		}
 		
-		public static function convertInputLine(_oLineInputVar : VarObj, _eOpp : EuOperator , _bOnlyInput:Bool = false):String {
+		public static function convertInputLine(_oSBloc : SBloc , _oLineInputVar : VarObj, _eOpp : EuOperator , _bOnlyInput:Bool = false):String {
 		//public static function convertInputLine(_oLineInputVar : VarObj, _eOpp : EuOperator =null, _bOnlyInput:Bool = false):String {
 	//		if (_eOpp==null) _eOpp = EuOperator.None;
 			
@@ -367,7 +370,7 @@ package language.project.convertCpp ;
 			var _oLineInput  : LineInput = cast(_oLineInputVar);
 			ExtractBlocs.nCurrLine = _oLineInput.nLine;
 					
-			var _sLineInput : String = convertCppVarType(_oLineInput,_oLineInput.nLine); //line after =
+			var _sLineInput : String = convertCppVarType(_oLineInput,_oLineInput.nLine, false, null, _oSBloc); //line after =
 			_sLineInput =  TypeText.getConvertFunc(_sLineInput,  _oLineInput.oConvertInType,  _oLineInput.oResultingType);
 			
 			/*
@@ -557,6 +560,22 @@ package language.project.convertCpp ;
 					
 				//break;
 				*/
+				
+				
+				case EuVarType._Number :
+					
+					var _oVarNumber : VarNumber = cast(_oVar);
+					
+					var _sStrInt : String;
+					if (_oVarNumber.sName == null) { //Take is value instead
+						_sStrInt =  cast(_oVarNumber.nValue);
+					}else {
+						_sStrInt = _oVarNumber.sName;
+					}
+					
+					return checkVarConvertIn(_oVar, _oConvertIn,  checkIfCurStaticLoc(_oVar, _oContainer) +  _sStrInt, _oContainer);
+					
+				
 				case EuVarType._Int :
 					
 					var _oVarInt : VarInt = cast(_oVar);
@@ -730,6 +749,17 @@ package language.project.convertCpp ;
 					return  _sExBefore + checkVarConvertIn(_oExtendFunc.oSFunc, _oConvertIn,  _oExtendFunc.oSFunc.sName + "()", _oContainer);
 				//break;
 				
+				
+	
+				case EuVarType._GateFuncCall:{
+					
+					var _oVarFuncCall : FuncCall = cast(_oVar);
+					var _oVarFunc : SFunction = _oVarFuncCall.oFunction;
+				
+					//return  "fSend(new " +  _oVarFunc.oSClass.sNsAccess + _oVarFunc.oSClass.sName + "::c" + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer) + ")";
+						return  "Send(new " +  _oVarFunc.oSClass.sNsAccess + _oVarFunc.oSClass.sName + "::c" + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(this" +  convertFuncCallParam(_oVarFuncCall, false) + ")", _oContainer) + ")";
+					}
+					
 				case EuVarType._ExtendFuncCall  //FuncCall with param
 				| EuVarType._FuncCall : //FuncCall with param
 
@@ -808,6 +838,13 @@ package language.project.convertCpp ;
 					
 					var _oVarNew : VarNew = cast(_oVar);	
 					//return "gzSp<" + convertCppVarType(_oVarNew.oNewRef, _nLineNum) + ">(new " + convertCppVarType(_oVarNew.oNewRef, _nLineNum) + "(" + convertFuncCallParam(_oVarNew)  + ") )";
+					
+
+					if (_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef, VarStaticClass).oRefClass.bIsVector ){
+						var _sParam : String = convertFuncCallParam(_oVarNew);
+						return convertCppVarType(_oVarNew.oNewRef, _nLineNum, false, null, _oVarNew) + "::New<gzFloat>({" + _sParam + "})";
+					}
+
 					if(_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef,VarStaticClass).oRefClass.bThread ){
 						return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) + "::NewThread(this)";
 					}else { //Normal
@@ -877,13 +914,30 @@ package language.project.convertCpp ;
 					var _oVarGate : VarGate = cast(_oVar);
 					return  checkVarConvertIn(_oVar, _oConvertIn, checkIfCurStaticLoc(_oVar, _oContainer) + _oVarGate.sName, _oContainer);
 				//break;
+				
+				case EuVarType._Vector :
+					var _oVarVec : VarVector = cast(_oVar);
+					return  checkVarConvertIn(_oVar, _oConvertIn, checkIfCurStaticLoc(_oVar, _oContainer) + _oVarVec.sName, _oContainer);
+				
 
 				case EuVarType._NewArraySquare :
 					var _oVarNewArraySquare : VarNewArraySquare = cast(_oVar);
 					//return _oConvertIn;
 					
 					return TypeText.iniMemFixeArray( _oVarNewArraySquare.oIniArray, _oVarNewArraySquare.nSize, _oVarNewArraySquare.nDimReq);
+
 				//break;
+				
+				
+				case EuVarType._ArrayInitializer :
+					var _oVarArrayInitializer : VarArrayInitializer = cast(_oVar);
+					//return _oConvertIn;
+					
+					//return TypeText.iniMemFixeArray( _oVarNewArraySquare.oIniArray, _oVarNewArraySquare.nSize, _oVarNewArraySquare.nDimReq);
+					return _oVarArrayInitializer.fToCpp();
+				//break;
+				
+				
 				
 				
 				case EuVarType._DataArr :
@@ -949,6 +1003,7 @@ package language.project.convertCpp ;
 					}
 					
 					return _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName;
+				
 
 				//break;
 				
@@ -1009,7 +1064,7 @@ package language.project.convertCpp ;
 					if(!_oVarNatFunc.bIntegrateFunc){
 						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn, _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum )  + _sParm +  ")", _oNativeFuncCall.oSource);	
 					}else{
-						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn,  _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum ) + "."  + _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sAddToParam + _sParm.substring(2) +  ")", _oNativeFuncCall.oSource);	
+						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn,  _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum , false, null, _oNativeFuncCall.oSource) + "."  + _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sAddToParam + _sParm.substring(2) +  ")", _oNativeFuncCall.oSource);	
 					}
 				//break;
 				
@@ -1244,14 +1299,30 @@ package language.project.convertCpp ;
 		
 		public static function checkIfCurStaticLoc(_oVar:VarObj, _oContainer:VarObj):String {
 			
-			if (_oContainer == null && cast(_oVar,CommonVar).eLocation == EuLocation.Static || cast(_oVar,CommonVar).eLocation == EuLocation.Atomic ) {
+			//if (_oContainer == null && cast(_oVar,CommonVar).eLocation == EuLocation.Static || cast(_oVar,CommonVar).eLocation == EuLocation.Atomic ) {
+			if (cast(_oVar,CommonVar).eLocation == EuLocation.Static || cast(_oVar,CommonVar).eLocation == EuLocation.Atomic ) {
+
 				var _oCommon : CommonVar = cast(_oVar);
-				if (_oCommon.eConstant == EuConstant.Constant || _oCommon.eLocation == EuLocation.Atomic) {
-					return "_::";
+
+				if ((_oCommon.eConstant == EuConstant.Constant || _oCommon.eLocation == EuLocation.Atomic)) {
+						if (Std.is(_oContainer, ExtendVar) ){
+							var _oExtClass : SClass = cast(_oContainer, ExtendVar).oClassExtend;
+							return  _oExtClass.sNsAccess  + _oExtClass.sName + "::";	
+						}
+						if(Std.is(_oContainer, SFunction) ){
+							return "_::";				
+						}else{
+							return "";
+						}
 				}
+
+				
 				if (_oCommon.oSBloc.oSFunction != null && _oCommon.oSBloc.oSFunction.bStatic ) {
 					return "";
-				}else{
+				}
+				
+				if(Std.is(_oContainer, SFunction) ){
+				//else{
 				//	return "_::Get(thread)->" ;
 					return "_::GetInst(thread)->" ;
 				}
@@ -1459,7 +1530,7 @@ package language.project.convertCpp ;
 						}else if(_oNextVar.eType == EuVarType._FuncCall && cast(_oNextVar,FuncCall).oFunction.eFuncType == EuFuncType.Pure){
 								_sReturn += "::";
 						}else {
-							if (_oNextVar.eType == EuVarType._Enum || (TypeResolve.isVarCommon( _oNextVar) && cast(_oNextVar,CommonVar ).eConstant == EuConstant.Constant)  || (TypeResolve.isVarCommon( _oNextVar) && cast(_oNextVar,CommonVar ).eLocation == EuLocation.Atomic)  )  {
+							if (_oNextVar.eType == EuVarType._Enum || (TypeResolve.isVarCommon( _oNextVar) && cast(_oNextVar,CommonVar ).eConstant == EuConstant.Constant)  || (Std.is(_oNextVar,CommonVar) && cast(_oNextVar,CommonVar ).eLocation == EuLocation.Atomic)  )  {
 								_sReturn += "::"  ; //Normal
 							}else{
 								//_sReturn += "::"  ; //Normal
@@ -1468,8 +1539,8 @@ package language.project.convertCpp ;
 								if ( (TypeResolve.isVarCommon( _oNextVar) && cast(_oNextVar,CommonVar ).bStatic)){
 									_sReturn += "::Get(thread)->";
 								}else{
-									_sReturn += "::GetInst(thread)->";
-									
+								//	_sReturn += "::GetInst(thread)->" + "|"+ TypeResolve.isVarCommon( _oNextVar) +"|" +  _oNextVar.fGetName() +"|" ; 
+									_sReturn += "::GetInst(thread)->"; 
 								}
 							
 								
@@ -1480,7 +1551,7 @@ package language.project.convertCpp ;
 						_bBefStaticClass = true;
 					}else if (_oVar.eType == EuVarType._Enum || _oVar.eType == EuVarType._UseEnum || _oVar.eType == EuVarType._ExClass ) {
 						_sReturn += "";
-					}else if (_oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._QueueArray ||  _oVar.eType == EuVarType._QElement) {	//SNatAttribute?
+					}else if ( (_oVar.eType == EuVarType._CallClass && cast(_oVar, VarCallClass ).oCallRef.bIsVector )  ||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._QueueArray ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
 						_sReturn += "."; 
 					}else {
 						_sReturn += "->";
@@ -1560,7 +1631,7 @@ package language.project.convertCpp ;
 		
 		
 		
-		private static function convertFuncCallParam(_oFuncCall:FuncCall):String {
+		private static function convertFuncCallParam(_oFuncCall:FuncCall, bIsFirst : Bool = true):String {
 			var _sReturn : String = "";
 			var _aParamList  : Array<Dynamic>  = _oFuncCall.aParamList;
 			var _aConvertInList  : Array<Dynamic>  = _oFuncCall.aConvertInTypeList; 
@@ -1568,7 +1639,7 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oConvertIn : VarObj = _aConvertInList[i];
 				
-				if (i != 0) {
+				if (!bIsFirst || i != 0) {
 					_sReturn += ", ";
 				}
 				var _oVar : VarObj = _aParamList[i];
@@ -1670,18 +1741,18 @@ package language.project.convertCpp ;
 			var _aVarList  : Array<Dynamic>  = _oSClass.aIniGlobalVarList;
 			var _i:UInt = _aVarList.length;
 			for (i in 0 ...  _i) {
-				createSpecialVar(_oFile, _aVarList[i]);
+				createSpecialVar(_oFile, _aVarList[i], _oSBloc);
 			}
 		}
 		
 		
-		public static function createSpecialVar(_oFile:CommonCpp, _oVar:VarObj,  _sLoc:String = ""):Void {
+		public static function createSpecialVar(_oFile:CommonCpp, _oVar:VarObj,  _oSBloc:SBloc, _sLoc:String = ""):Void {
 			//List special var creation
 			switch(_oVar.eType) {
 				
 				case  EuVarType._LineInputMod 
 				| EuVarType._LineInput :
-					convertLineType(_oFile, cast(_oVar,LineInput));
+					convertLineType(_oFile, cast(_oVar,LineInput),_oSBloc);
 					//_oFile.pushLine("LineInput");
 					//createSpecialVarLineInput(_oFile, LineInput(_oVar));
 				//break;

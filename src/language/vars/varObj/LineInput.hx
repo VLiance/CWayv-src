@@ -23,6 +23,12 @@ package language.vars.varObj ;
 			eType = EuVarType._LineInput;
 		}
 			
+		
+		override function fGetName():String {
+			return oVarInput.fGetName();
+		}
+		
+		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			var _oLine : LineInput = new LineInput();
 			_oLine.oSBloc = oSBloc;

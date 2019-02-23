@@ -1,13 +1,9 @@
 @echo off
+call  msbuild bin/Main-Debug.csproj
 cd bin/bin
-if "%1"=="debug" (
+
+	cd Debug
   :: run debug
   :  Main-Debug.exe
-  copy Main-Debug.exe ..\..\..\..\..\Cwc\Utils\CWayv\CWayv.exe
-  copy  Main-Debug.pdb ..\..\..\..\..\Cwc\Utils\CWayv\Main-Debug.pdb
-) else (
-  :: run release
-  :  Main.exe 
-  copy Main.exe ..\..\..\..\..\Cwc\Utils\CWayv\CWayv.exe
-)
-pause
+  copy Main-Debug.exe ..\..\..\..\..\..\Cwc\Utils\CWayv\CWayv.exe
+  copy  Main-Debug.pdb ..\..\..\..\..\..\Cwc\Utils\CWayv\Main-Debug.pdb

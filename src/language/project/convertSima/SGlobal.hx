@@ -99,8 +99,12 @@ package language.project.convertSima ;
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fPathGetFileExtention", [], "String", "", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fToUInt", [], "UInt", "", true));
 			
-		//	aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "fReceive", [], "ThreadMsg", "", true, "this"));
-			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "fSend", ["_oMsgToCopy : ThreadMsg"], "Int", "", true));
+			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "Execute", [], "Bool", "", true, "this"));
+			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "ExecuteAll", [], "UInt", "", true, "this"));
+			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "Receive", [], "ThreadMsg", "", true, "this"));
+			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "Send", ["_oMsgToCopy : ThreadMsg"], "Int", "", true));
+			
+			
 		}
 		
 		//Attribut

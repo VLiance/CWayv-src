@@ -1,4 +1,5 @@
 package language.project.convertCpp ;
+	import language.enumeration.EuClassType;
 	import language.enumeration.EuConstant;
 	import language.pck.FileImport;
 	import language.enumeration.EuFuncType;
@@ -77,7 +78,7 @@ package language.project.convertCpp ;
 			//includeMainHeader();
 			pushLine("#include \"" + _oSPck.oSLib.sWriteName + "/" + _oSPck.oSLib.sWriteName + ".h\"");
 		
-			pushLine("#include \"Lib_GZ/Thread.h\""); //Temp
+			pushLine("#include \"Lib_GZ/Base/Thread/Thread.h\""); //Temp
 			
 			includeClass(_oSPck);
 			
@@ -90,7 +91,7 @@ package language.project.convertCpp ;
 			}
 			
 			if(_oSClass.sName != "Class"){ //Base class exemption (recursive inclusion), todo only in GZ lib
-				pushLine("#include \"Lib_GZ/GZ.h\"");
+				pushLine("#include \"Lib_GZ/GZ_inc.h\"");
 			}
 			includeExtention(_oSClass);
 			
@@ -98,7 +99,7 @@ package language.project.convertCpp ;
 				//Extend
 				var _sExtend  : String  = "";
 				if(!_oSClass.bIsPod){
-					_sExtend   = " : "+ getExtendClassToString(_oSClass); //return bUseDefineIN
+					_sExtend   =  getExtendClassToString(_oSClass); //return bUseDefineIN
 				}
 				
 
@@ -169,7 +170,60 @@ package language.project.convertCpp ;
 				///////////////////////////////
 				
 				
-				
+				if (_oSClass.bIsVector){
+					/*
+#define gzDef_Vec_(_Name, _nSize) \
+typedef struct gzVec##_Name {  \
+union{\
+	gzFloat aTab[_nSize];\
+	struct { gzFloat x, y, z, w;};\
+	struct { gzFloat r, g, b, a; };\
+	struct { gzFloat s, t, p, q; };\
+};\
+	gzDef_Vec_Func(_Name, _nSize) \
+} gzVec##_Name;\
+gzDef_Vec_Other(_Name, _nSize);
+*/					
+					var _sVecName : String = _oSClass.sName;
+					var _sVecSize : UInt = 4;
+					pushLine("template <class T>");
+					pushLine("struct gzVec" + _sVecName + " {");
+					pushLine("union{");
+					pushLine("T aTab[" + _sVecSize + "];");
+					
+					var _bFirst = true;
+					var _sVars : String = "";
+					for (_oVar in  _oSClass.aGlobalVarList) {
+						
+						//if (_oVar.eType == EuVarType._Float){
+							if (!_bFirst){
+								_sVars += ", ";
+							}_bFirst = false;
+							
+							_sVars += _oVar.fGetName() ;
+						
+							/*
+						}else{
+							Debug.fError("Vector require float type"); // TODO other type?
+						}*/
+					}
+
+					pushLine("struct { T " + _sVars + "; };" );
+					
+					/////////
+					pushLine("};");
+					pushLine("gzDef_Vec_Func("+ _sVecName +", " +  _sVecSize +")");
+					pushLine("};");
+					//pushLine("} gzVec" + _sVecName +  ";");
+					pushLine("gzDef_Vec_Other(" + _sVecName + ", " + _sVecSize + ");");
+					
+					pushLine("namespace " +  _oSClass.sName  + "{");
+					pushLine("template<class T> inline gzVec" + _sVecName + "<T> New(gzVec" +  _oSClass.sName  + "<T> _oIni){return _oIni;};");
+					
+					pushLine(_oSClass.sEndNamespace);
+					pushLine("#endif");
+					return;
+				}
 
 				pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " c" + _oSClass.sName + _sExtend +" {");
 				
@@ -267,58 +321,61 @@ package language.project.convertCpp ;
 				
 				///////////////////////////////
 				///////// Thread Static //////
+				if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic){
+				//if (!_oSClass.oPackage.oSFrame.bSkipStatic){
 
-				pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " cs" + _oSClass.sName + getOverplaceString(_oSClass)  + "  {");
-		
-				addTab();
-				addSpace();
-				pushLine("public:");
-				addTab();
-				//AddCppCode
-				fAddCppLines(_oSClass.aCppLineListStatic_H);
-				
-				
-			//	pushLine("inline cs" + _oSClass.sName + "(Lib_GZ::cClass* _parent):cStThread(_parent){};");
-			//	pushLine("inline ~cs" + _oSClass.sName + "(){};");
-				
-				fCreateConstrutorWrapper(_oSClass);
-				
-				pushLine("//Public static"); //Only public
-				getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, false, false,EuConstant.Normal);
-				
-				addSpace();
-		//		pushLine("//Static function");
-		//		getStaticFunctionToConvert(_oSClass);
-				
-				
-				
-				getVarToConvert(_oSClass.aStaticVarList, EuSharing.Private, false, false,EuConstant.Normal);
-				
-			//	pushLine("//Auto Singleton");
-			//	pushLine("gzSp<" + "c" + _oSClass.sName  + "> zInst;");
-				
-				//subTab();
-				if(_oSClass.bHaveOverplace == false){
-				//	pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent), zInst(0) {};");
-			//		pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::cClass* _parent): Lib_GZ::cStThread(_parent) {};");
-					pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::cThread* _thread): Lib_GZ::csClass(_thread) {};");
-				}else {
-					var _oSClassOp : SClass =  cast(_oSClass.aExtendClass[0]);
-					//pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent), zInst(0) {};");
-					pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::cThread* _thread): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_thread) {};");
-				}
-				pushLine("inline ~cs" + _oSClass.sName +"(){};");
-				
-				subTab();
-				//pushLine("private:");
-				subTab();
-				pushLine("};");
-				
-				if(_oSClass.bHaveOverplace == false){
-					pushLine("GZ_mStaticClass(" + _oSClass.sName + ")");
-				}else {
-					var _oSClassOp : SClass =  cast(_oSClass.aExtendClass[0]);
-					pushLine("GZ_mStaticClassOp(" + _oSClass.sName + ", " + _oSClassOp.sNsAccess  + _oSClassOp.sName  + ");");
+					pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " cs" + _oSClass.sName + getOverplaceString(_oSClass)  + "  {");
+			
+					addTab();
+					addSpace();
+					pushLine("public:");
+					addTab();
+					//AddCppCode
+					fAddCppLines(_oSClass.aCppLineListStatic_H);
+					
+					
+				//	pushLine("inline cs" + _oSClass.sName + "(Lib_GZ::Base::cClass* _parent):cStThread(_parent){};");
+				//	pushLine("inline ~cs" + _oSClass.sName + "(){};");
+					
+					fCreateConstrutorWrapper(_oSClass);
+					
+					pushLine("//Public static"); //Only public
+					getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, false, false,EuConstant.Normal);
+					
+					addSpace();
+			//		pushLine("//Static function");
+			//		getStaticFunctionToConvert(_oSClass);
+					
+					
+					
+					getVarToConvert(_oSClass.aStaticVarList, EuSharing.Private, false, false,EuConstant.Normal);
+					
+				//	pushLine("//Auto Singleton");
+				//	pushLine("gzSp<" + "c" + _oSClass.sName  + "> zInst;");
+					
+					//subTab();
+					if(_oSClass.bHaveOverplace == false){
+					//	pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::cClass* _parent): Lib_GZ::cStThread(_parent), zInst(0) {};");
+				//		pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::cClass* _parent): Lib_GZ::cStThread(_parent) {};");
+						pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::Thread::cThread* _thread): Lib_GZ::Base::csClass(_thread) {};");
+					}else {
+						var _oSClassOp : SClass =  cast(_oSClass.aExtendClass[0]);
+						//pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent), zInst(0) {};");
+						pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::Thread::cThread* _thread): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_thread) {};");
+					}
+					pushLine("inline ~cs" + _oSClass.sName +"(){};");
+					
+					subTab();
+					//pushLine("private:");
+					subTab();
+					pushLine("};");
+					
+					if(_oSClass.bHaveOverplace == false){
+						pushLine("GZ_mStaticClass(" + _oSClass.sName + ")");
+					}else {
+						var _oSClassOp : SClass =  cast(_oSClass.aExtendClass[0]);
+						pushLine("GZ_mStaticClassOp(" + _oSClass.sName + ", " + _oSClassOp.sNsAccess  + _oSClassOp.sName  + ");");
+					}
 				}
 
 				/////////////////////////////
@@ -329,7 +386,9 @@ package language.project.convertCpp ;
 				pushLine("namespace " +  _oSClass.sName  + "{");
 			//	fCreateConstrutorWrapper();
 				fAddThreadFonction(_oSClass);
+				fAddAtomicFonction(_oSClass);
 				
+				fAddCppLines(_oSClass.aCppLineListNamespace_End_H);
 				pushLine(_oSClass.sEndNamespace);
 				
 				//pushLine("}")
@@ -455,14 +514,14 @@ package language.project.convertCpp ;
 			 addSpace();
 			var i:Int;
 						
-			var _i:UInt = _oSPck.aSImportList.length;
+			var _i:UInt = _oSPck.aSImportList_Full.length;
 			
 			if (_i > 0) { 
 				pushLine("//Optimised Class include -> direct class or header of header (Constants)");
 			}
 			//Normal class
 			for ( i in 0 ... _i) {
-				_oImport = 	_oSPck.aSImportList[i];
+				_oImport = 	_oSPck.aSImportList_Full[i];
 				
 				_sName = _oImport.sName;
 	
@@ -480,25 +539,31 @@ package language.project.convertCpp ;
 					pushLine("#include \""   + _sPath + _sName + ".h\"");
 					
 				}else{
+					
+
 					if (  _oCurrSPack.fHaveConstant()) {
-										
-						 //////////////// Have Lite _.h ////////////
-						_sLib  = _oImport.oSLib.sWritePath;
-						_sPath = _oImport.sPath; 
-						_sPath =  _oImport.oSLib.sWriteName + "\\"+ _sPath;
 						
+					//	_sLib  = _oImport.oSLib.sWritePath;	
+						 //////////////// Have Lite _.h ////////////
+						_sPath =  _oImport.oSLib.sWriteName + "\\"+ _oImport.sPath;
 						_sPath = _sPath.split("\\").join("/");  
+						
 						pushLine("#include \""   + _sPath + "_" + _sName + ".h\"");
 						
 					}else { 
 						////////////// Optimised //////////////////
-						_sLib  = _oImport.oSLib.sWriteName;
+						//_sLib  = _oImport.oSLib.sWriteName;
 						//pushLine("class " + _sLib + "_" + _sName + ";" + listUnit(_oCurrSClass) );
-						for(_oCurrSClass in _oCurrSPack.aClassList){	
+						for (_oCurrSClass in _oCurrSPack.aClassList){
+							var _sClassPrefix : String = "c";
+							if (_oCurrSClass.bIsVector){
+								_sClassPrefix = "gzVec";
+							}
+							
 							if (_oCurrSClass.aUnitList.length != 0) {
-								pushLine(_oCurrSClass.sCNamespace + "class c" + _sName + "; namespace " + _sName + " {" + listUnit(_oCurrSClass) + "}" + _oCurrSClass.sCEndNamespace);
+								pushLine(_oCurrSClass.sCNamespace + "class "+ _sClassPrefix + _sName + "; namespace " + _sName + " {" + listUnit(_oCurrSClass) + "}" + _oCurrSClass.sCEndNamespace);
 							}else {
-								pushLine(_oCurrSClass.sCNamespace + "class c" + _sName + ";" + _oCurrSClass.sCEndNamespace );
+								pushLine(_oCurrSClass.sCNamespace + "class "+ _sClassPrefix + _sName + ";" + _oCurrSClass.sCEndNamespace );
 							}
 						}
 			
@@ -750,6 +815,10 @@ package language.project.convertCpp ;
 		
 		public function fCreateConstrutorWrapper(_oSClass:SClass):Void {
 			
+			if (_oSClass.bIsVector){ //Not for vector
+				return;
+			}
+			
 			if( !_oSClass.bThread && _oSClass.aFunctionList.length > 0 ){ //_oSClass.aFunctionList.length > 0 useless?
 				var _sLoc : String =  "c" + _oSClass.sName;
 				var _sLocOp : String = _sLoc;
@@ -784,7 +853,7 @@ package language.project.convertCpp ;
 				}
 				
 				if (_oSClass.bIsPod) {
-					pushLine("inline virtual gzPod<" + _sLocOp  + "> New(Lib_GZ::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
+					pushLine("inline virtual gzPod<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 					//	pushLine("inline virtual gzPod<" + _sLocOp  + "> New("  + getFunctionParam( _oSClass.oFuncConstructor , true, false, true) + "){" );
 					addTab();
 					pushLine("gzPod<" + _sLoc  + ">_oTemp = gzPod<" + _sLoc + ">(" + _sLoc + "());");
@@ -796,11 +865,11 @@ package language.project.convertCpp ;
 				}else{
 					
 					var _sVirtual : String  = "";
-					if (_oSClass.bHaveOverplace) {
+					if (_oSClass.bHaveOverplace || _oSClass.bOverclass) {
 						_sVirtual = "virtual ";
 					}
 					
-					pushLine("inline " + _sVirtual + "gzSp<" + _sLocOp  + "> New(Lib_GZ::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
+					pushLine("inline " + _sVirtual + "gzSp<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 					addTab();
 					pushLine("gzSp<" + _sLoc  + ">_oTemp = gzSp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
 					pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
@@ -835,6 +904,46 @@ package language.project.convertCpp ;
 				//pushLine("GZ_mNewThreadH(" + _oSClass.oSLib.sWriteName  +  ", " +  _oSClass.sName + ");");
 				pushLine("GZ_mNewThreadH();");
 			}
+		}
+		
+			
+		public function fAddAtomicFonction(_oSClass:SClass):Void {
+			for( _oFunc  in _oSClass.aAtomicFunc) {//VarGat
+					fConvertAtomicFunction(_oFunc);
+			}
+		}
+		
+		public function fConvertAtomicFunction(_oFunc:SFunction){
+			var _sExtend : String  = ": public Lib_GZ::Base::Thread::cThreadMsg";
+			pushLine("class tApi_" + _oFunc.oSClass.oSLib.sWriteName + " c" + _oFunc.sName + _sExtend +" {");
+				addTab();
+				pushLine("private:");
+				addTab();
+				for( _oParam  in _oFunc.aParamList) {//VarGat
+				    pushLine(TypeText.typeToCPP(_oParam) + " "  + _oParam.fGetName() + ";");
+				}
+				pushLine("public:");
+				 pushLine("inline " + " c" + _oFunc.sName + "(Lib_GZ::Base::cClass* _parent " + getFunctionParam(_oFunc, true, false, false) + "): Lib_GZ::Base::Thread::cThreadMsg(_parent)");
+				
+				 var _sIni : String = "";
+				 var _aParam : Array<VarObj> = _oFunc.aParamList;
+
+				for (_oParam in _aParam) {
+					var _sName : String = _oParam.fGetName();
+					_sIni +=  ", " + _sName + "(" +  _sName + ")";
+				}
+				pushLine(_sIni);
+				 pushLine("{};"); 
+				 
+				 pushLine("inline virtual void fRun(){");
+				  pushLine("((" + "c" + _oFunc.oSClass.sName + "*)parent)->" + _oFunc.sName + "(" +  getFunctionParam(_oFunc, false, true)+ ");");
+				 pushLine("};");
+				 
+				subTab();
+				subTab();
+				pushLine("};");
+				
+			
 		}
 		
 		
@@ -895,6 +1004,7 @@ package language.project.convertCpp ;
 				}
 				_sCopy += ", " + _oVar.sName + "(" + _sSetTo + ")";
 			}
+			
 			return _sCopy;
 		}
 		

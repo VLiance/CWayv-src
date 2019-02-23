@@ -47,7 +47,7 @@ package language.project.convertSima;
 		
 		public var eClassType : EuClassType = EuClassType.Invalid;
 				
-		public var bDefaultConstrutorAnalysed : Bool = false;
+		public var bDefaultConstrutorGenereted : Bool = false;
 		public var sConstructLineToExtract : String = "";
 		
 
@@ -57,6 +57,7 @@ package language.project.convertSima;
 		public var bOverclass : Bool = false;
 		public var bAtomic : Bool = false;
 		public var bIsPod : Bool = false;
+		public var bIsVector : Bool = false;
 		public var bThread : Bool = false;
 		public var sThreadClass : String = "";
 		public var oThreadClass : SClass;
@@ -82,7 +83,7 @@ package language.project.convertSima;
 		public var aDelegateExist: Array<Dynamic> = [];
 		
 		public var aFixeVarList: Array<Dynamic> = [];
-		public var aGlobalVarList: Array<Dynamic> = [];
+		public var aGlobalVarList: Array<CommonVar> = [];
 		public var aHashGlobalVarList: Map<String,Bool> = [""=>false];
 		
 		public var aStaticVarList: Array<Dynamic> = [];
@@ -91,6 +92,8 @@ package language.project.convertSima;
 		
 		public var aAtomicVarList: Array<Dynamic> = [];
 		public var aAtomicVarListIniString: Array<Dynamic> = [];
+		
+		public var aAtomicFunc: Array<Dynamic> = [];
 		
 		public var aAssociateVarList: Array<Dynamic> = [];
 		
@@ -119,6 +122,7 @@ package language.project.convertSima;
 		public var aInlineIndex : Array<Dynamic> = [];
 		
 		public var aEmbedVarList: Array<Dynamic> = [];
+
 		public var aAllVarList: Array<Dynamic> = [];
 		public var aUnitList: Array<Dynamic> = [];
 		public var aEnumList: Array<Dynamic> = [];
@@ -186,9 +190,12 @@ package language.project.convertSima;
 		
 		public var aCppLineListClass : Array<Dynamic> = [];
 		public var aCppLineListClass_H : Array<Dynamic> = [];
+		public var aCppLineInitializerList_H : Array<VarCppLine> = [];
+		public var aCppLineInitializer_H : Array<VarCppLine> = [];
 		
 		public var aCppLineListNamespace : Array<Dynamic> = [];
 		public var aCppLineListNamespace_H : Array<Dynamic> = [];
+		public var aCppLineListNamespace_End_H : Array<Dynamic> = [];
 		
 		public var aCppLineListStatic : Array<Dynamic> = [];
 		public var aCppLineListStatic_H : Array<Dynamic> = [];
@@ -321,7 +328,7 @@ package language.project.convertSima;
 			aSubClassUsedList.push(_oSClass);
 			
 
-			for (_oFileImport in oPackage.aSImportList) {
+			for (_oFileImport in oPackage.aSImportList_Full) {
 				
 				if ( _oFileImport.oRefPackage.fHaveClass(_oSClass) ) {
 					return false;
@@ -375,14 +382,14 @@ package language.project.convertSima;
 		}
 		
 		public function pushAtomicVar(_oVar:CommonVar, _sInitialistion:String):Void {
-						if (_oVar == null){
+			if (_oVar == null){
 				Debug.fBreak();
 			}
 			
 
 			_oVar.nId = aAtomicVarList.length;
 			_oVar.eLocation = EuLocation.Atomic;
-
+			
 			aAtomicVarList.push(_oVar);
 			aAtomicVarListIniString.push(_sInitialistion);
 			if (_oVar.eType == EuVarType._Gate) {
@@ -390,6 +397,7 @@ package language.project.convertSima;
 			}
 
 			aAllVarList.push(_oVar);
+			//aStaticVarList.push(_oVar); //Not sure
 		}
 		
 		
@@ -562,11 +570,15 @@ package language.project.convertSima;
 		private function loadExtendedClassVar(_oClassExtend:SClass):Void {
 			
 			var _aList : Array<Dynamic> = _oClassExtend.aGlobalVarList;
+			var _aAtomicList : Array<Dynamic> = _oClassExtend.aAtomicVarList;
+			
+			_aList = _aList.concat(_aAtomicList);
+			
 			var _i:UInt = _aList.length;
 			for (i in 0 ..._i) {
 				var _oVar : CommonVar = _aList[i];
-				if (_oVar.eSharing == EuSharing.Public) {
-					var _oExtend : ExtendVar = new ExtendVar(this, _oVar); //TODO check subextend
+				if (_oVar.eSharing == EuSharing.Public || _oVar.bAtomic) {
+					var _oExtend : ExtendVar = new ExtendVar(this, _oVar, _oClassExtend); //TODO check subextend
 					aAllVarList.push(_oExtend);
 					aExtendVarList.push(_oExtend);
 						
@@ -632,8 +644,13 @@ package language.project.convertSima;
 		//	oPackage.fAddImportFullDefinition(_oVar.oCallRef);
 		}
 		
-
 		
+		public function fAddAtomicFunc(_oFunc : SFunction):Void {
+			aAtomicFunc.push(_oFunc);
+		}
+		
+		
+
 			
 		public function fReload():Void {
 			
@@ -713,7 +730,7 @@ package language.project.convertSima;
 		public function fRemoveClassData():Void {
 			bFuncExtracted = false;
 							
-			bDefaultConstrutorAnalysed  = false;
+			bDefaultConstrutorGenereted  = false;
 			sConstructLineToExtract  = "";
 			oFuncConstructor = null;
 		
@@ -726,8 +743,11 @@ package language.project.convertSima;
 			aCppLineGlsl  = [];
 			aCppLineListClass  = [];
 			aCppLineListClass_H  = [];
+			aCppLineInitializerList_H  = [];
+			aCppLineInitializer_H  = [];
 			aCppLineListNamespace  = [];
 			aCppLineListNamespace_H = [];
+			aCppLineListNamespace_End_H = [];
 			aCppLineListStatic = [];
 			aCppLineListStatic_H  = [];
 			
@@ -735,6 +755,7 @@ package language.project.convertSima;
 		//	aSImportListRequireFullDefinition  = [];
 			
 			aEmbedVarList  = [];
+			aAtomicFunc = [];
 
 			aDelegateList = [];
 			aDelegateListIni = [];
@@ -844,12 +865,21 @@ package language.project.convertSima;
 						aCppLineListClass_H.push(_oCpp);
 					//break;
 					
+					case Initializer_list :
+						aCppLineInitializerList_H.push(_oCpp);
+						
+					case Initializer :
+						aCppLineInitializer_H.push(_oCpp);
+						
 					case EuCppLineType.Namespace : 
 						aCppLineListNamespace.push(_oCpp);
 					//break;
 					
 					case EuCppLineType.Namespace_H : 
 						aCppLineListNamespace_H.push(_oCpp);
+						
+					case EuCppLineType.Namespace_End_H : 
+						aCppLineListNamespace_End_H.push(_oCpp);
 					//break;
 					
 					case EuCppLineType.Static : 

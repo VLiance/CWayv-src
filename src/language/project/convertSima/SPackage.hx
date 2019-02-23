@@ -47,8 +47,13 @@ class SPackage extends SBloc
 		public var oDebugImport : FileImport;
 		public var oClassImport : FileImport;
 		public var oThreadMsgImport : FileImport;
+		public var aLibImport : Array<FileImport> = [];
 		
 	public var aSImportList : Array<FileImport> = [];
+	public var aSImportListRecursive : Array<FileImport> = [];
+	
+	public var aSImportList_Full : Array<FileImport> = [];
+	
 	public var aSImportListRequireFullDefinition : Array<Bool> = [];
 	
 			
@@ -148,45 +153,103 @@ class SPackage extends SBloc
 				Debug.fError("Lib null!");	
 			}
 			
+			/* TODO INCLUDE --> recursive import
 			oDebugImport = newSImport();
-			oDebugImport.sPath = "Sys/";
+			oDebugImport.sPath = "Debug/";
 			oDebugImport.sName = "Debug";
 			oDebugImport.nLine = 0;
-			//oDebugImport.oSLib = oSProject.oGzLib;
-			oDebugImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+			oDebugImport.oSLib = oSProject.oGzLib;
+			//oDebugImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+			*/
+			
 			
 			oClassImport = newSImport();
-			oClassImport.sPath = "";
+			oClassImport.sPath = "Base/";
 			oClassImport.sName = "Class";
 			oClassImport.nLine = 0;
-			//oClassImport.oSLib = oSProject.oGzLib;
-			oClassImport.oSLib = oSProject.oGzCppLib;//ReadOnly
+			oClassImport.oSLib = oSProject.oGzLib;
+			//oClassImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 
 			
 			oThreadMsgImport = newSImport();
-			oThreadMsgImport.sPath = "";
+			oThreadMsgImport.sPath = "Base/Thread/";
 			oThreadMsgImport.sName = "ThreadMsg";
 			oThreadMsgImport.nLine = 0;
-		//	oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
-			oThreadMsgImport.oSLib = oSProject.oGzCppLib;//ReadOnly
-			
+			oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
+			//oThreadMsgImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 			
 			
 			oSClass = new SClass(_Main, _oSProject,this, _sName); ///Default class (Same name as package)
 			aClassList.push(oSClass); //Default class
 			
+					
+			
 			if (_aFile != null){
 				oSFrame = new SFrame(_Main, _oSProject, this, _aFile, _sPath);	
+			
+				//if (oSLib.oLibFileImport != null){ //Copy --> TODO make other lib importe
+				
+				for(_oLib in oSProject.aLibList){
+					if ( _oLib.oLibFileImport != null){ //Copy --> TODO make other lib importe
+						var _oLibImport:FileImport = newSImport();
+						//Debug.fTrace("¸**Lib " + oSClass.sName + " " +  oSLib.oLibFileImport.sName);
+						_oLibImport.sPath = _oLib.oLibFileImport.sPath;
+						_oLibImport.sName = _oLib.oLibFileImport.sName;
+						_oLibImport.oSLib = _oLib.oLibFileImport.oSLib;
+						_oLibImport.nLine = 0;
+						
+						aLibImport.push(_oLibImport);
+					}
+				}
 			}
 			
 	
 		}
 		
+		public  function fImportAs(_aList : Array<FileImport>, _sPath:String, _sName:String) :Bool {
+			for (_oImport  in _aList){
+				if (_oImport.sName == _sName){
+					if (_oImport.sPath == _sPath){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		
+		public function fAddRecursiveImportList(_aList : Array<FileImport>, _bRecursiveSImport = false){ //TODO don't import same file?
+
+			for (_oImport  in aSImportListRecursive){
+				if (!fImportAs(_aList, _oImport.sPath, _oImport.sName) ){
+					_aList.push(_oImport);
+					_oImport.oRefPackage.fAddRecursiveImportList(_aList);
+					
+				}
+			}
+			for (_oImport  in aSImportList){
+				if (!fImportAs(_aList, _oImport.sPath, _oImport.sName) ){
+					if (_bRecursiveSImport){
+						_aList.push(_oImport);
+						_oImport.oRefPackage.fAddRecursiveImportList(_aList);
+					}
+				}
+			}
+		}
+	
+		public function fBuildFullImportList(){
+		//	Debug.fTrace("----------------------------------------------SPackage: " + sName);
+			aSImportList_Full = [];
+			fAddRecursiveImportList(aSImportList_Full,true);
+
+		}
 		
-		public function newSImport() : FileImport {
+		public function newSImport(_bRecursive : Bool = false) : FileImport {
 			var _oImport : FileImport = new FileImport();
 			aSImportList.push(_oImport );
+			if (_bRecursive){
+				aSImportListRecursive.push(_oImport);
+			}
+			
 		//	_oImport.oClass = this;
 			_oImport.oRefPackage = this;
 			_oImport.bCpp = false;
@@ -222,6 +285,15 @@ class SPackage extends SBloc
 			}
 			return false;
 		}
+		public function fHaveStackType() : Bool {
+			for (_oClass in aClassList){
+				if ( _oClass.bIsVector ){
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		
 		public function fGetClassName(_sSearch:String) : SClass {
 				for (_oClass in aClassList){
@@ -294,9 +366,23 @@ class SPackage extends SBloc
 			}
 		}
 		
+		/*fHaveStackType()){
+				aSImportListRequireFullDefinition[aSImportList.length - 1] = true;
+			}*/
+		
+			
+		public function fAddImportFullDefinitionFromStrackType():Void {
+			for (i in 0 ... aSImportList_Full.length) {
+				var _oImport : FileImport = aSImportList_Full[i];
+				if (_oImport.oRefPackage.fHaveStackType()) {
+					aSImportListRequireFullDefinition[i] = true; //TODO break?
+				}
+			}
+		}
+		
 		public function fAddImportFullDefinition(_oSClass:SClass):Void {
-			for (i in 0 ... aSImportList.length) {
-				var _oImport : FileImport = aSImportList[i];
+			for (i in 0 ... aSImportList_Full.length) {
+				var _oImport : FileImport = aSImportList_Full[i];
 				if (_oImport.oRefPackage.fHaveClass(_oSClass)) {
 					aSImportListRequireFullDefinition[i] = true; //TODO break?
 				}

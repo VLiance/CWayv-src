@@ -34,6 +34,8 @@ package language.project.convertSima ;
 	//	public var oSCurrClass : SClass;
 		public var oSPackage : SPackage;
 		public var bSkipContent : Bool = false;
+		public var bSkipStatic : Bool = false;
+		public var bWrapper : Bool = false;
 		public var aFile : Array<Dynamic>;
 		public var aGenerate : Array<Dynamic> = [];
 		
@@ -60,11 +62,12 @@ package language.project.convertSima ;
 			ExtractBlocs.oCurrPackage = null;
 		}
 		
-		
+	
 		
 		private function All(_sPath:String) :Bool {
 			
 			oCurrSClass = oSPackage.oSClass;
+			ExtractBlocs.oCurrSClass = oCurrSClass;
 			
 			var _i:UInt = aFile.length;
 			//aFile = aFile;
@@ -200,6 +203,20 @@ package language.project.convertSima ;
 				bSkipContent = true;
 				return true;
 			}
+			var _nIndex : Int = _sLine.indexOf("#skipStatic");
+			if (_nIndex >= 0) {
+				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
+				bSkipStatic= true;
+				return true;
+			}
+			
+			var _nIndex : Int = _sLine.indexOf("#Wrapper");
+			if (_nIndex >= 0) {
+				//Debug.fError("Wrapper for " + oSPackage.sFilePath);
+				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
+				bWrapper= true;
+				return true;
+			}
 			
 			var _nIndex : Int = _sLine.indexOf("package ");
 			if (_nIndex >= 0) {
@@ -234,18 +251,26 @@ package language.project.convertSima ;
 		
 		
 		private var cStartImport : String = "import ";
+		private var cStartInclude : String = "include ";
 		private function getImport(_sLine:String, _nLineNum : UInt) : Bool {
 			var _bCpp : Bool = false;
-			var _nIndex : Int = _sLine.indexOf(cStartImport);
+			var _bRecursive : Bool = false;
 	
-			if (_nIndex >= 0) {
+			var _nIndex : Int 		 = _sLine.indexOf(cStartImport);
+			var _nIndexInclude : Int = _sLine.indexOf(cStartInclude);
+			
+			if (_nIndex >= 0 || _nIndexInclude >= 0) {
+				if (_nIndexInclude > _nIndex){
+					_nIndex = _nIndexInclude + cStartInclude.length;
+					_bRecursive = true;
+				}else{
+					_nIndex += cStartImport.length;
+				}
 
-				//Get Path
-				_nIndex += cStartImport.length;
 				var _sPath : String = _sLine.substring(_nIndex, _sLine.length);
 				_sPath = _sPath.substring(0, _sPath.indexOf(";"));
 
-				return 	extractImport(_sPath, oSPackage, _nLineNum);
+				return 	extractImport(_sPath, oSPackage, _nLineNum, null,false, false, _bRecursive);
 			}else {
 				
 				return false;
@@ -253,7 +278,7 @@ package language.project.convertSima ;
 		}
 		
 		
-		public static function extractImport(_sPath:String, _oPckg:SPackage, _nLineNum:UInt, _oSlib:SLib = null, _bTestIfIsReallyOverPlace : Bool = false) : Bool { //Ugly lib import TODO
+		public static function extractImport(_sPath:String, _oPckg:SPackage, _nLineNum:UInt, _oSlib:SLib = null, _bTestIfIsReallyOverPlace : Bool = false, _bIsLibFile : Bool = false, _bIsRecursive : Bool = false) : Bool { //Ugly lib import TODO
 			
 			var _oImport : FileImport;
 			
@@ -295,13 +320,18 @@ package language.project.convertSima ;
 			var _nType : UInt;
 			
 
-			_oImport = _oPckg.newSImport();
+			_oImport = _oPckg.newSImport(_bIsRecursive);
 
 			//Push value
 			_oImport.sPath = _sPath.split("\\").join("/");
 			_oImport.sName = _sName;
 			_oImport.nLine = _nLineNum;
 			_oImport.oSLib = _oSlib;
+			_oImport.bRecursive = _bIsRecursive;
+			
+			if (_bIsLibFile){
+				_oSlib.oLibFileImport = _oImport;
+			}
 			
 
 			return true;
@@ -323,6 +353,7 @@ package language.project.convertSima ;
 			var _bIsOverClass: Bool = false;
 			var _bIsAtomic: Bool = false;
 			var _bIsPod: Bool = false;
+			var _bIsVector: Bool = false;
 			
 			
 		var _eClassType: EuClassType = EuClassType.Invalid;
@@ -338,6 +369,11 @@ package language.project.convertSima ;
 				_nIndex = Text.nCurrentIndex;
 				switch(_sClassType) {
 					
+					case "vector":
+						_bIsFound = true;
+						_bIsVector = true;
+						_eClassType = EuClassType.Vector;
+						
 					case "pod":
 						_bIsFound = true;
 						_bIsPod = true;
@@ -377,7 +413,7 @@ package language.project.convertSima ;
 			
 			
 			if (_bIsFound) {
-				fClassFrame(_sLine, _nIndex, _nLineNum,_bIsExtension, _bIsThead , _bIsOverClass, _bIsAtomic, _bIsPod, _eClassType);
+				fClassFrame(_sLine, _nIndex, _nLineNum,_bIsExtension, _bIsThead , _bIsOverClass, _bIsAtomic, _bIsPod, _bIsVector, _eClassType);
 				
 				return true;
 			}
@@ -441,7 +477,7 @@ package language.project.convertSima ;
 			return false;
 		}
 		
-		public function fClassFrame(_sLine:String, _nIndex : Int, _nLineNum : UInt, _bIsExtension :Bool , _bIsThead : Bool , _bIsOverclass : Bool , _bIsAtomic:Bool , _bIsPod:Bool  ,  _eClassType : EuClassType ) :Void {
+		public function fClassFrame(_sLine:String, _nIndex : Int, _nLineNum : UInt, _bIsExtension :Bool , _bIsThead : Bool , _bIsOverclass : Bool , _bIsAtomic:Bool , _bIsPod:Bool  , _bIsVector:Bool, _eClassType : EuClassType ) :Void {
 			var sExtend : String;
 			var sOverplace : String;
 			var _sThreadClass : String = "";
@@ -471,6 +507,7 @@ package language.project.convertSima ;
 			oCurrSClass.bOverclass = _bIsOverclass;
 			oCurrSClass.bAtomic = _bIsAtomic;
 			oCurrSClass.bIsPod = _bIsPod;
+			oCurrSClass.bIsVector = _bIsVector;
 			
 			
 			//Array<Dynamic> of name to class for quick find
@@ -487,6 +524,9 @@ package language.project.convertSima ;
 				if (sOverplace != null) {
 					oCurrSClass.bHaveOverplace = true; //TODO mix extens / overplace
 					sExtend = sOverplace;
+					if (oCurrSClass.bExtension){
+						Debug.fError("'extention' type class cannot 'overplace': " + oCurrSClass.sName );
+					}
 				}
 				
 				oCurrSClass.bHaveExtend = true;
@@ -632,6 +672,7 @@ package language.project.convertSima ;
 				_oVar.bStatic = true;
 				if (_sNextWord == "atomic" ){
 					_oVar.bAtomic = true;
+					//oCurrSClass.pushGlobalVar(_oVar,_sInitialistion);
 					oCurrSClass.pushAtomicVar(_oVar, _sInitialistion);
 				}else{
 					oCurrSClass.pushStaticVar(_oVar, _sInitialistion);
@@ -784,7 +825,7 @@ package language.project.convertSima ;
 					
 					_oSFunction.eSharing = EuSharing.Destructor;
 					_oSFunction.sName = "destructor";
-					_oSFunction.oSClass.aFunctionList.pop(); //*Special case Remove from the list*
+					//_oSFunction.oSClass.aFunctionList.pop(); //*Special case Remove from the list* //Keep it to garanted seach balise between functions
 					_oSClass.oFuncDestrutor = _oSFunction;
 			
 				//	if (Text.search(_sLine, "{", _nSearchAccIndex) >= 0) {
@@ -804,6 +845,11 @@ package language.project.convertSima ;
 				case "public" : 
 					_oSFunction.eSharing = EuSharing.Public;
 				//break;
+				
+				case "atomic" : 
+					_oSClass.fAddAtomicFunc(_oSFunction);
+					_oSFunction.bAtomic = true;
+					_oSFunction.eSharing = EuSharing.Public;
 				
 				case "overable" : 
 					_oSFunction.bOverable = true;
@@ -847,7 +893,7 @@ package language.project.convertSima ;
 					_bTestSecondWord = false;
 				//break;
 				
-				case "static" :
+				case "static_REMOVED" : //Disable static func because it break polymorphisme
 					//Cpp class always public by default,  maybe test if its cpp class
 					_oSFunction.eSharing = EuSharing.Public;
 					//_oSFunction.eFuncType = EuFuncType.Static;
@@ -882,7 +928,7 @@ package language.project.convertSima ;
 						_oSFunction.eFuncType = EuFuncType.Normal;
 					//break;
 					
-					case "static" :
+					case "static_REMOVED" : //Disable static func because it break polymorphisme
 						//_oSFunction.eFuncType = EuFuncType.Static;
 						_oSFunction.bStatic = true;
 					//break;
@@ -926,6 +972,8 @@ package language.project.convertSima ;
 				
 				_oSFunction.oSClass.oFuncConstructor = _oSFunction;
 				_oSFunction.bConstructor = true;
+				
+
 			}
 			
 			//Main type

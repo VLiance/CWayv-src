@@ -14,6 +14,7 @@ package language.pck ;
 		public var oRefPackage  : SPackage;
 		public var bCpp  : Bool;
 		public var bVirtual  : Bool= false; //File not really exist 
+		public var bRecursive  : Bool;
 
 		public function new() {
 

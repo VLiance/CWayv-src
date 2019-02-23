@@ -41,6 +41,10 @@ package language.project.convertSima ;
 			var _i:UInt;
 			var i:Int;
 			
+			for (_oSPck in _aPackage){for (_oSClass in _oSPck.aClassList){
+				_oSPck.fBuildFullImportList();
+			}}
+			
 			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
@@ -90,8 +94,8 @@ package language.project.convertSima ;
 			}}
 			
 				//	Debug.fBreak();
-	
-Debug.fTrace("!!Load var " );
+
+
 			//Load all global var initilisation 
 			//In extractVariable();
 			//private var nExample : Int = _aCurrentVar[cVarListIniInString];
@@ -102,7 +106,7 @@ Debug.fTrace("!!Load var " );
 				iniThreadTemplate(_oSClass);
 				iniUseUnit(_oSClass);
 				iniUseEnum(_oSClass);
-				iniClassVar(_oSClass, _oSClass.oPackage.aSImportList, EuVarType._StaticClass);
+				iniClassVar(_oSClass, _oSClass.oPackage.aSImportList_Full, EuVarType._StaticClass);
 				//iniClassVar(_oSClass, _oSClass.aCppImportList, EuVarType._CppStaticClass);
 				iniGlobalVar(_oSClass, _oSClass.aAtomicVarList, _oSClass.aAtomicVarListIniString);
 				iniGlobalVar(_oSClass, _oSClass.aStaticVarList, _oSClass.aStaticVarListIniString); //Static before make global (sometime global depend on static)
@@ -113,9 +117,12 @@ Debug.fTrace("!!Load var " );
 			
 			//Ini Embed (oCallRef from _CallClass must be initialised, maybe initiale this before iniGlobalVar????)
 			for (_oSPck in _aPackage){for (_oSClass in _oSPck.aClassList){
+				
+				_oSPck.fAddImportFullDefinitionFromStrackType();
+				
 				for (_oVar in _oSClass.aEmbedVarList){
 					if(_oVar.eType == EuVarType._CallClass){
-						if (cast(_oVar,VarCallClass).bEmbed){
+						if (cast(_oVar,VarCallClass).bEmbed ){ 
 							_oSPck.fAddImportFullDefinition(_oVar.oCallRef);
 						}
 					}
@@ -194,10 +201,10 @@ Debug.fTrace("!!Load var " );
 		
 		public static function fCreateDefaultConstructor(_oSClass:SClass):Void {
 			//Order was important when accessing extended class
-			 if ( _oSClass.oFuncConstructor != null || _oSClass.bDefaultConstrutorAnalysed == true) {
+			 if ( _oSClass.oFuncConstructor != null || _oSClass.bDefaultConstrutorGenereted == true) {
 				 return;
 			 }
-			 _oSClass.bDefaultConstrutorAnalysed = true;
+			 _oSClass.bDefaultConstrutorGenereted = true;
 			 
 			 ExtractBlocs.oCurrSClass = _oSClass;
 			 ExtractBlocs.nCurrLine = _oSClass.nLine;
@@ -233,6 +240,13 @@ Debug.fTrace("!!Load var " );
 				fCreateDefaultConstructor(_oExtClass); //recursive if not already analysed
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
+				
+				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
+			}
+		}
+		
+		
+		public static function fSetDefaultConstructLineToExtract(_oSFunction : SFunction, _oExtClass : SClass ){
 			 
 				_oSFunction.aParamNotIni = _oExtClass.oFuncConstructor.aParamNotIni;
 				
@@ -241,19 +255,30 @@ Debug.fTrace("!!Load var " );
 					//extractFunctionInfoParam(_oSFunction);
 
 					var _bFirst : Bool = true;
+					for( _oParam  in _oSFunction.aParamList) {
+						if (!_bFirst) {
+							_sParamList += ", ";
+						}
+						_bFirst = false;
+						_sParamList += _oParam.fGetName();
+					}
+					
+					/*
 					for( _sParam  in _oSFunction.aParamNotIni) {
 						if (!_bFirst) {
 							_sParamList += ", ";
 						}
 						_bFirst = false;
 						_sParamList += _sParam;
-					}
+					}*/
+					
+					
 				}
-			_oSClass.sConstructLineToExtract = _oExtClass.sName + "(" + _sParamList + ")";
+				
+				_oSFunction.oSClass.sConstructLineToExtract = _oExtClass.sName + "(" + _sParamList + ")";
 				//ExtractBlocs.extractLine( _oSFunction,  _oExtClass.sName + "(" + _sParamList + ")", _oSFunction.nLine + 1);
-			}
-			
 		}
+		
 		
 		
 		public static function fLoadDefaultConstructorLine(_oSClass:SClass):Void {
@@ -757,10 +782,12 @@ Debug.fTrace("!!Load var " );
 			var _i:UInt = _aFuncList.length;
 			for (i in 0 ..._i) {
 				var _oSFunction : SFunction =  _aFuncList[i];
-				ExtractBlocs.oCurrSFunc = _oSFunction;
-				extractFunctionInfoParam(_oSFunction);
-				extractFunctionInfoReturn(_oSFunction);
-				ExtractBlocs.oCurrSFunc = null;
+				if(_oSFunction.eSharing != EuSharing.Destructor){ //Not sure
+					ExtractBlocs.oCurrSFunc = _oSFunction;
+					extractFunctionInfoParam(_oSFunction);
+					extractFunctionInfoReturn(_oSFunction);
+					ExtractBlocs.oCurrSFunc = null;
+				}
 			}
 			
 		}

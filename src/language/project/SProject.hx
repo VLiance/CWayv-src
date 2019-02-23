@@ -56,7 +56,7 @@ package language.project ;
 		//public var sMainLib : String;
 		public var oMainLib : SLib;
 		public var oGzLib : SLib;
-		public var oGzCppLib : SLib;
+		//public var oGzCppLib : SLib;
 		//public var oGzSysLib : SLib;
 		
 		//public var sProjectFile : String;
@@ -145,6 +145,8 @@ package language.project ;
 			
 			
 			
+			
+			
 			if(oMainLib != null){
 				//var _aRead : Array<Dynamic> = mFile.readFile(oProjectData.sRootPath + sProjectFile + sMainFile + ".as");
 				var _sReadFile : String =  oMainLib.sReadPath + sMainFile + Setting.sFileExtention;
@@ -160,6 +162,10 @@ package language.project ;
 				//Load first one then it will import all other
 				loadFileImport(oMainSPackage.aSImportList);
 				//loadFileImport(oMainSClass.aCppImportList, true); //Cpp
+			}else{
+				//dummy package
+				oMainSPackage = new SPackage(Main, this, null, null, "", "", "");
+				
 			}
 			bClassLoaded = true;
 		
@@ -180,9 +186,10 @@ package language.project ;
 		
 		public function setGZE_lib():Void {
 			
-			oGzLib = fFindLib("Engine_(GZ)");
+			//oGzLib = fFindLib("Engine_(GZ)");
+			oGzLib = fFindLib("Lib_GZ");
 			
-			oGzCppLib = fFindLib("Wrapper_(GZ)");
+			//oGzCppLib = fFindLib("Wrapper_(GZ)");
 		}
 		
 		public function setMainLib(_oMainLib:SLib, _oSLib:SLib, _oSysLib:SLib, _sMainFile : String):Void {	
@@ -216,7 +223,7 @@ package language.project ;
 			for( _oLib  in aLibList) {
 				var _oTempPackage : SPackage = new SPackage(Main, this, null,_oLib, "", "LibClass", "TempClass");
 				for ( _oFile  in _oLib.aFileList  ) {
-				//	Debug.fTrace(_oFile.sPath);
+					Debug.fTrace(_oFile.sPath + " ||  " + _oFile.bIsProbablyOverPlace);
 					
 					/*
 					var _bIsProbablyOverPlace : Bool = false;
@@ -225,9 +232,9 @@ package language.project ;
 						_bIsProbablyOverPlace = true; //TODO  verify if this is really an overplace class
 					}*/
 					//Debug.fTrace("aa " + _sPath.substring(_sPath.lastIndexOf(".")+1));
-					if (_oLib.bForceLoadAll || _oFile.bIsProbablyOverPlace){
+					if (_oLib.bForceLoadAll || _oFile.bIsProbablyOverPlace || _oFile.bIsLibFile){
 					//	Debug.fTrace("bForceLoadAll ");
-						SFrame.extractImport(_oLib.sName + "." + _oFile.sCwPath, _oTempPackage, 0, _oLib, _oFile.bIsProbablyOverPlace); //Focre create a import from itself file to include all file, Ugly lib import TODO
+						SFrame.extractImport(_oLib.sName + "." + _oFile.sCwPath, _oTempPackage, 0, _oLib, _oFile.bIsProbablyOverPlace,  _oFile.bIsLibFile); //Focre create a import from itself file to include all file, Ugly lib import TODO
 					}
 				}
 				
@@ -317,6 +324,7 @@ package language.project ;
 				Debug.fError("No lib ID name found for : " + _sLibName);
 			}else {
 				Debug.fError("In lib: " + _sLibName + ", file not found: " + _sPath);
+				//Debug.fFatal("In lib: " + _sLibName + ", file not found: " + _sPath);
 			}
 			
 			return null;
@@ -341,13 +349,12 @@ package language.project ;
 		
 
 		//Step 2 --> load all other file with import list
-		public function loadFileImport(_aImport:Array<Dynamic>):Void {
+		public function loadFileImport(_aImport:Array<FileImport>):Void {
 			
-			var _i:UInt = _aImport.length;
-			for (i in 0 ..._i) {
-				var _oImport : FileImport = _aImport[i];
+			for(_oImport in _aImport){
 				
-				if (_oImport.bVirtual){
+				
+				if (_oImport.sName == "" || _oImport.bVirtual){ //TODO _oImport.sName == "" ?? 
 					continue;
 				}
 				

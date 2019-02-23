@@ -199,7 +199,7 @@ package language.project.assist;
 		
 		public static function fGetClassImport(_oSClass:SClass):String {
 			var _sResult : String = "";
-			var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList;		
+			var _aList : Array<Dynamic> = _oSClass.oPackage.aSImportList_Full;		
 			
 			for (i in 0 ...  _aList.length) {
 				var _oImport : FileImport  = _aList[i];

@@ -129,6 +129,9 @@ package language;
 						oMake.fSetExportBasePath(_sLine);
 					//break;
 					
+					case "Include" :
+						aImport.push(new CwmImport(this, _sLine,true)); //TODO?
+						
 					case "Import" :
 						aImport.push(new CwmImport(this, _sLine));
 					//break;
