@@ -259,23 +259,24 @@ package language.project.convertCpp ;
 			
 			for( _oExtend  in _alist) {//SClass
 				
-				if (_oExtend.sName != "Class" || i == 0) { //0 is a direct extend and must be ini
-					if (i != 0) {
-						_sExtend +=  ",";
-					}
-					_sExtend += _oExtend.sNsAccess + "c" +  _oExtend.sName + _sCopy;
-					i++;
+				//if (_oExtend.sName != "Class" || i == 0) { //0 is a direct extend and must be ini
+			
+				if (i != 0) {
+					_sExtend +=  ",";
 				}
+				_sExtend += _oExtend.sNsAccess + "c" +  _oExtend.sName + _sCopy;
+				i++;
+				
 			
 			}
-			
+			/*
 			if (i == 0) {
 
 				if (_oSClass.sName == "Class" && _oSClass.oSLib.sIdName == "Gz" ) { //TODO only in lib GZE
 					//_sExtend +=   "Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
 					_sExtend +=   ""; //New delegate for all class
 				}
-			}
+			}*/
 			if(_sExtend != ""){
 				_sExtend = " : " + _sExtend;
 			}
@@ -324,10 +325,18 @@ package language.project.convertCpp ;
 					_sExtend += ", ";
 				}
 				var _oExtend : SClass = _aList[i];
+				
+				//var _sResultShared :String = "";
+				
 				var _sResultShared :String = _sShared;
+			
+				
+				/*
 				if (_oExtend.sName == "Class") {
 					_sResultShared = "public ";
-				}
+				}*/
+				
+				
 				
 				//_sExtend +=  "public " +  _oExtend.oSLib.sWriteName + "::c" +  _oExtend.sName;
 				_sExtend +=  _sResultShared +  _oExtend.sNsAccess + "c" +  _oExtend.sName + _sCopy;
@@ -438,15 +447,15 @@ package language.project.convertCpp ;
 			var _sReturn : String;
 			var _sFuncName : String = _oSFunction.sName;
 			var _sLib : String = _oSClass.oSLib.sWriteName;
-	
+	/*
 			//Return
 			if (_oSFunction.eFuncType ==  EuFuncType.Main) {
 				//_sReturn = _sLib +"_"; //Main function	
 				_sReturn = ""; //Main function	
-			}else {
+			}else {*/
 				//_sReturn = "Void "; //temp
 				_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
-			}
+			//}
 			
 			/* Namespace
 			if (_oSFunction.eFuncType  == EuFuncType.Static) {
@@ -461,7 +470,7 @@ package language.project.convertCpp ;
 				_sStatic = "static ";
 				
 			//}else if (oSClass.bExtension  && _oSFunction.eFuncType !=  EuFuncType.Main  && !_oSFunction.bAddDlgWrapper || _oSFunction.bStatic) { // _nFuncId != 0  
-			}else if (  _oSFunction.eFuncType !=  EuFuncType.Main  && !_oSFunction.bAddDlgWrapper || _oSFunction.bStatic && !_oSClass.bIsPod) { // _nFuncId != 0  
+			}else if (  !_oSFunction.bConstructor  && !_oSFunction.bAddDlgWrapper || _oSFunction.bStatic && !_oSClass.bIsPod) { // _nFuncId != 0  
 			
 				_sReturn = "virtual " + _sReturn;
 			}
@@ -495,24 +504,39 @@ package language.project.convertCpp ;
 			
 			//Special case for class extension type  //X Now -> Always
 			//if (oSClass.bExtension  && _oSFunction.eFuncType == EuFuncType.Main ) {  
-			if ( _oSFunction.eFuncType == EuFuncType.Main ) {  
-				if(!_oSClass.bIsPod){
+			if ( _oSFunction.bConstructor ) {
+				
+				//if(!_oSClass.bIsPod){
+				
 					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent);");
 					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
-					pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
+					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
+					pushLine("inline c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
 				
 					
 					fGetInitializerList(_oSFunction);
 					fAddCppLines(_oSClass.aCppLineInitializerList_H);
 					pushLine("{");
+					
+					pushLine("//Special var ini"); //TODO create function to call for complexe initiliazation (in .cpp)
+					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction); //TODO must be before Cpp section initilizer
+				
 					fAddCppLines(_oSClass.aCppLineInitializer_H);
 					pushLine("};");
-					pushLine("virtual void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
+					//pushLine("virtual void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
+					var _sIsRideFunc : String = "";
+					if (_oSFunction.eFuncType == EuFuncType.Riding){
+						_sIsRideFunc = "virtual ";
+					}
+					pushLine(_sIsRideFunc  + _sReturn  + " "+ Setting.sConstructorKeyword + "(" + _sParam + ");");
+					
+					
+					/*
 				}else {
 					pushLine(_sReturn + "c" + _sFuncName + "();"); //Default constructor only
 					pushLine("void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
 				}
-				
+				*/
 				
 			}else {
 				//Normal push

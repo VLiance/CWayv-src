@@ -93,7 +93,7 @@ package language.project.convertSima;
 		public var aAtomicVarList: Array<Dynamic> = [];
 		public var aAtomicVarListIniString: Array<Dynamic> = [];
 		
-		public var aAtomicFunc: Array<Dynamic> = [];
+		public var aAtomicFunc: Array<SFunction> = [];
 		
 		public var aAssociateVarList: Array<Dynamic> = [];
 		

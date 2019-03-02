@@ -223,7 +223,7 @@ package language.project ;
 			for( _oLib  in aLibList) {
 				var _oTempPackage : SPackage = new SPackage(Main, this, null,_oLib, "", "LibClass", "TempClass");
 				for ( _oFile  in _oLib.aFileList  ) {
-					Debug.fTrace(_oFile.sPath + " ||  " + _oFile.bIsProbablyOverPlace);
+					//Debug.fTrace(_oFile.sPath + " ||  " + _oFile.bIsProbablyOverPlace);
 					
 					/*
 					var _bIsProbablyOverPlace : Bool = false;

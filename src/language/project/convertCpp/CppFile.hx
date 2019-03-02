@@ -327,11 +327,11 @@ package language.project.convertCpp ;
 			
 			
 			
-			if (_oSFunction.eFuncType == EuFuncType.Main) {
+			if (_oSFunction.bConstructor) {
 				//Constructor
 				//_sMainFunctionLib = _sLib + "_"
 				_sMainFunctionLib = "c";
-				_sReturn = "";
+				//_sReturn = "";
 				//_sExtendClass =  getExtendClassToString(oSClass);
 				//_sIni = convertConstructorIni();
 				
@@ -350,9 +350,10 @@ package language.project.convertCpp ;
 				}*/
 				
 				//Basic type
-				_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " ";
+				//_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " ";
 			}
 
+			_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " ";
 			
 			var _sFuncName : String = _sMainFunctionLib + _oSFunction.sName;
 			
@@ -374,7 +375,7 @@ package language.project.convertCpp ;
 			}
 			
 			//if (_oSFunction.eFuncType == EuFuncType.Main &&  oSClass.bExtension) { //Special case for class extension They have no param
-			if (_oSFunction.eFuncType == EuFuncType.Main ) {
+			if (_oSFunction.bConstructor ) {
 		/* Use inline constructor instead for performances, TODO Verify  
 				var _sEmbedIni :String = fGetEmbedVarIni(oSClass);
 				
@@ -409,7 +410,7 @@ package language.project.convertCpp ;
 			//addSpace();
 			
 	
-			if (_oSFunction.eFuncType == EuFuncType.Main) {
+			if (_oSFunction.bConstructor) {
 		
 				//if(!oSClass.bIsPod){
 				
@@ -429,14 +430,16 @@ package language.project.convertCpp ;
 				//}
 			*/
 				
-				pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" + "{" + _sStack);
+				//pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" + "{" + _sStack);
+				pushLine(_sReturn + "c" + _sClass + Setting.sConstructorKeyword  + "(" + _sParam + ")" + "{" + _sStack);
 
 				
 				addTab();
-				pushLine("//Special var ini");
-					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
+			//	pushLine("//Special var ini");
+			//	ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction); //TODO must be before Cpp section initilizer
+					
 				//}
-				iniEmbedVar(_oSClass);
+				iniEmbedVar(_oSClass); //TODO?
 			}
 			//addSpace();
 			
@@ -923,11 +926,11 @@ package language.project.convertCpp ;
 		}
 		*/
 
-		public function fDefaultCopyFunc(_oSClass : SClass) :Void { 
+		public function fDefaultCopyFunc(_oSClass : SClass) :Void {
+			/*
 			if (!_oSClass.bExtension && !_oSClass.bIsPod) {
 				
 				pushLine( "gzAny c" + _oSClass.sName + "::MemCopy(){");
-			///	pushLine( "printf( \"Copy :"  + oSClass.sName + "\" );");
 				
 				if(_oSClass.bAtomic){
 					pushLine( "return (gzAny)this;"); //Todo inline
@@ -935,19 +938,10 @@ package language.project.convertCpp ;
 					pushLine( "return (gzAny)new c" +  _oSClass.sName  + "(*this);");		
 				}
 				
-				//pushLine( "return (gzAny)0;");
+
 				pushLine( "}");
 				
-				//CW-Not sure
-				/*
-				pushLine( "gzAny c" + oSClass.sName + "::DeepCopy(){"); 
-
-			///	pushLine( "printf( \"Copy :"  + oSClass.sName + "\" );");
-
-				pushLine( "return (gzAny)new c" +  oSClass.sName  + "(*this, true);");
-				//pushLine( "return (gzAny)0;");
-				pushLine( "}");*/
-			}
+			}*/
 		}
 		
 		public function fAddFunctionName(_oSClass : SClass):Void {

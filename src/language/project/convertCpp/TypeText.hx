@@ -144,12 +144,13 @@ package language.project.convertCpp ;
 		
 		
 		
-		public static function typeToCPP(_oVar:VarObj, _bFunReturn:Bool = false, _bIsolate:Bool = false, _bForceBit:Bool = false, _bFuncParam:Bool = false, _bNotScopeOwner : Bool = false):String {
+		public static function typeToCPP(_oVar:VarObj, _bFunReturn:Bool = false, _bIsolate:Bool = false, _bForceBit:Bool = false, _bFuncParam:Bool = false, _bNotScopeOwner : Bool = false, _bParam_owner: Bool = false):String {
 	
 			var _eType : EuVarType = _oVar.eType;
 			var _sParamAdd : String = "";
 			if (_bFuncParam) {
-				_sParamAdd = "P";
+				//_sParamAdd = "P";
+				_sParamAdd = "_";
 			}
 			
 			
@@ -163,7 +164,7 @@ package language.project.convertCpp ;
 						return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "<gzFloat>";
 						//if (_bFuncParam) { //Not used&
 					
-					}else if ((_oCallClass.bScopeOwner &&  !_bNotScopeOwner) || _bFunReturn) {
+					}else if ((_oCallClass.bScopeOwner &&  !_bNotScopeOwner) || _bFunReturn || _bParam_owner) {
 						if(_oCallClass.bWeak){
 							return "gzWp<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 						}else if(_oCallClass.oCallRef.bIsPod){
@@ -193,6 +194,7 @@ package language.project.convertCpp ;
 				case EuVarType._SClass:
 					var _oSClass : SClass  = cast(_oVar);
 					//return _oCallClass.oCallRef.sNsAccess + "c" +   _oSClass.sName + "*";????
+
 					return _oSClass.sNsAccess + "c" +   _oSClass.sName + "*";
 				//	return _oSClass.oCallRef.sNsAccess + "c" +   _oSClass.sName + "*";
 					
@@ -314,10 +316,13 @@ package language.project.convertCpp ;
 				//break;
 				
 				case EuVarType._String:
+					var _oString : VarString  = cast(_oVar);
+
 					if(_bIsolate){
 						return "(gzStr)";
 					}
-					return "gz" + _sParamAdd + "Str";
+				//	return "gz" + _sParamAdd + "Str";
+					return _sParamAdd + "gzStr";
 			
 				//break;
 				

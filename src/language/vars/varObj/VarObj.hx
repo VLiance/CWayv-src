@@ -31,7 +31,7 @@ package language.vars.varObj ;
 		}
 
 		public function copyArrayVars(_aList:Array<Dynamic>, _oSBloc:SBloc):Array<Dynamic> {
-			var _aCopy : Array<Dynamic> = [];
+			var _aCopy : Array<VarObj> = [];
 			var _oVarCopy : VarObj;
 			var _i:UInt = _aList.length;
 			for (i in 0 ..._i) {

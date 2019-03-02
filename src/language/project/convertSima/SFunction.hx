@@ -15,6 +15,10 @@ package language.project.convertSima ;
 	class SFunction extends SBloc
 	{
 		
+			
+	//	public var bIsConstructor : Bool = false;
+		public var eFuncType : EuFuncType;
+		
 		public var bSpecifiquePlatforme : Bool = false;
 		public var bSpecialGenerate : Bool = false;
 		
@@ -24,7 +28,8 @@ package language.project.convertSima ;
 		public var eSharing : EuSharing;
 		public var bOverable : Bool = true;
 		public var bAtomic : Bool = false;
-		public var eFuncType : EuFuncType;
+		//public var bIsRiding : Bool = false;
+	
 		public var bStatic : Bool = false;  //linked with EuFuncType.Static; better algo ==>	if (_bStatic == _oFunc.bStatic) {
 		public var bAddDlgWrapper : Bool = false;  
 

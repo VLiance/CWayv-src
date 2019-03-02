@@ -922,7 +922,7 @@ package language.project.convertSima ;
 			var _aVarOpList : Array<Dynamic> = _oLine.aOpList;
 
 			
-			var _aNewVarList : Array<Dynamic> = [];
+			var _aNewVarList : Array<VarObj> = [];
 			var _aNewOpList : Array<Dynamic> = [];
 			
 			var _nStart : UInt = 0;
@@ -1035,7 +1035,7 @@ package language.project.convertSima ;
 				var _aVarOpList : Array<Dynamic> = _oLine.aOpList;
 
 				
-				var _aNewVarList : Array<Dynamic> = [];
+				var _aNewVarList : Array<VarObj> = [];
 				var _aNewOpList : Array<Dynamic> = [];
 				
 				var _nStart : UInt = 0;

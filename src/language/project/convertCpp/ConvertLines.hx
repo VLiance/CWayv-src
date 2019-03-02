@@ -741,12 +741,12 @@ package language.project.convertCpp ;
 				
 				case EuVarType._ExtendFunction :
 					var _oExtendFunc : ExtendFunc = cast(_oVar);
-					var _sExBefore : String = "";  
+					var _sExFuncName : String = _oExtendFunc.oSFunc.sName;  
 					if (_oExtendFunc.oSFunc.bConstructor) {  //Super constructor condition
 						//_sExBefore = "Ini_" + _oExtendFunc.oSFunc.oSClass.oSLib.sWriteName + "_";
-						_sExBefore = "Ini_c";
+						_sExFuncName = "c" + _oExtendFunc.oSFunc.oSClass.sName + "::" + Setting.sConstructorKeyword;
 					}
-					return  _sExBefore + checkVarConvertIn(_oExtendFunc.oSFunc, _oConvertIn,  _oExtendFunc.oSFunc.sName + "()", _oContainer);
+					return   checkVarConvertIn(_oExtendFunc.oSFunc, _oConvertIn, _sExFuncName + "()", _oContainer);
 				//break;
 				
 				
@@ -766,19 +766,19 @@ package language.project.convertCpp ;
 					
 					var _oVarFuncCall : FuncCall = cast(_oVar);
 					var _oVarFunc : SFunction = _oVarFuncCall.oFunction;
-					var _sFcBefore : String = "";  
+					var _sFcName : String = _oVarFunc.sName;  
 					if (_oVarFunc.bStatic) {  //Super constructor condition
 						//Now with namespace
 						//_sFcBefore = CppProject.sStaticPrefix;;
 					}else if (_oVarFunc.bConstructor) {  //For ExtendFuncCall ONLY
 						//_sFcBefore = "Ini_" + _oVarFuncCall.oFunction.oSClass.oSLib.sWriteName + "_";
-						_sFcBefore = "Ini_c";
+						_sFcName =  "c" + _oVarFuncCall.oFunction.oSClass.sName  + "::"+ Setting.sConstructorKeyword;
 					}
 					/*
 					if (_oVarFuncCall.bInline) {
 						return "InlineFunc";
 					}*/
-					return  _sFcBefore + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer);
+					return   checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _sFcName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer);
 					
 						//_sName = convertVarToString("directName",   _aSelectedVar[cVarListName]);
 		

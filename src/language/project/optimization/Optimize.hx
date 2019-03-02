@@ -85,7 +85,7 @@ package language.project.optimization;
 			for (i in 0 ..._i) {
 				var _oSBloc : SBloc = _aInlineBloc[i];
 				var _nIndex : UInt = _aInlineIndex[i];
-				var _oLine : LineObj = _oSBloc.aLineList[_nIndex];
+				var _oLine : LineObj =  cast( _oSBloc.aLineList[_nIndex]);
 				var _oFunc : FuncCall = getFunctionToInline(_oLine);
 				
 				_oSBloc.aLineList.splice(_nIndex, 1);//TODO delete must be before? But todo check for index they will cahnge on multiple inline!!

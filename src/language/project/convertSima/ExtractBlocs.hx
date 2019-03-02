@@ -163,11 +163,15 @@ package language.project.convertSima ;
 		}*/
 		
 		
-		public static function extractLineObjTry( _oSBloc : SBloc, _sLine:String, _nLineNum : UInt, _sWord:String):Void {
+		public static function extractLineObjTry( _oSBloc : SBloc, _sLine:String, _nLineNum : UInt, _sWord:String, _nInsertToLine:Int = -1):Void {
 
 				var _oLine : VarObj = ExtractLines.extractLineObj(_oSBloc, _sLine, _sWord, Text.nCurrentIndex, _nLineNum); //var //return 
-				if(_oLine != null){ //Ex : new Var eithout ini
-					_oSBloc.pushLine(_oLine);
+				if (_oLine != null){ //Ex : new Var eithout ini
+					if(_nInsertToLine == -1){
+						_oSBloc.pushLine(_oLine);
+					}else{
+						_oSBloc.insertLine(_nInsertToLine, _oLine);
+					}
 				}
 						
 						/*
@@ -185,7 +189,7 @@ package language.project.convertSima ;
 
 		
 		
-		public static function extractLine( _oSBloc : SBloc, _sLine:String, _nLineNum : UInt):SBloc {
+		public static function extractLine( _oSBloc : SBloc, _sLine:String, _nLineNum : UInt, _nInsertToLine:Int = -1):SBloc {
 			if(_sLine != ""){
 				var _sWord : String = Text.between3(_sLine, 0,EuBetween.Word);
 				var _nIndex : Int;
@@ -202,7 +206,7 @@ package language.project.convertSima ;
 							
 							try {
 					
-								extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord);
+								extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord,_nInsertToLine);
 							} catch (err:String) {
 								//Debug.fBreak();
 								if (err.charAt(0) == ":") { //My errors
@@ -213,7 +217,7 @@ package language.project.convertSima ;
 							
 						}else{
 							
-							extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord);
+							extractLineObjTry(_oSBloc, _sLine, _nLineNum, _sWord,_nInsertToLine);
 							
 						}
 						

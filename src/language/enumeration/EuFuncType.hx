@@ -6,10 +6,11 @@ package language.enumeration ;
 			
 				 None 						;
 			
-				 Main 						;
+			//	 Main 						;
 				// Extension 				;
 				 Extend 					;
 				 Override 					;
+				 Riding 					;
 				 Normal 					;
 				// Static 					; //
 				 Macro 					;
@@ -33,10 +34,10 @@ package language.enumeration ;
 					case None :
 						return "Invalid";
 					//break;
-					
+					/*
 					case Main :
 						return "";
-					//break;
+					//break;*/
 					
 					case Extend :
 						return "extend";
@@ -54,8 +55,10 @@ package language.enumeration ;
 						return "";
 						
 					case Override:
-						return "overide";
+						return "override";
 					
+					case Riding:
+						return "riding";
 					
 					case Const:
 						return "overable";

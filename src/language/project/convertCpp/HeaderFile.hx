@@ -19,6 +19,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.EaseOut;
 	import language.vars.varObj.LineObj;
 	import language.vars.varObj.ParamInput;
+	import language.vars.varObj.VarCallClass;
 	import language.vars.varObj.VarCppLine;
 	import language.vars.varObj.VarGate;
 	import language.vars.varObj.VarObj;
@@ -268,6 +269,8 @@ gzDef_Vec_Other(_Name, _nSize);
 				
 				//Get public function
 				getFunctionToConvert(_oSClass, EuSharing.Public);
+				
+				
 				//Default Copy func
 				if(!_oSClass.bIsPod){
 					fDefaultCopyFunc(_oSClass);
@@ -853,6 +856,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				}
 				
 				if (_oSClass.bIsPod) {
+					/*
 					pushLine("inline virtual gzPod<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 					//	pushLine("inline virtual gzPod<" + _sLocOp  + "> New("  + getFunctionParam( _oSClass.oFuncConstructor , true, false, true) + "){" );
 					addTab();
@@ -861,7 +865,7 @@ gzDef_Vec_Other(_Name, _nSize);
 					pushLine("return _oTemp;");
 					subTab();
 					pushLine("}");
-					
+					*/
 				}else{
 					
 					var _sVirtual : String  = "";
@@ -872,7 +876,8 @@ gzDef_Vec_Other(_Name, _nSize);
 					pushLine("inline " + _sVirtual + "gzSp<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 					addTab();
 					pushLine("gzSp<" + _sLoc  + ">_oTemp = gzSp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
-					pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
+					//pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
+					pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
 					if (_oSClass.bHaveOverplace) {
 						pushLine("return _oTemp.get();");//
 					}else{
@@ -914,13 +919,14 @@ gzDef_Vec_Other(_Name, _nSize);
 		}
 		
 		public function fConvertAtomicFunction(_oFunc:SFunction){
+			pushLine("//Atomic function");
 			var _sExtend : String  = ": public Lib_GZ::Base::Thread::cThreadMsg";
 			pushLine("class tApi_" + _oFunc.oSClass.oSLib.sWriteName + " c" + _oFunc.sName + _sExtend +" {");
 				addTab();
 				pushLine("private:");
 				addTab();
 				for( _oParam  in _oFunc.aParamList) {//VarGat
-				    pushLine(TypeText.typeToCPP(_oParam) + " "  + _oParam.fGetName() + ";");
+				    pushLine(TypeText.typeToCPP(_oParam, false,false,false,false,false,true) + " "  + _oParam.fGetName() + ";");
 				}
 				pushLine("public:");
 				 pushLine("inline " + " c" + _oFunc.sName + "(Lib_GZ::Base::cClass* _parent " + getFunctionParam(_oFunc, true, false, false) + "): Lib_GZ::Base::Thread::cThreadMsg(_parent)");
@@ -930,7 +936,12 @@ gzDef_Vec_Other(_Name, _nSize);
 
 				for (_oParam in _aParam) {
 					var _sName : String = _oParam.fGetName();
-					_sIni +=  ", " + _sName + "(" +  _sName + ")";
+					var _sAdd : String = "";
+					if (_oParam.eType == EuVarType._CallClass && !cast(_oParam, VarCallClass).oCallRef.bIsVector ){
+						_sAdd += "->Copy(true)";
+						//_sAdd += "*";
+					}
+					_sIni +=  ", " + _sName + "("  + _sName + _sAdd +   ")";
 				}
 				pushLine(_sIni);
 				 pushLine("{};"); 
@@ -961,9 +972,15 @@ gzDef_Vec_Other(_Name, _nSize);
 			
 		//	pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o)" + " : " + Cpy_" + _oSClass.sHeaderName + "{};" );
 		//	pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o, gzBool _b)" + " : "+ getExtendClassToString(_oSClass,"(_o, _b)") + fCopyAllVar(_oSClass, true)  + "{};" ); 
+			var _sInitialiserList : String = getExtendClassToString(_oSClass, "(_o)") + fCopyAllVar(_oSClass,true);
+			if (_sInitialiserList == " : "){ //minimal = " : "
+				_sInitialiserList = "";
+			}
 			
-			
-			//pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o)" +  getExtendClassToString(_oSClass,"(_o)") + fCopyAllVar(_oSClass)  + "{};" ); 
+			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" +  _sInitialiserList  + "{" );
+			pushLine("printf(\"\\nCopy" + _oSClass.sName  +"\");");
+				pushLine("};" ); 
+	
 			//pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o, gzBool _b)" + getExtendClassToString(_oSClass,"(_o, _b)") + fCopyAllVar(_oSClass, true)  + "{};" ); 
 			
 			
@@ -983,10 +1000,11 @@ gzDef_Vec_Other(_Name, _nSize);
 			
 			
 			
-			if(!_oSClass.bExtension && !_oSClass.bIsPod){
-				pushLine("virtual gzAny MemCopy();"); 
-		//		pushLine("virtual gzAny DeepCopy();");
-			}
+			//if(!_oSClass.bExtension && !_oSClass.bIsPod){
+				pushLine("virtual gzAny Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);};"); //gzSp?
+				//pushLine("virtual gzAny MemCopy();"); 
+			//	pushLine("virtual gzAny DeepCopy();");
+			//}
 		}
 		
 		
@@ -995,14 +1013,19 @@ gzDef_Vec_Other(_Name, _nSize);
 			var _sCopy : String = "";
 			for ( _oVar in _oSClass.aGlobalVarList) {//CommonVar
 				var _sSetTo : String = "";
-		
-				if (_oVar.bEmbed || TypeResolve.isTypeCommon( _oVar.eType) ||  _oVar.eType == EuVarType._String || _oVar.eType == EuVarType._Gate ) { //Is a base type? Then copy
+				//TODO delegate are illegal + _QElement / _DArray are empty
+				//if (_oVar.bEmbed || TypeResolve.isTypeCommon( _oVar.eType) ||  _oVar.eType == EuVarType._String || _oVar.eType == EuVarType._Gate ) { //Is a base type? Then copy
+				if (   _oVar.eType != EuVarType._DArray    &&  _oVar.eType != EuVarType._QueueArray 
+					&& _oVar.eType != EuVarType._QElement  &&  _oVar.eType != EuVarType._PtrFunc
+					&& _oVar.eType != EuVarType._CallClass &&  _oVar.eType != EuVarType._Any
+				){
 					_sSetTo = "_o." + _oVar.sName;
 					if (_bDeepCopy && _oVar.eType == EuVarType._String) {
-						_sSetTo += ",_b";
+						_sSetTo += ",_bDCpy";
 					}	
+					_sCopy += ", " + _oVar.sName + "(" + _sSetTo + ")";
 				}
-				_sCopy += ", " + _oVar.sName + "(" + _sSetTo + ")";
+			
 			}
 			
 			return _sCopy;

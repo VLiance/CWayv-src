@@ -102,7 +102,9 @@ package language;
 			if (!_oFile.bReadOnly && !_oLib.oLib.bReadOnly) {
 				_bReadOnly = false;
 			}*/
-					Debug.fTrace("--LIB : " + _oLib.oLib.sName + "  File " + _oFile.sName );
+			
+			Debug.fTrace("--LIB : " + _oLib.oLib.sName + "  File " + _oFile.sName );
+			
 				//	Debug.fTrace("--LIB : " + _oLib.bReadOnly + "  File " + _oFile.bReadOnly );
 		//	oSProject.addLib(_oLib, _oLib.sReadCWavePath, _oLib.sWriteCppPath, _oLib.sLibCWaveName, _bReadOnly, _oLib.sLibCppName, _oLib.sIdName, _oLib.bLoadAll, _oLib.sPlatform);
 			oSProject.addLib(_oLib);

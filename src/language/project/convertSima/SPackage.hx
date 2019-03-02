@@ -5,6 +5,7 @@ import language.enumeration.EuVarType;
 import language.pck.FileImport;
 import language.pck.SLib;
 import language.project.convertCpp.DefHeaderFile;
+import language.vars.varObj.VarCallClass;
 import language.vars.varObj.VarStaticClass;
 
 /**
@@ -161,16 +162,16 @@ class SPackage extends SBloc
 			oDebugImport.oSLib = oSProject.oGzLib;
 			//oDebugImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 			*/
-			
-			
+			/*
+
 			oClassImport = newSImport();
 			oClassImport.sPath = "Base/";
 			oClassImport.sName = "Class";
 			oClassImport.nLine = 0;
 			oClassImport.oSLib = oSProject.oGzLib;
 			//oClassImport.oSLib = oSProject.oGzCppLib;//ReadOnly
-
-			
+*/
+						
 			oThreadMsgImport = newSImport();
 			oThreadMsgImport.sPath = "Base/Thread/";
 			oThreadMsgImport.sName = "ThreadMsg";
@@ -388,5 +389,22 @@ class SPackage extends SBloc
 				}
 			}
 		}
+		
+		public function fAddImportFullDefinition_AtomicFunc():Void {
+
+			for (_oSClass in aClassList){
+				for ( _oFunc  in _oSClass.aAtomicFunc) {
+					
+					for ( _oParam  in _oFunc.aParamList) {
+									
+						if (_oParam.eType == EuVarType._CallClass && !cast(_oParam, VarCallClass).oCallRef.bIsVector ){
+						//	Debug.fFatal("here:"  +   _oParam.fGetName() + " :  " +  _oSClass.sName);
+							fAddImportFullDefinition(cast(_oParam, VarCallClass).oCallRef);
+						}
+					}
+				}
+			}
+		}
+		
 		
 }

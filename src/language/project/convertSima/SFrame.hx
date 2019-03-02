@@ -856,6 +856,12 @@ package language.project.convertSima ;
 					_oSFunction.eSharing = EuSharing.Public;
 				//break;
 				
+				
+				case "riding" :
+					
+					_oSFunction.eFuncType = EuFuncType.Riding;
+					_oSFunction.eSharing = EuSharing.Public;
+					
 				case "override" :
 
 					_oSFunction.eFuncType = EuFuncType.Override;
@@ -875,7 +881,7 @@ package language.project.convertSima ;
 						case "public" : 
 							_oSFunction.eSharing = EuSharing.Public;
 						//break;
-						case "private" : 
+						case "protected" : 
 							_oSFunction.eSharing = EuSharing.Protected;
 						//break;
 						
@@ -979,7 +985,7 @@ package language.project.convertSima ;
 			//Main type
 			if (_oSFunction.eFuncType == EuFuncType.Normal) {
 				if (_oSFunction.sName == _oSClass.sName) { //Same name as class name(it's a constructor)
-					_oSFunction.eFuncType  = EuFuncType.Main;
+					_oSFunction.bConstructor = true;
 				}
 			}
 			

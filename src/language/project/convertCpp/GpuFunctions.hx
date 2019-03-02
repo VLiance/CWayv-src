@@ -169,7 +169,7 @@ package language.project.convertCpp ;
 			var _sLib : String = _oSClass.oSLib.sWriteName;
 	
 			//Return
-			if (_oSFunction.eFuncType ==  EuFuncType.Main) {
+			if (_oSFunction.bConstructor) {
 				//_sReturn = _sLib +"_"; //Main function	
 				_sReturn = ""; //Main function	
 			}else {
@@ -183,7 +183,7 @@ package language.project.convertCpp ;
 			}*/
 		
 			//Virtual function (extend class)
-			if (_oSClass.bExtension  && _oSFunction.eFuncType !=  EuFuncType.Main  ) { // _nFuncId != 0  
+			if (_oSClass.bExtension  && !_oSFunction.bConstructor  ) { // _nFuncId != 0  
 				_sReturn = "virtual " + _sReturn;
 			}
 			

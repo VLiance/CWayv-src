@@ -17,7 +17,10 @@ class Setting
 	
 	public static var sToCpp = ">C++";
 	public static var sUpToDate = ":UpToDate";
-
+	
+	
+	public static var sConstructorKeyword = "Constructor"; //or super?
+ 
 	
 	public function new() 
 	{

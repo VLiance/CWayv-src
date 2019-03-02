@@ -58,7 +58,7 @@ package language.vars.varObj ;
 		
 						
 			var _oLookFunc  :SFunction = oFunction;
-			var _aLookParamList : Array<Dynamic> = _oLookFunc.aParamList; //TODO check same number of param
+			var _aLookParamList : Array<VarObj> = _oLookFunc.aParamList; //TODO check same number of param
 			
 			//var _aParamList : Array<Dynamic> = _sParam.split(",");
 
@@ -70,7 +70,7 @@ package language.vars.varObj ;
 			for (i in 0 ..._i) {
 			
 				if (_aLookParamList[i] == null) {
-					Debug.fError("LookParam not correspond in : " + _oLookFunc.sName + " for "  + _aParamList[i] + "-->["+ _sParam   + "]" +  " (Total : " + _aParamList.length + ")");
+					Debug.fError("LookParam not correspond in : " + _oLookFunc.sName + " for "  + _aParamList[i] + "-->["+ _sParam   + "]" +  " (Total: " + _aParamList.length + ", Req: " +_aLookParamList.length  + ")");
 				}
 				
 				////ParamGetType/// Maybe do direct

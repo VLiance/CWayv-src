@@ -115,27 +115,32 @@ package language.project.convertSima ;
 	
 			}}
 			
-			//Ini Embed (oCallRef from _CallClass must be initialised, maybe initiale this before iniGlobalVar????)
-			for (_oSPck in _aPackage){for (_oSClass in _oSPck.aClassList){
-				
-				_oSPck.fAddImportFullDefinitionFromStrackType();
-				
-				for (_oVar in _oSClass.aEmbedVarList){
-					if(_oVar.eType == EuVarType._CallClass){
-						if (cast(_oVar,VarCallClass).bEmbed ){ 
-							_oSPck.fAddImportFullDefinition(_oVar.oCallRef);
-						}
-					}
-				}
-			}}		
-
-			
 			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				extractFunctionInfo( _oSClass);
 			}}
+			
+			//Ini Embed (oCallRef from _CallClass must be initialised, maybe initiale this before iniGlobalVar????)
+			for (_oSPck in _aPackage){
+				_oSPck.fAddImportFullDefinitionFromStrackType();
+				_oSPck.fAddImportFullDefinition_AtomicFunc();
+				
+				for (_oSClass in _oSPck.aClassList){
+				
+					for (_oVar in _oSClass.aEmbedVarList){
+						if(_oVar.eType == EuVarType._CallClass){
+							if (cast(_oVar,VarCallClass).bEmbed ){ 
+								_oSPck.fAddImportFullDefinition(_oVar.oCallRef);
+							}
+						}
+					}
+				}
+			}		
+
+			
+	
 			
 			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
@@ -223,14 +228,15 @@ package language.project.convertSima ;
 			_oSFunction.nLineNum = _nLineNum;
 			_oSFunction.nLine = _nLineNum;
 			_oSFunction.nLastLine = _nLineNum; //If has no line
-			_oSFunction.bConstructor = true;
+			
 			_oSFunction.bDefaultConstructor = true;
 		
 			_oSFunction.eSharing = EuSharing.Public;
 			_oSFunction.sIniReturn = "Void";
 			extractFunctionInfoReturn(_oSFunction);
-			
-			_oSFunction.eFuncType  = EuFuncType.Main; 
+			_oSFunction.bConstructor = true;
+			//_oSFunction.eFuncType  = EuFuncType.Main; 
+
 			
 			_oSFunction.bNoLine = true; //If have no extention
 			
@@ -284,7 +290,25 @@ package language.project.convertSima ;
 		public static function fLoadDefaultConstructorLine(_oSClass:SClass):Void {
 			if (_oSClass.sConstructLineToExtract != ""){
 				ExtractBlocs.oCurrSFunc = _oSClass.oFuncConstructor;
-				ExtractBlocs.extractLine( _oSClass.oFuncConstructor,  _oSClass.sConstructLineToExtract, _oSClass.oFuncConstructor.nLine + 1);
+				//ExtractBlocs.extractLine( _oSClass.oFuncConstructor,  _oSClass.sConstructLineToExtract, _oSClass.oFuncConstructor.nLine + 1);
+				
+				
+				var _bFound : Bool = false;
+				var i : Int = 0;
+				while (i <  _oSClass.oFuncConstructor.aLineList.length){
+					var _oLine =  _oSClass.oFuncConstructor.aLineList[i];
+					if (_oLine.eType == EuVarType._LineReturn){
+						ExtractBlocs.extractLine( _oSClass.oFuncConstructor,  _oSClass.sConstructLineToExtract, _oSClass.oFuncConstructor.nLine + 1, i);
+						_bFound = true;
+						i++;
+					}
+					i++;
+				}
+				
+				if (!_bFound){
+					ExtractBlocs.extractLine( _oSClass.oFuncConstructor,  _oSClass.sConstructLineToExtract, _oSClass.oFuncConstructor.nLine + 1);
+				}
+
 				ExtractBlocs.oCurrSFunc = null;
 			}
 		}
@@ -677,7 +701,7 @@ package language.project.convertSima ;
 					var _sLine : String = "= 0;"; //Force for enum Todo optimize
 					_aSubVarList[i] = cast(ExtractLines.newLineSet(_oEnum.oSClass,   _sLine.substring(1, _sLine.length), _oEnum.nLine, EuVarType._ParamInput, _oSubEnum,false,EuOperator.None),ParamInput);
 					_oSubEnum = _aSubVarList[i];
-					var _oVar : VarInt = cast(_oSubEnum,ParamInput).aVarList[0];
+					var _oVar : VarInt = cast(cast(_oSubEnum,ParamInput).aVarList[0]);
 					
 					_nFillVal = fGetNextNotUsedEmumVal(_oEnum, _nFillVal);
 					_oVar.nValue = _nFillVal;
