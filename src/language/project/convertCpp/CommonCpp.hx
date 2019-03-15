@@ -1,4 +1,5 @@
 package language.project.convertCpp ;
+	import language.enumeration.EuClassType;
 	import language.enumeration.EuConstant;
 	import language.enumeration.EuFuncType;
 	import language.enumeration.EuVarType;
@@ -303,17 +304,23 @@ package language.project.convertCpp ;
 			var _i : UInt = _aList.length;
 			
 			if (_i == 0 ) {
-				if(_sCopy == ""){
-					//return "";
-					//return  _sShared + "::" + _oSClass.oSProject.oSDelegate.sLib_Name + _sCopy; //New delegate for all class
-					if (_sShared != "" &&  _oSClass.sName == "Class") { //!TODO only in lib GZE!!
-						
-						return  ""; //New delegate for all class
+				if (_sCopy == ""){
+					 if (_oSClass.bIsResults){
+				
+						 return " : " + _sShared + "cResult" + _sCopy; //New delegate for all class
+						 
+					 }else {
+						//return "";
+						//return  _sShared + "::" + _oSClass.oSProject.oSDelegate.sLib_Name + _sCopy; //New delegate for all class
+						if (_sShared != "" &&  _oSClass.sName == "Class") { //!TODO only in lib GZE!!
 							
-						//return  "public Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
-					
-					}else{
-						return " : " + _sShared + "Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
+							return  ""; //New delegate for all class
+								
+							//return  "public Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
+						
+						}else{
+							return " : " + _sShared + "Lib_GZ::Base::cClass" + _sCopy; //New delegate for all class
+						}
 					}
 				}
 			}
@@ -506,13 +513,24 @@ package language.project.convertCpp ;
 			//if (oSClass.bExtension  && _oSFunction.eFuncType == EuFuncType.Main ) {  
 			if ( _oSFunction.bConstructor ) {
 				
-				//if(!_oSClass.bIsPod){
+				if(!_oSClass.bIsResults){
 				
 					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent);");
 					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
 					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
 					pushLine("inline c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
-				
+				}else {
+					
+					//pushLine("inline c" + _sFuncName + "()" + getAllExtendClassToString(_oSClass, "(_parent)"));
+					var _sExtend : String = getAllExtendClassToString(_oSClass, "()");
+					if (_sExtend == ""){
+						_sExtend = ":cResult(false)";
+					}
+					pushLine("inline c" + _sFuncName + "()" + _sExtend);
+				}
+					
+					
+					
 					
 					fGetInitializerList(_oSFunction);
 					fAddCppLines(_oSClass.aCppLineInitializerList_H);
@@ -535,8 +553,9 @@ package language.project.convertCpp ;
 				}else {
 					pushLine(_sReturn + "c" + _sFuncName + "();"); //Default constructor only
 					pushLine("void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
-				}
-				*/
+					
+				}*/
+				
 				
 			}else {
 				//Normal push

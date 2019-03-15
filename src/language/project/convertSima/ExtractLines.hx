@@ -1036,7 +1036,9 @@ import haxe.crypto.BaseCode;
 					
 				//break;
 				
-				case EuVarType._FuncCall:
+							
+				case EuVarType._FuncCall
+				 | EuVarType._NativeFuncCall:
 					
 					var _oFuncCall : FuncCall = cast(_oPrecLocVar);
 					//_oCallClass.oCallRef;

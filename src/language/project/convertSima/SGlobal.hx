@@ -24,6 +24,7 @@ package language.project.convertSima ;
 			var _oSClassNative : SClass = new SClass(_Main, _oSProject, _oSProject.oMainSPackage, "ClassNative");
 			_oSProject.loadFileImport( _oSClassNative.oPackage.aSImportList );
 			_oSClassNative.aAllVarList.push(new VarStaticClass(_oSClassNative, _oSClassNative.oPackage.oThreadMsgImport,  _oSClassNative.oPackage.oThreadMsgImport.oRefPackage.oSClass));
+			_oSClassNative.aAllVarList.push(new VarStaticClass(_oSClassNative, _oSClassNative.oPackage.oResult_SearchImport,  _oSClassNative.oPackage.oResult_SearchImport.oRefPackage.oSClass));
 			
 		//	Debug.fError("awqwwsName : " + VarStaticClass(_oSClassNative.aClassVarList[0]).sName );
 			createNativeAttribut(_Main, _oSProject, _oSClassNative);
@@ -83,7 +84,7 @@ package language.project.convertSima ;
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fPrev", [], "Bool","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fNext", [], "Bool","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fCharAt", ["nIndex : Int"], "Int","", true));
-			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fFind", ["sSearch : String", "_nStartIndex : Int = 0"], "Int","", true));
+			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fFind", ["sSearch : String", "_nStartIndex : Int = 0"], "Result_Search","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fRevFind", ["sSearch : String", "_nStartIndex : Int = 0"], "Int","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fSplit", ["_sDelimiter : String"], "DArray<String>","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fReplace", ["sSearch : String","sReplace : String","_nStartIndex : Int = 0"], "Int","", true));
@@ -138,8 +139,8 @@ package language.project.convertSima ;
 			new SNatAttribut(_oSClassNative, aNAQueueArray,  EuVarType._QueueArray, "qeFirst", "rFirst", "QElement",  "(Any)"  );
 			new SNatAttribut(_oSClassNative, aNAQueueArray,  EuVarType._QueueArray, "qeLast", "rLast", "QElement",  "(Any)"  );
 			new SNatAttribut(_oSClassNative, aNAQueueArray,  EuVarType._QueueArray, "nSize", "GnTotal()", "Int",  ""  );
-			new SNatAttribut(_oSClassNative, aNAArray, 		 EuVarType._DArray, "nSize", "nSize", "UInt",  ""  );
-			new SNatAttribut(_oSClassNative, aNADataArr, 		 EuVarType._DataArr, "nSize", "nSize", "UInt",  ""  );
+			new SNatAttribut(_oSClassNative, aNAArray, 		 EuVarType._DArray, "nSize", "GnSize()", "UIntX",  ""  );
+			new SNatAttribut(_oSClassNative, aNADataArr, 	 EuVarType._DataArr, "nSize", "GnSize()", "UIntX",  ""  );
 			
 			
 			

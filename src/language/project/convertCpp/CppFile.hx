@@ -158,7 +158,7 @@ package language.project.convertCpp ;
 				return;
 			}
 			
-			if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic){
+			if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic && !_oSClass.bIsResults ){
 			//if (!_oSClass.oPackage.oSFrame.bSkipStatic){
 				
 			//if(oSClass.bHaveOverplace == false){
@@ -403,7 +403,17 @@ package language.project.convertCpp ;
 			 */	
 			}else {
 				//pushLine(_sReturn + _sClass + _sFuncName + "(" + _sParam + ")" + _sIni + "{");
-				pushLine(_sReturn + _sStatic + _sClass  + _sFuncName + "(" + _sParam + "){" + _sStack);
+				var _sAddNamespace : String = "";
+				if (_oSFunction.bHaveCpp){ //Have Cpp
+					//Add Namespace for extended class constant //TODO add if they avec <namespace> code
+					_sAddNamespace = "using namespace " + _oSFunction.oSClass.sName +  ";";
+					for (_oClass in _oSFunction.oSClass.aExtendAllClassList){
+						if (_oClass.aConstList.length != 0){
+								_sAddNamespace +=  "using namespace " + _oClass.sNsAccess + _oClass.sName +  ";";
+						}
+					}
+				}
+				pushLine(_sReturn + _sStatic + _sClass  + _sFuncName + "(" + _sParam + "){" + _sStack + _sAddNamespace);
 			}
 			
 			addTab();

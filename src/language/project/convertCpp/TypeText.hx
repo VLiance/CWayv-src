@@ -164,6 +164,9 @@ package language.project.convertCpp ;
 						return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "<gzFloat>";
 						//if (_bFuncParam) { //Not used&
 					
+					}else if (_oCallClass.oCallRef.bIsResults) {
+						return _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName;
+						
 					}else if ((_oCallClass.bScopeOwner &&  !_bNotScopeOwner) || _bFunReturn || _bParam_owner) {
 						if(_oCallClass.bWeak){
 							return "gzWp<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
@@ -836,7 +839,7 @@ package language.project.convertCpp ;
 			
 			if (_oMod != null && _oMod.bScopeConvert) {
 				if (_oMod.bNewCreation) {
-					if (_oSClass.bIsPod || _oSClass.bIsVector) {
+					if (_oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) {
 						//return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName  + ")" +  "(" + _sVar + ")"; //?
 						return  "(" + _sVar + ")"; 
 					}else{	
@@ -861,7 +864,7 @@ package language.project.convertCpp ;
 				// if (_oConvertInType.eType == EuVarType._CallClass && VarCallClass(_oConvertInType).oCallRef.bIsPod) { //POD
 				 if (_oSClass.bIsPod ) { //POD
 						return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName  + "*)" +  "(" + _sVar + ")"; //Work?
-				}else if ( _oSClass.bIsVector) {
+				}else if ( _oSClass.bIsVector || _oSClass.bIsResults) {
 			
 					//return "(" +_oSClass.sNsAccess + "gzVec" +   _oSClass.sName  + "&)" +  "(" + _sVar + ")"; //TODO test if UpCast is legal
 					//return "(" + _sVar + ")"; //TODO test if UpCast is legal

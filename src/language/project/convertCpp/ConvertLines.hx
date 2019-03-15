@@ -418,13 +418,13 @@ package language.project.convertCpp ;
 			var _sLine : String = "";
 			//make first var
 			var _aVarList : Array<Dynamic> = _oVar.aVarList;
-			var _i:UInt = _aVarList.length - 1;
-			var i: Int = 0;
-			for (i in 0 ...  _i) {
-						
-				_sLine += convertCppVarType(_aVarList[i], _oVar.nLine,true) + _sMultiOp;
+
+			for (i in 0 ...   _aVarList.length) {	
+				if (i == _aVarList.length-1){
+					_sMultiOp = "";
+				}
+				_sLine += convertCppVarType(_aVarList[i], _oVar.nLine, true) + _sMultiOp;
 			}
-			_sLine += convertCppVarType(_aVarList[i], _oVar.nLine,true);
 			return  _sLine;
 		}
 		
@@ -757,9 +757,35 @@ package language.project.convertCpp ;
 					var _oVarFunc : SFunction = _oVarFuncCall.oFunction;
 				
 					//return  "fSend(new " +  _oVarFunc.oSClass.sNsAccess + _oVarFunc.oSClass.sName + "::c" + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer) + ")";
-						return  "Send(new " +  _oVarFunc.oSClass.sNsAccess + _oVarFunc.oSClass.sName + "::c" + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(this" +  convertFuncCallParam(_oVarFuncCall, false) + ")", _oContainer) + ")";
-					}
+					//With Parent:
+					//return  "Send(new " +  _oVarFunc.oSClass.sNsAccess + _oVarFunc.oSClass.sName + "::c" + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(this" +  convertFuncCallParam(_oVarFuncCall, false) + ")", _oContainer) + ")";
+					//Without Parent:
+					return  "Send(new " +  _oVarFunc.oSClass.sNsAccess + _oVarFunc.oSClass.sName + "::c" + checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _oVarFunc.sName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer) + ")";
 					
+						
+				}
+					
+				
+				
+				case EuVarType._NativeFuncCall :
+					var _oNativeFuncCall : NativeFuncCall = cast(_oVar);
+					var _oVarNatFunc : SNatFunction  = cast(_oNativeFuncCall.oFunction);
+					var _sParm : String;
+
+					if(_oNativeFuncCall.aParamList.length > 0){
+						_sParm  =  ", " + convertFuncCallParam(_oNativeFuncCall);
+					}else {
+						_sParm = "";
+					}
+					if(!_oVarNatFunc.bIntegrateFunc){
+						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn, _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum )  + _sParm +  ")", _oNativeFuncCall.oSource);	
+					}else{
+						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn,  _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum , false, null, _oNativeFuncCall.oSource) + "."  + _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sAddToParam + _sParm.substring(2) +  ")", _oNativeFuncCall.oSource);	
+					}
+				//break;
+				
+				
+				
 				case EuVarType._ExtendFuncCall  //FuncCall with param
 				| EuVarType._FuncCall : //FuncCall with param
 
@@ -1051,23 +1077,7 @@ package language.project.convertCpp ;
 				//break;
 				
 				
-				case EuVarType._NativeFuncCall :
-					var _oNativeFuncCall : NativeFuncCall = cast(_oVar);
-					var _oVarNatFunc : SNatFunction  = cast(_oNativeFuncCall.oFunction);
-					var _sParm : String;
-
-					if(_oNativeFuncCall.aParamList.length > 0){
-						_sParm  =  ", " + convertFuncCallParam(_oNativeFuncCall);
-					}else {
-						_sParm = "";
-					}
-					if(!_oVarNatFunc.bIntegrateFunc){
-						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn, _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum )  + _sParm +  ")", _oNativeFuncCall.oSource);	
-					}else{
-						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn,  _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum , false, null, _oNativeFuncCall.oSource) + "."  + _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sAddToParam + _sParm.substring(2) +  ")", _oNativeFuncCall.oSource);	
-					}
-				//break;
-				
+			
 				case EuVarType._ExtendVar : 
 					return 	convertCppVarType(cast(_oVar,ExtendVar).oVar, _nLineNum, _bPriority, _oConvertIn, _oContainer);
 				//break;
@@ -1551,7 +1561,7 @@ package language.project.convertCpp ;
 						_bBefStaticClass = true;
 					}else if (_oVar.eType == EuVarType._Enum || _oVar.eType == EuVarType._UseEnum || _oVar.eType == EuVarType._ExClass ) {
 						_sReturn += "";
-					}else if ( (_oVar.eType == EuVarType._CallClass && cast(_oVar, VarCallClass ).oCallRef.bIsVector )  ||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._QueueArray ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
+					}else if ( (_oVar.eType == EuVarType._CallClass && (cast(_oVar, VarCallClass ).oCallRef.bIsVector || cast(_oVar, VarCallClass ).oCallRef.bIsResults ) )  ||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._DArray ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
 						_sReturn += "."; 
 					}else {
 						_sReturn += "->";

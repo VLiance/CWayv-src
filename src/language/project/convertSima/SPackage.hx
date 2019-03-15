@@ -48,6 +48,8 @@ class SPackage extends SBloc
 		public var oDebugImport : FileImport;
 		public var oClassImport : FileImport;
 		public var oThreadMsgImport : FileImport;
+		public var oResult_SearchImport : FileImport;
+
 		public var aLibImport : Array<FileImport> = [];
 		
 	public var aSImportList : Array<FileImport> = [];
@@ -179,6 +181,13 @@ class SPackage extends SBloc
 			oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
 			//oThreadMsgImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 			
+			oResult_SearchImport = newSImport();
+			oResult_SearchImport.sPath = "Base/Result/";
+			oResult_SearchImport.sName = "Result_Search";
+			oResult_SearchImport.nLine = 0;
+			oResult_SearchImport.oSLib = oSProject.oGzLib; //Temp?
+			
+			
 			
 			oSClass = new SClass(_Main, _oSProject,this, _sName); ///Default class (Same name as package)
 			aClassList.push(oSClass); //Default class
@@ -288,13 +297,21 @@ class SPackage extends SBloc
 		}
 		public function fHaveStackType() : Bool {
 			for (_oClass in aClassList){
-				if ( _oClass.bIsVector ){
+				if ( _oClass.bIsVector  || _oClass.bIsResults ){
 					return true;
 				}
 			}
 			return false;
 		}
-		
+		public function fHaveIsAllStackType() : Bool {
+			for (_oClass in aClassList){
+				//if ( !( _oClass.bIsVector  || _oClass.bIsResults) ){
+				if ( !( _oClass.bIsResults) ){
+					return false;
+				}
+			}
+			return true;
+		}
 		
 		public function fGetClassName(_sSearch:String) : SClass {
 				for (_oClass in aClassList){

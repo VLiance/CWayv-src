@@ -15,6 +15,7 @@ package language.project.convertSima ;
 	 */
 	class SBloc extends VarObj
 	{
+	
 		
 		//public var aLineList   : Array<Dynamic>;
 		public var oParentBloc : SBloc;

@@ -50,7 +50,8 @@ package language.vars.varObj ;
 			//	return _oClass.sNsAccess + "c" +  _oClass.sName;
 			
 				//return  oSBloc.oSClass.sNsAccess + "c" +  oSBloc.oSClass.sName  + ", Lib_GZ::cThreadMsg";
-				return  oRslTemplate.sNsAccess + "c" +  oRslTemplate.sName  + ", Lib_GZ::Base::Thread::cThreadMsg";
+				//return  oRslTemplate.sNsAccess + "c" +  oRslTemplate.sName  + ", Lib_GZ::Base::Thread::cThreadMsg";
+				return  oRslTemplate.sNsAccess + "c" +  oRslTemplate.sName ;
 		//	}
 			//return "UnknowGateType";
 			//return TypeText.typeToCPP(oRslTemplate);

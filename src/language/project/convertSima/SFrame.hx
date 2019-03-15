@@ -369,6 +369,10 @@ package language.project.convertSima ;
 				_nIndex = Text.nCurrentIndex;
 				switch(_sClassType) {
 					
+					case "result":
+						_bIsFound = true;
+						_eClassType = EuClassType.Results;
+						
 					case "vector":
 						_bIsFound = true;
 						_bIsVector = true;
@@ -500,7 +504,11 @@ package language.project.convertSima ;
 			
 			 oCurrSClass.sThreadClass = _sThreadClass;
 				
-			
+			if (oCurrSClass.eClassType == EuClassType.Results){
+				oCurrSClass.bIsResults = true;
+			}
+			 
+			 
 			
 			oCurrSClass.bThread = _bIsThead;
 			oCurrSClass.bExtension = _bIsExtension;
@@ -508,6 +516,9 @@ package language.project.convertSima ;
 			oCurrSClass.bAtomic = _bIsAtomic;
 			oCurrSClass.bIsPod = _bIsPod;
 			oCurrSClass.bIsVector = _bIsVector;
+			
+
+		
 			
 			
 			//Array<Dynamic> of name to class for quick find

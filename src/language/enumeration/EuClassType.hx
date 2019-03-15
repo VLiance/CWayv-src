@@ -10,6 +10,7 @@ package language.enumeration ;
 			 Thread ;
 			 Atomic ;
 			 Vector;
+			 Results;
 		}
 		
 			
@@ -18,6 +19,10 @@ package language.enumeration ;
 			public static function fGet(_eType: EuClassType):String {
 				
 				switch(_eType) {
+					
+					case Results :
+						return "result";
+
 					case Pod :
 						return "pod";
 

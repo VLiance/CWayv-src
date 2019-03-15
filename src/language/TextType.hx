@@ -182,7 +182,8 @@ package language;
 			switch (_sType) {
 				
 						
-				case "Vec"  :
+				case "Vec_disable"  :
+			//	case "Vec"  :
 					return EuVarType._Vector;
 				
 				

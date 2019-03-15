@@ -19,6 +19,8 @@ package language.project.convertSima ;
 	//	public var bIsConstructor : Bool = false;
 		public var eFuncType : EuFuncType;
 		
+		public var bHaveCpp : Bool = false;
+			
 		public var bSpecifiquePlatforme : Bool = false;
 		public var bSpecialGenerate : Bool = false;
 		

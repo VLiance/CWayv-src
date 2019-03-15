@@ -77,9 +77,17 @@ package language.project.convertCpp ;
 			
 			//#include "mainHeader.h"
 			//includeMainHeader();
-			pushLine("#include \"" + _oSPck.oSLib.sWriteName + "/" + _oSPck.oSLib.sWriteName + ".h\"");
+			
+			
 		
-			pushLine("#include \"Lib_GZ/Base/Thread/Thread.h\""); //Temp
+			if(!(_oSPck.fHaveIsAllStackType() && _oSPck.oSLib.sIdName == "GZ")) { //Just to not have circular inclusion for String --> Result --> GZ --> Result
+				pushLine("#include \"" + _oSPck.oSLib.sWriteName + "/" + _oSPck.oSLib.sWriteName + ".h\"");
+			}
+			
+			if(!_oSPck.fHaveIsAllStackType()){
+				pushLine("#include \"Lib_GZ/Base/Thread/Thread.h\""); //Temp
+			}
+			
 			
 			includeClass(_oSPck);
 			
@@ -91,9 +99,12 @@ package language.project.convertCpp ;
 				pushLine("#include \"_" + _oSClass.sName + ".h\"");
 			}
 			
-			if(_oSClass.sName != "Class"){ //Base class exemption (recursive inclusion), todo only in GZ lib
-				pushLine("#include \"Lib_GZ/GZ_inc.h\"");
+			if(!_oSPck.fHaveIsAllStackType()){
+				if(_oSClass.sName != "Class"){ //Base class exemption (recursive inclusion), todo only in GZ lib
+					pushLine("#include \"Lib_GZ/GZ_inc.h\"");
+				}
 			}
+					
 			includeExtention(_oSClass);
 			
 					//class Example {
@@ -101,6 +112,11 @@ package language.project.convertCpp ;
 				var _sExtend  : String  = "";
 				if(!_oSClass.bIsPod){
 					_sExtend   =  getExtendClassToString(_oSClass); //return bUseDefineIN
+				}
+				
+				if (_oSClass.sName == "Class" && _oSClass.oSLib.sIdName == "GZ"){
+					
+					_sExtend = ": gzAny";
 				}
 				
 
@@ -169,6 +185,8 @@ package language.project.convertCpp ;
 				
 				addSpace();	
 				///////////////////////////////
+				
+				
 				
 				
 				if (_oSClass.bIsVector){
@@ -272,7 +290,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				
 				
 				//Default Copy func
-				if(!_oSClass.bIsPod){
+				if(!_oSClass.bIsPod && !_oSClass.bIsResults){
 					fDefaultCopyFunc(_oSClass);
 				}
 				//Destructeur
@@ -324,7 +342,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				
 				///////////////////////////////
 				///////// Thread Static //////
-				if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic){
+				if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic &&  !_oSClass.bIsResults){
 				//if (!_oSClass.oPackage.oSFrame.bSkipStatic){
 
 					pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " cs" + _oSClass.sName + getOverplaceString(_oSClass)  + "  {");
@@ -397,9 +415,9 @@ gzDef_Vec_Other(_Name, _nSize);
 				//pushLine("}")
 				//pushLine("}")
 				
-				if (_oSClass.bExtension) { //For extention
+				//if (_oSClass.bExtension) { //For extention
 					pushLine("#undef tHDef_IN_" +  _oSClass.oPackage.sHeaderName);
-				}
+				//}
 				
 				
 		
@@ -423,9 +441,10 @@ gzDef_Vec_Other(_Name, _nSize);
 			pushLine("#define tHDef_" +  _oSPck.sHeaderName);
 			
 			for (_oSClass in _oSPck.aClassList ){
-			if (_oSClass.bExtension) { //For extention
+			//if (_oSClass.bExtension) { //For extention --/// Always safe to keep it
 				pushLine("#define tHDef_IN_" +  _oSPck.sHeaderName);
-			}}
+			//}
+			}
 
 		}
 		
@@ -818,7 +837,7 @@ gzDef_Vec_Other(_Name, _nSize);
 		
 		public function fCreateConstrutorWrapper(_oSClass:SClass):Void {
 			
-			if (_oSClass.bIsVector){ //Not for vector
+			if (_oSClass.bIsVector || _oSClass.bIsResults ){ //Not for vector
 				return;
 			}
 			
@@ -929,7 +948,10 @@ gzDef_Vec_Other(_Name, _nSize);
 				    pushLine(TypeText.typeToCPP(_oParam, false,false,false,false,false,true) + " "  + _oParam.fGetName() + ";");
 				}
 				pushLine("public:");
-				 pushLine("inline " + " c" + _oFunc.sName + "(Lib_GZ::Base::cClass* _parent " + getFunctionParam(_oFunc, true, false, false) + "): Lib_GZ::Base::Thread::cThreadMsg(_parent)");
+				//With Parent:
+				// pushLine("inline " + " c" + _oFunc.sName + "(Lib_GZ::Base::cClass* _parent " + getFunctionParam(_oFunc, true, false, false) + "): Lib_GZ::Base::Thread::cThreadMsg(_parent)");
+				//Without Parent:
+				pushLine("inline " + " c" + _oFunc.sName + "(" + getFunctionParam(_oFunc, true) + "): Lib_GZ::Base::Thread::cThreadMsg()");
 				
 				 var _sIni : String = "";
 				 var _aParam : Array<VarObj> = _oFunc.aParamList;
@@ -1001,7 +1023,7 @@ gzDef_Vec_Other(_Name, _nSize);
 			
 			
 			//if(!_oSClass.bExtension && !_oSClass.bIsPod){
-				pushLine("virtual gzAny Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);};"); //gzSp?
+				pushLine("virtual gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);};"); //gzSp?
 				//pushLine("virtual gzAny MemCopy();"); 
 			//	pushLine("virtual gzAny DeepCopy();");
 			//}
@@ -1017,7 +1039,8 @@ gzDef_Vec_Other(_Name, _nSize);
 				//if (_oVar.bEmbed || TypeResolve.isTypeCommon( _oVar.eType) ||  _oVar.eType == EuVarType._String || _oVar.eType == EuVarType._Gate ) { //Is a base type? Then copy
 				if (   _oVar.eType != EuVarType._DArray    &&  _oVar.eType != EuVarType._QueueArray 
 					&& _oVar.eType != EuVarType._QElement  &&  _oVar.eType != EuVarType._PtrFunc
-					&& _oVar.eType != EuVarType._CallClass &&  _oVar.eType != EuVarType._Any
+					&& !( _oVar.eType == EuVarType._CallClass && !cast(_oVar, VarCallClass).oCallRef.bIsVector)
+					&&  _oVar.eType != EuVarType._Any
 				){
 					_sSetTo = "_o." + _oVar.sName;
 					if (_bDeepCopy && _oVar.eType == EuVarType._String) {

@@ -58,6 +58,7 @@ package language.project.convertSima;
 		public var bAtomic : Bool = false;
 		public var bIsPod : Bool = false;
 		public var bIsVector : Bool = false;
+		public var bIsResults : Bool = false;
 		public var bThread : Bool = false;
 		public var sThreadClass : String = "";
 		public var oThreadClass : SClass;
@@ -146,7 +147,7 @@ package language.project.convertSima;
 		
 		public var sExtendNotIni : String = "";
 		public var aExtendClass : Array<SClass> = []; //Current class extend
-		public var aExtendAllClassList: Array<Dynamic> = []; //Full extend list of currnent class
+		public var aExtendAllClassList: Array<SClass> = []; //Full extend list of currnent class
 		
 		public var sPathBack : String;
 		public var nNbFolder : UInt;
@@ -475,11 +476,19 @@ package language.project.convertSima;
 		public function getClassExtends():Void {
 			if (sExtendNotIni == "") {
 				
-				if(sName != "Class" && !bIsPod){
+				if(sName != "Class" && !bIsPod && !bIsResults  && !bIsVector){
 					var oExtend : SClass = SFind.findClass(this, "Class");
 					aExtendClass.push(oExtend);
+				}
+				
+				if (sName != "Result" && bIsResults ){
+				
+						var oExtend : SClass = SFind.findClass(this, "Result");
+						aExtendClass.push(oExtend);
 					
 				}
+				
+				
 				
 			}else{
 				var _aStrList : Array<Dynamic> = sExtendNotIni.split(",");

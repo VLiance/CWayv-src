@@ -280,6 +280,9 @@ package language.project.convertSima ;
 					if(Text.eCppLineType == EuCppLineType.Glsl){ //Glsl
 						Text.oCurrentBalise.pushLine(_oCpp);
 					}else { //Cpp
+						if(_oSBloc.oSFunction != null){
+							_oSBloc.oSFunction.bHaveCpp = true;
+						}
 						_oSBloc.pushLine(_oCpp);
 					}
 					
@@ -768,6 +771,7 @@ package language.project.convertSima ;
 				
 				_oCompare.eOpp = EuOperator.LogicNotEgal;
 				_oCompare.oLineLeft = ExtractLines.newLineSet(_oSBloc, _sLine, _nLineNum, EuVarType._None,null,false,EuOperator.None);
+				//_oCompare.oLineRight =  ExtractLines.newLineSet(_oSBloc, "false", _nLineNum, EuVarType._None,null,false,EuOperator.None); //TODO optimize this put direcly the var
 				_oCompare.oLineRight =  ExtractLines.newLineSet(_oSBloc, "0", _nLineNum, EuVarType._None,null,false,EuOperator.None); //TODO optimize this put direcly the var
 				
 				return _oCompare;
@@ -781,6 +785,9 @@ package language.project.convertSima ;
 			oCurrSClass = _oSClass;
 			//Extract all line in each function 
 			var _aFile : Array<Dynamic>  =   _oSClass.aFile;
+			if (_aFile == null){
+				Debug.fFatal("Class File null " + _oSClass);
+			}
 			var _nTotalLine : UInt = _aFile.length;
 			var _aFunctionList : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i:UInt = _aFunctionList.length;
