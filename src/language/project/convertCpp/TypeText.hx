@@ -161,7 +161,8 @@ package language.project.convertCpp ;
 					var _oCallClass : VarCallClass  = cast(_oVar);
 					
 					if (_oCallClass.oCallRef.bIsVector){
-						return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "<gzFloat>";
+						//return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "< gzFloat>";
+						return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "<" + TypeText.typeToCPP(_oCallClass.oTemplateVar) + ">";
 						//if (_bFuncParam) { //Not used&
 					
 					}else if (_oCallClass.oCallRef.bIsResults) {
@@ -347,7 +348,11 @@ package language.project.convertCpp ;
 				
 				case EuVarType._Float :
 					var _oVarFloat : VarFloat  = cast(_oVar);
-					return "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit);
+					if(_oVarFloat.bEaseType){
+						return "gzEase<gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit )+ ">" ;
+					}else{
+						return "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit);
+					}
 					
 					
 				case EuVarType._Vector :
@@ -1362,6 +1367,7 @@ package language.project.convertCpp ;
 					return "gzInt" +  EuBit_.getStringBit(_oVar, true);
 				//break;
 				case EuVarType._Float :
+					
 					return "gzFloat" +  EuBit_.getStringBit(_oVar, true);
 				//break;
 				case EuVarType._QElement :

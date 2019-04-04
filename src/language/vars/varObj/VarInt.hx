@@ -9,6 +9,7 @@ package language.vars.varObj ;
 		
 		public var bUnsigned   : Bool = false;
 		public var eBit   : EuBit;
+		public var bEaseType   : Bool = false;
 		
 		public var nValue   : Int = 0;
 		public var bConvertInPixel : Bool = false;

@@ -8,6 +8,7 @@ package language.vars.varObj ;
 
 		public var nValue   : Float = 0;
 		public var eBit   : EuBit;
+		public var bEaseType   : Bool = false;
 		
 		public function new(_oSBloc:SBloc) {
 			super(_oSBloc, EuVarType._Float);

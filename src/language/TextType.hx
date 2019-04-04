@@ -108,6 +108,7 @@ package language;
 		
 		
 		
+		public static var bEaseType : Bool ;
 		public static var eTypeNbBit : EuBit ;
 		public static var nTypeNumVal : Int ;
 		public static var aLastClassLoc : Array<Dynamic>;
@@ -132,6 +133,14 @@ package language;
 			if (_aList.length > 1) {
 				Debug.trace1("aaaaaaaaaaa: " + _sType);
 			}*/
+			
+			
+			bEaseType = false;
+			
+			if (_sType.length > 5 && _sType.indexOf("Ease") >= 0 ){
+				bEaseType = true;
+				_sType = _sType.substr(4); //Remove "Ease"
+			}
 			
 			/////////// NB bit //////////////////
 			eTypeNbBit = EuBit.nFast;
@@ -211,7 +220,7 @@ package language;
 					return EuVarType._ULong;
 				//break;
 				*/
-				
+
 				case "Float"  :
 					return  EuVarType._Float;
 				//break;

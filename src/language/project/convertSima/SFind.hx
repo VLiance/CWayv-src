@@ -558,13 +558,18 @@ package language.project.convertSima
 				}
 			}
 			
+			var _oVar : VarObj = findVarGlobalSClass(_oStaticClass.oRefClass, _sVar, false);
+			if (_oVar != null){
+				return _oVar;
+			}
+			
 			Debug.fError("static var not found : " + _sVar);
 			Debug.fStop();
 			return null;
 		}
 	
 		
-		private static function findVarGlobalSClass(_oClass:SClass, _sVar:String):VarObj {
+		private static function findVarGlobalSClass(_oClass:SClass, _sVar:String, _bManageError:Bool = true):VarObj {
 			
 			
 			if (_sVar.charAt(0) == "f") {  //PtrFunction maybe not best method
@@ -610,15 +615,17 @@ package language.project.convertSima
 				}
 			}
 			
-						Debug.fTrace("----");
-			for ( _oVar in _oClass.aAllVarList){
-				Debug.fTrace(_oVar.fGetName());
+			if(_bManageError){
+				Debug.fTrace("----");
+				for ( _oVar in _oClass.aAllVarList){
+					Debug.fTrace(_oVar.fGetName());
+				}
+				
+				
+				Debug.fFatal("Var not found : " + _sVar + " in class : "  + _oClass.sName);
+			//	Debug.fError("Var not found : " + _sVar + " in class : "  + _oClass.sName);
+				Debug.fStop();
 			}
-			
-			
-			Debug.fFatal("Var not found : " + _sVar + " in class : "  + _oClass.sName);
-		//	Debug.fError("Var not found : " + _sVar + " in class : "  + _oClass.sName);
-			Debug.fStop();
 			return null;
 		}
 		

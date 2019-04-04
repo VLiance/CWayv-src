@@ -4,12 +4,17 @@ package language.vars.varObj ;
 	import language.project.convertSima.SClass;
 	import language.project.convertSima.SFind;
 	import language.base.Debug;
+	import language.project.convertSima.TypeResolve;
 	
 
 	class VarCallClass extends CommonVar {
 
 		public var oCallRef  : SClass;
+		
+		
+		public var oTemplateVar  : VarObj;
 		public var eTemplateType  : EuVarType = EuVarType._None;
+		public var bEaseType  : Bool = false;
 		public var sCallClassNotReady  : SClass;
 		public var sTypeNotIni  : String;
 		public var bScopeOwner  : Bool;
@@ -21,6 +26,8 @@ package language.vars.varObj ;
 			
 			if (_sTemplate != ""){
 				eTemplateType = TextType.stringToType(_sTemplate);
+				oTemplateVar = TypeResolve.createVarWithType(oSBloc, _sTemplate, "", Text.nCurrentIndex,true);  //TODO create only one vartype and reuseit
+				
 			}
 			
 			bWeak = _bWeak;

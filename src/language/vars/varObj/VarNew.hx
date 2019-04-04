@@ -7,6 +7,7 @@ package language.vars.varObj ;
 	import language.project.convertSima.SClass;
 	import language.project.convertSima.SFunction;
 	import language.base.Debug;
+	import language.project.convertSima.TypeResolve;
 	
 	
 	//FuncCall with param else we have SFunction (EuVarType._Function) direcly
@@ -16,6 +17,7 @@ package language.vars.varObj ;
 	
 		public var oNewRef  : VarObj;
 		public var eNewTemplateType  : EuVarType = EuVarType._None;
+		public var oTemplateVar  : VarObj;
 		public var oVarSetObj  : VarObj;
 
 		
@@ -32,10 +34,20 @@ package language.vars.varObj ;
 	
 		public function extractTemplate(_sParam:String):Void {
 			eNewTemplateType = TextType.stringToType(_sParam);
-
+			
+			oTemplateVar = TypeResolve.createVarWithType(oSBloc, _sParam, "", Text.nCurrentIndex,true);  //TODO create only one vartype and reuseit
+				
+				
 			if (oVarSetObj.eType == EuVarType._CallClass){
-				cast(oVarSetObj, VarCallClass).eTemplateType = eNewTemplateType;
+				var _oCallClass : VarCallClass = cast(oVarSetObj, VarCallClass);
+				
+				
+			
+				
+				_oCallClass.eTemplateType = eNewTemplateType;
+				_oCallClass.bEaseType = TextType.bEaseType;
 			//	Debug.fFatal("!!! " + cast(oVarSetObj, VarCallClass).sName);
+				
 				
 			}
 		}

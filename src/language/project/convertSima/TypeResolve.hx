@@ -85,12 +85,14 @@ package language.project.convertSima ;
 					var _oVarUInt : VarInt =  new VarInt(_oSBloc);
 					_oVarUInt.bUnsigned = true;
 					_oVarUInt.eBit = TextType.eTypeNbBit;
+					_oVarUInt.bEaseType  = TextType.bEaseType;
 					return _oVarUInt;
 				//break;
 				
 				case EuVarType._Int :
 					var _oVatInt : VarInt = new VarInt(_oSBloc);
 					_oVatInt.eBit = TextType.eTypeNbBit;
+					_oVatInt.bEaseType  = TextType.bEaseType;
 					return _oVatInt;
 				//break;
 				
@@ -106,6 +108,7 @@ package language.project.convertSima ;
 				case EuVarType._Float :
 					var _oVarFloat: VarFloat =  new VarFloat(_oSBloc);
 					_oVarFloat.eBit = TextType.eTypeNbBit;
+					_oVarFloat.bEaseType  = TextType.bEaseType;
 					return  _oVarFloat;
 					
 					
@@ -1226,9 +1229,9 @@ package language.project.convertSima ;
 				_oResultRc.oToCallClass = _oToCallClass;
 				_oResultRc.oRcClass = _oRcClass;
 			
-				var _aVDrive : Array<Dynamic> =  _oResultString.sValue.split(":");
+				var _aVDrive : Array<Dynamic> =  _oResultString.sValue.split("|");
 				if (_aVDrive.length == 0) {
-					Debug.fError("Ressource require Drive or Virtual Drive, you need a first sentence followed by ':' ");
+					Debug.fError("Ressource require Drive or Virtual Drive, you need a first sentence followed by '|' ");
 					return EuVar.VarNone;
 				}
 				var _sVDrive : String =  _aVDrive[0];

@@ -868,7 +868,7 @@ package language.project.convertCpp ;
 
 					if (_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef, VarStaticClass).oRefClass.bIsVector ){
 						var _sParam : String = convertFuncCallParam(_oVarNew);
-						return convertCppVarType(_oVarNew.oNewRef, _nLineNum, false, null, _oVarNew) + "::New<gzFloat>({" + _sParam + "})";
+						return convertCppVarType(_oVarNew.oNewRef, _nLineNum, false, null, _oVarNew) + "::New<"  +   TypeText.typeToCPP(_oVarNew.oTemplateVar)   + ">({" + _sParam + "})";
 					}
 
 					if(_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef,VarStaticClass).oRefClass.bThread ){
