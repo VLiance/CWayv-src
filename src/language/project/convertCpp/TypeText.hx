@@ -162,7 +162,17 @@ package language.project.convertCpp ;
 					
 					if (_oCallClass.oCallRef.bIsVector){
 						//return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "< gzFloat>";
-						return _oCallClass.oCallRef.sNsAccess + "gzVec" +   _oCallClass.oCallRef.sName + "<" + TypeText.typeToCPP(_oCallClass.oTemplateVar) + ">";
+						
+						var _sResultTemplateVar : String = TypeText.typeToCPP(_oCallClass.oTemplateVar);
+						var _sIsEase : String = "";
+						if (_sResultTemplateVar.indexOf("Ease") >= 0){
+							_sIsEase = "Ease";
+						}
+						/*
+						if (_oCallClass.oTemplateVar){
+							
+						}*/
+						return _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +_sResultTemplateVar + ">";
 						//if (_bFuncParam) { //Not used&
 					
 					}else if (_oCallClass.oCallRef.bIsResults) {

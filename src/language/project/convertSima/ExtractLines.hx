@@ -867,8 +867,10 @@ import haxe.crypto.BaseCode;
 							_oNativeFuncCall.oAssociate = cast(_oSearchInBloc,CommonVar).oAssociate;
 							
 						}else {
+							/* Now we can use function on basic type
 							Debug.fError("Interpolation fonction on Common Var with no associate var : " +  cast(_oSearchInBloc,CommonVar).sName);
-							Debug.fStop();
+							Debug.fStop();*
+							*/
 						}
 					}
 					////////////////////
@@ -1091,8 +1093,12 @@ import haxe.crypto.BaseCode;
 				//break;
 				
 				default :
-					Debug.fError("PrecLocVar invalid type  : " + _oPrecLocVar.eType);
-					Debug.fStop();
+			
+					//if(_oPrecLocVar.eType == EuVarType._Float ){}
+					_oLookInBloc = _oPrecLocVar; //Now base type can have function
+					
+					//Debug.fError("PrecLocVar invalid type  : " + _oPrecLocVar.eType);
+					//Debug.fStop();
 				//break;
 			}
 			

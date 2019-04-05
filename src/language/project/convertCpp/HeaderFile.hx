@@ -203,6 +203,10 @@ union{\
 } gzVec##_Name;\
 gzDef_Vec_Other(_Name, _nSize);
 */					
+					
+						fAddVectorDef(_oSClass, _oSClass.sName);
+				
+					/*
 					var _sVecName : String = _oSClass.sName;
 					var _sVecSize : UInt = 4;
 					pushLine("template <class T>");
@@ -214,30 +218,36 @@ gzDef_Vec_Other(_Name, _nSize);
 					var _sVars : String = "";
 					for (_oVar in  _oSClass.aGlobalVarList) {
 						
-						//if (_oVar.eType == EuVarType._Float){
+			
 							if (!_bFirst){
 								_sVars += ", ";
 							}_bFirst = false;
 							
 							_sVars += _oVar.fGetName() ;
 						
-							/*
-						}else{
-							Debug.fError("Vector require float type"); // TODO other type?
-						}*/
+				
 					}
 
 					pushLine("struct { T " + _sVars + "; };" );
-					
 					/////////
 					pushLine("};");
 					pushLine("gzDef_Vec_Func("+ _sVecName +", " +  _sVecSize +")");
 					pushLine("};");
 					//pushLine("} gzVec" + _sVecName +  ";");
 					pushLine("gzDef_Vec_Other(" + _sVecName + ", " + _sVecSize + ");");
+					*/
+					
+					fAddVectorDef(_oSClass, "Ease" + _oSClass.sName,  ", vSpeed", 1, "Ease");
+					
+					/*
+					pushLine("template <class T>");
+					pushLine("struct gzVecEase" + _sVecName + ": gzVec" + _sVecName + "<T>{T nSpeed; T nLimit;");
+					pushLine("};");
+					*/
+					
 					
 					pushLine("namespace " +  _oSClass.sName  + "{");
-					pushLine("template<class T> inline gzVec" + _sVecName + "<T> New(gzVec" +  _oSClass.sName  + "<T> _oIni){return _oIni;};");
+					pushLine("template<class T> inline gzVec" + _oSClass.sName + "<T> New(gzVec" +  _oSClass.sName  + "<T> _oIni){return _oIni;};");
 					
 					pushLine(_oSClass.sEndNamespace);
 					pushLine("#endif");
@@ -429,6 +439,50 @@ gzDef_Vec_Other(_Name, _nSize);
 			}
 		
 		}
+		
+		
+		
+		public function fAddVectorDef(_oSClass:SClass, _sVecName:String, _sAdditionalVar:String = "", _nAdditionalVarSize = 0, _sAdditionalFunc:String = ""){
+			//var _sVecName : String = _oSClass.sName;
+			var _sVecSize : UInt = _oSClass.aGlobalVarList.length + _nAdditionalVarSize;
+			pushLine("template <class T>");
+			pushLine("struct gzVec" + _sVecName + " {");
+			pushLine("union{");
+			pushLine("T aTab[" + _sVecSize + "];");
+			
+			var _bFirst = true;
+			var _sVars : String = "";
+			for (_oVar in  _oSClass.aGlobalVarList) {
+				
+				//if (_oVar.eType == EuVarType._Float){
+					if (!_bFirst){
+						_sVars += ", ";
+					}_bFirst = false;
+					
+					_sVars += _oVar.fGetName() ;
+				
+					/*
+				}else{
+					Debug.fError("Vector require float type"); // TODO other type?
+				}*/
+			}
+
+			pushLine("struct { T " + _sVars + _sAdditionalVar + "; };" );
+			/////////
+			pushLine("};");
+			pushLine("gzDef_Vec_Func(" + _sVecName +", " +  _sVecSize +")");
+			if(_sAdditionalFunc != ""){
+				pushLine("gzDef_Vec_Func_" + _sAdditionalFunc +"(" + _sVecName +", " +  _sVecSize +")");
+			}
+			pushLine("};");
+			//pushLine("} gzVec" + _sVecName +  ";");
+			pushLine("gzDef_Vec_Other(" + _sVecName + ", " + _sVecSize + ");");
+			
+	
+		}
+		
+		
+		
 		//#ifndef tHDef_LibName_Example
 		//#define tHDef_LibName_Example
 		private function pushHeaderDefine(_oSPck:SPackage):Void {

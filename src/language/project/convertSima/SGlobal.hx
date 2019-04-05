@@ -38,6 +38,8 @@ package language.project.convertSima ;
 		public static var aNFArray : Array<Dynamic> = [];
 		public static var aNFDataArr : Array<Dynamic> = [];
 		public static var aNFString : Array<Dynamic> = [];
+		public static var aNFEaseNumber : Array<Dynamic> = [];
+		public static var aNFVector : Array<Dynamic> = [];
 		
 		public static var aNFGate: Array<Dynamic> = [];
 		
@@ -105,6 +107,13 @@ package language.project.convertSima ;
 			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "ExecuteAll", [], "UInt", "", true, "this"));
 			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "Receive", [], "ThreadMsg", "", true, "this"));
 			aNFGate.push(new SNatFunction(_oSClassNative, EuVarType._Gate, "", "Send", ["_oMsgToCopy : ThreadMsg"], "Int", "", true));
+			
+			aNFEaseNumber.push(new SNatFunction(_oSClassNative, EuVarType._Float, "", "fTo", ["_nDest:Number"], "Void", "", true));
+			aNFEaseNumber.push(new SNatFunction(_oSClassNative, EuVarType._Float, "", "fStep", ["_nSpeed:Float=10", "_nLimit:Float = 999999999"], "Void", "", true));
+			
+			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fStep", [], "Void", "", true));
+			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fSetSpeed", ["_nSpeed:Number"], "Void", "", true));
+			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fSetLimit", ["_nLimit:Number"], "Void", "", true));
 			
 			
 		}

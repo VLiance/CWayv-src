@@ -262,7 +262,18 @@ package language.project.convertSima
 					return findNativeFunction(SGlobal.aNFString, _sFunc);
 				//break;
 				
+				case EuVarType._Number:
+					return findNativeFunction(SGlobal.aNFEaseNumber, _sFunc);
+				//break;
+				
+				
+				case EuVarType._SClass:
+					var _oSClass : SClass = cast(_oSource);
+					if (_oSClass.bIsVector){
+						return findNativeFunction(SGlobal.aNFVector, _sFunc);
+					}
 				default:
+
 			}
 			
 			
@@ -328,6 +339,7 @@ package language.project.convertSima
 			if (_bDontFail){return null; };
 
 			//maybe a Function type
+			//Debug.fError("can't find func obj for func : " + _sFunc + " in class " + _oSClass.sName  + " " + _oSource.fGetType());
 			Debug.fError("can't find func obj for func : " + _sFunc + " in class " + _oSClass.sName );
 			Debug.fStop();
 			
