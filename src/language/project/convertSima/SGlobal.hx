@@ -111,7 +111,8 @@ package language.project.convertSima ;
 			aNFEaseNumber.push(new SNatFunction(_oSClassNative, EuVarType._Float, "", "fTo", ["_nDest:Number"], "Void", "", true));
 			aNFEaseNumber.push(new SNatFunction(_oSClassNative, EuVarType._Float, "", "fStep", ["_nSpeed:Float=10", "_nLimit:Float = 999999999"], "Void", "", true));
 			
-			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fStep", [], "Void", "", true));
+		//	aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fStep", [], "Void", "", true));
+			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fStep", ["_nSpeed:Number = 0", "_nLimit:Number = 0"], "Void", "", true));
 			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fSetSpeed", ["_nSpeed:Number"], "Void", "", true));
 			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fSetLimit", ["_nLimit:Number"], "Void", "", true));
 			
