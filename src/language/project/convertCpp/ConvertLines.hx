@@ -1530,6 +1530,13 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				_bNoNameSpace = false;
 				if (i != 0) {
+					
+					var _oRealVar : VarObj = _oVar;
+					if (_oRealVar.eType == EuVarType._ExtendVar){
+						_oRealVar = cast(_oVar, ExtendVar ).oVar;
+					}
+					
+					
 					if (_oVar.eType == EuVarType._StaticClass) { //Must be firts var also
 						 _oNextVar  = _aVarList[i];
 						if ( (TypeResolve.isVarCommon( _oNextVar) && cast(_oNextVar,CommonVar ).eConstant == EuConstant.Macro ) 
@@ -1561,7 +1568,8 @@ package language.project.convertCpp ;
 						_bBefStaticClass = true;
 					}else if (_oVar.eType == EuVarType._Enum || _oVar.eType == EuVarType._UseEnum || _oVar.eType == EuVarType._ExClass ) {
 						_sReturn += "";
-					}else if ( (_oVar.eType == EuVarType._CallClass && (cast(_oVar, VarCallClass ).oCallRef.bIsVector || cast(_oVar, VarCallClass ).oCallRef.bIsResults ) )  ||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._DArray ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
+					}else if ( (_oRealVar.eType == EuVarType._CallClass && (cast(_oRealVar, VarCallClass ).oCallRef.bIsVector || cast(_oRealVar, VarCallClass ).oCallRef.bIsResults ) )  
+					||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._DArray ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
 						_sReturn += "."; 
 					}else {
 						_sReturn += "->";

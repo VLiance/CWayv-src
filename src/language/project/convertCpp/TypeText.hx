@@ -144,7 +144,7 @@ package language.project.convertCpp ;
 		
 		
 		
-		public static function typeToCPP(_oVar:VarObj, _bFunReturn:Bool = false, _bIsolate:Bool = false, _bForceBit:Bool = false, _bFuncParam:Bool = false, _bNotScopeOwner : Bool = false, _bParam_owner: Bool = false):String {
+		public static function typeToCPP(_oVar:VarObj, _bFunReturn:Bool = false, _bIsolate:Bool = false, _bForceBit:Bool = false, _bFuncParam:Bool = false, _bNotScopeOwner : Bool = false, _bParam_owner: Bool = false, _bAddEasing:Bool = true):String {
 	
 			var _eType : EuVarType = _oVar.eType;
 			var _sParamAdd : String = "";
@@ -172,7 +172,7 @@ package language.project.convertCpp ;
 						if (_oCallClass.oTemplateVar){
 							
 						}*/
-						return _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +_sResultTemplateVar + ">";
+						return _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +TypeText.typeToCPP(_oCallClass.oTemplateVar,false,false,false,false,false,false,false) + ">";
 						//if (_bFuncParam) { //Not used&
 					
 					}else if (_oCallClass.oCallRef.bIsResults) {
@@ -358,10 +358,21 @@ package language.project.convertCpp ;
 				
 				case EuVarType._Float :
 					var _oVarFloat : VarFloat  = cast(_oVar);
-					if(_oVarFloat.bEaseType){
-						return "gzEase<gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit )+ ">" ;
+					var _sType : String = "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit);
+					if (_oVarFloat.bEaseType && _bAddEasing){
+					
+						return "gzEase<gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit ) + ">";
+						/*
+						var _sSubType : String = "";
+						if (_bAddSubType){//Vector not require subtype
+							//_sSubType = "," + _sType;
+							return "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit );
+						}else{
+							return "gzEase<gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit )+ ">";
+						}*/
+						//return "gzEase<gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit )+ ">" + _sSubType ; //SubType template used in gzEase
 					}else{
-						return "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit);
+						return _sType;
 					}
 					
 					

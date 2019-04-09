@@ -237,7 +237,7 @@ gzDef_Vec_Other(_Name, _nSize);
 					pushLine("gzDef_Vec_Other(" + _sVecName + ", " + _sVecSize + ");");
 					*/
 					
-					fAddVectorDef(_oSClass, "Ease" + _oSClass.sName,  ", vSpeed", 1, "Ease");
+					fAddVectorDef(_oSClass, "Ease" + _oSClass.sName,  ", vSpeed", 1, "Ease",false);
 					
 					/*
 					pushLine("template <class T>");
@@ -442,10 +442,14 @@ gzDef_Vec_Other(_Name, _nSize);
 		
 		
 		
-		public function fAddVectorDef(_oSClass:SClass, _sVecName:String, _sAdditionalVar:String = "", _nAdditionalVarSize = 0, _sAdditionalFunc:String = ""){
+		public function fAddVectorDef(_oSClass:SClass, _sVecName:String, _sAdditionalVar:String = "", _nAdditionalVarSize = 0, _sAdditionalFunc:String = "", _bHaveDefault = true){
 			//var _sVecName : String = _oSClass.sName;
 			var _sVecSize : UInt = _oSClass.aGlobalVarList.length + _nAdditionalVarSize;
-			pushLine("template <class T>");
+			if(_bHaveDefault){
+				pushLine("template <class T, class SubT = T>");
+			}else{
+				pushLine("template <class SubT, class T= gzEase<SubT>>");
+			}
 			pushLine("struct gzVec" + _sVecName + " {");
 			pushLine("union{");
 			pushLine("T aTab[" + _sVecSize + "];");
@@ -472,7 +476,9 @@ gzDef_Vec_Other(_Name, _nSize);
 			pushLine("};");
 			pushLine("gzDef_Vec_Func(" + _sVecName +", " +  _sVecSize +")");
 			if(_sAdditionalFunc != ""){
-				pushLine("gzDef_Vec_Func_" + _sAdditionalFunc +"(" + _sVecName +", " +  _sVecSize +")");
+				pushLine("gzDef_Vec_Func_" + _sAdditionalFunc +"(" + _sVecName +", " +  _sVecSize + "," + _oSClass.sName + ")");
+			}else{
+				pushLine("gzDef_Vec_Func_EaseConv(" + _sVecName +", " +  _sVecSize +")");
 			}
 			pushLine("};");
 			//pushLine("} gzVec" + _sVecName +  ";");
