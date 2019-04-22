@@ -42,11 +42,18 @@ package language.vars.varObj ;
 		
 		public function applyVarArray(_oVar:VarObj):Void {
 			oArrayFull = _oVar;  //Maybe an extended var
-			if (oArrayFull.eType == EuVarType._ExtendVar) {
-				oArray = cast(cast(_oVar,ExtendVar).oVar);
-			}else {
-				oArray = cast(oArrayFull);
-			}
+		//	try{
+				
+				if (oArrayFull.eType == EuVarType._ExtendVar) {
+					oArray = cast(cast(_oVar,ExtendVar).oVar);
+				}else {
+					oArray = cast(oArrayFull);
+				}
+				/*
+			} catch (err : String ) {
+				Debug.fError("Can't convert to array: " + err);
+				throw err; //throw away
+			}*/
 		}
 		
 		

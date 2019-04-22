@@ -136,6 +136,9 @@ package language;
 			
 			
 			bEaseType = false;
+			if (_sType == null){ //error like :	public var gzFloat nConterStart = 0;
+				Debug.fError("Type invalid: " + _sLine);
+			}
 			
 			if (_sType.length > 5 && _sType.indexOf("Ease") >= 0 ){
 				bEaseType = true;

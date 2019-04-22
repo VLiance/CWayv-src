@@ -26,6 +26,11 @@ package language.vars.special ;
 			//	}
 				super(_oSBloc, _eType);
 				
+				if (_eType == EuVarType._String){
+					oVarsType = TypeResolve.createVarWithType(_oSBloc, "UInt", "", Text.nCurrentIndex,true);
+					return;
+				}
+				
 				var _aParamList : Array<Dynamic> = _sParam.split(",");
 				var _sLineType : String = _aParamList[0];
 				

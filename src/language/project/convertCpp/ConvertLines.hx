@@ -1158,7 +1158,15 @@ package language.project.convertCpp ;
 				var _j:UInt = _aVarList.length;
 				for (j in 0 ..._j){
 					var _oFixeSquare : VarObj  =  _aVarList[j];
-					_sArray +=  "[" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + "]";
+					if(j == _aVarList.length-1  && (_oContainer == null || _oContainer.eType != EuVarType._LineInput) && _oLineArray.oArray.eType != EuVarType._FixeArray) {
+						//Reading operation
+						_sArray +=  "(" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + ")";
+					}else{
+						//Writing operation
+						_sArray +=  "[" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + "]" ;
+						//if (_oContainer != null) {_oContainer.fGetType(); }
+					}
+					
 				}
 				return _sArray;
 				
