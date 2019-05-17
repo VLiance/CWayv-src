@@ -70,7 +70,7 @@ package language.vars.varObj ;
 			for (i in 0 ..._i) {
 			
 				if (_aLookParamList[i] == null) {
-					Debug.fError("LookParam not correspond in : " + _oLookFunc.sName + " for "  + _aParamList[i] + "-->["+ _sParam   + "]" +  " (Total: " + _aParamList.length + ", Req: " +_aLookParamList.length  + ")");
+					Debug.fError("LookParam not correspond with : " + _oLookFunc.sName + "(" + _sParam + ")" + " for param:"  + _aParamList[i] +  " (Total: " + _aParamList.length + ", Req: " +_aLookParamList.length  + ")");
 				}
 				
 				////ParamGetType/// Maybe do direct

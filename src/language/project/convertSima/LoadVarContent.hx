@@ -256,10 +256,14 @@ package language.project.convertSima ;
 			 
 				_oSFunction.aParamNotIni = _oExtClass.oFuncConstructor.aParamNotIni;
 				
+				var _oExtFunc : SFunction =  _oExtClass.oFuncConstructor;
+				
+				
 				var _sParamList: String = "";
 				if(_oSFunction.aParamNotIni.length > 0 ){
 					//extractFunctionInfoParam(_oSFunction);
-
+					
+					var _nTotalExtendRemain : Int = _oExtFunc.aParamList.length;
 					var _bFirst : Bool = true;
 					for( _oParam  in _oSFunction.aParamList) {
 						if (!_bFirst) {
@@ -267,6 +271,11 @@ package language.project.convertSima ;
 						}
 						_bFirst = false;
 						_sParamList += _oParam.fGetName();
+						
+						_nTotalExtendRemain--;
+						if (_nTotalExtendRemain == 0){
+							break;
+						}
 					}
 					
 					/*
