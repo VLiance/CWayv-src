@@ -382,6 +382,12 @@ package language.project.convertSima ;
 						_bIsFound = true;
 						_bIsPod = true;
 						_eClassType = EuClassType.Pod;
+						
+					case "struct":
+						_bIsFound = true;
+						_bIsPod = true;
+						_eClassType = EuClassType.Pod;
+					
 					//break; 
 					
 					case "class":

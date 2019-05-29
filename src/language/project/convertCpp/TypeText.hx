@@ -182,7 +182,7 @@ package language.project.convertCpp ;
 						if(_oCallClass.bWeak){
 							return "gzWp<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 						}else if(_oCallClass.oCallRef.bIsPod){
-							return "gzPod<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
+							return "gzUp<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 						}else if(_oCallClass.bEmbed){
 							//return "gzEmbed<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
 							return "gzPod<" + _oCallClass.oCallRef.sNsAccess + "c" +   _oCallClass.oCallRef.sName + ">";
@@ -865,7 +865,8 @@ package language.project.convertCpp ;
 			
 			if (_oMod != null && _oMod.bScopeConvert) {
 				if (_oMod.bNewCreation) {
-					if (_oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) {
+				//	if (_oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) {
+					if ( _oSClass.bIsVector || _oSClass.bIsResults) { //bIsPod is struct
 						//return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName  + ")" +  "(" + _sVar + ")"; //?
 						return  "(" + _sVar + ")"; 
 					}else{	
@@ -888,7 +889,8 @@ package language.project.convertCpp ;
 
 			}else {
 				// if (_oConvertInType.eType == EuVarType._CallClass && VarCallClass(_oConvertInType).oCallRef.bIsPod) { //POD
-				 if (_oSClass.bIsPod ) { //POD
+				// if (_oSClass.bIsPod ) { //POD
+				 if (false ) { //POD is struct now
 						return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName  + "*)" +  "(" + _sVar + ")"; //Work?
 				}else if ( _oSClass.bIsVector || _oSClass.bIsResults) {
 			
@@ -1045,6 +1047,10 @@ package language.project.convertCpp ;
 					//return "gzPStr(" + _sVar + ")"; ;
 					return  _sVar ;
 				//break;
+				
+				
+			//	case EuVarType._LineArray:
+			//		return   "gzStrC((char*)" + _sVar + ")"; //Not good we have no lenght
 				
 				case EuVarType._Int:
 					return   "gzStrI(" + _sVar + ")";

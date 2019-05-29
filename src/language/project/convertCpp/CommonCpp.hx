@@ -249,8 +249,8 @@ package language.project.convertCpp ;
 		private  function getAllExtendClassToString(_oSClass:SClass, _sCopy:String = ""):String {
 			var _sExtend : String = "";
 			var i : Int = 0;
-			
-			var _alist : Array<Dynamic> =  _oSClass.aExtendAllClassList;
+
+			var _alist : Array<SClass> =  _oSClass.aExtendAllClassList;
 
 			if (_bAllVirtual) {
 				_alist = _oSClass.aExtendAllClassList;
@@ -260,15 +260,21 @@ package language.project.convertCpp ;
 			
 			for( _oExtend  in _alist) {//SClass
 				
-				//if (_oExtend.sName != "Class" || i == 0) { //0 is a direct extend and must be ini
-			
-				if (i != 0) {
-					_sExtend +=  ",";
-				}
-				_sExtend += _oExtend.sNsAccess + "c" +  _oExtend.sName + _sCopy;
-				i++;
+				if (!_oExtend.bIsCustomCppString){
+					
+					
+					//if (_oExtend.sName != "Class" || i == 0) { //0 is a direct extend and must be ini
 				
+					if (i != 0) {
+						_sExtend +=  ",";
+					}
+					_sExtend += _oExtend.sNsAccess + "c" +  _oExtend.sName + _sCopy;
 			
+				}else{
+					//_sExtend += _oExtend.sName + "()"; //TODO parma? //We can have no constructor in c++ //TODO make syntax to add it
+		
+				}
+				i++;
 			}
 			/*
 			if (i == 0) {
@@ -288,6 +294,17 @@ package language.project.convertCpp ;
 		
 		private  function getExtendClassToString(_oSClass:SClass, _sCopy:String = ""):String { //Execute
 
+			for (_oExtend  in  _oSClass.aExtendClass) {
+				if (_oExtend.bIsCustomCppString){
+					return " : " + _oExtend.sName;
+				}
+			}
+			if (_oSClass.bIsPod) {
+				return "";
+			}
+			
+			
+			
 			var _sShared : String = "public ";
 			if (_bAllVirtual) {
 				_sShared = "public virtual ";

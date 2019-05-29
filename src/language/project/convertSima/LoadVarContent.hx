@@ -254,6 +254,8 @@ package language.project.convertSima ;
 		
 		public static function fSetDefaultConstructLineToExtract(_oSFunction : SFunction, _oExtClass : SClass ){
 			 
+				if (_oExtClass.oFuncConstructor == null){return; }
+				
 				_oSFunction.aParamNotIni = _oExtClass.oFuncConstructor.aParamNotIni;
 				
 				var _oExtFunc : SFunction =  _oExtClass.oFuncConstructor;

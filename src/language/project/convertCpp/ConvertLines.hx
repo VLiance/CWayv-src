@@ -865,7 +865,19 @@ package language.project.convertCpp ;
 					var _oVarNew : VarNew = cast(_oVar);	
 					//return "gzSp<" + convertCppVarType(_oVarNew.oNewRef, _nLineNum) + ">(new " + convertCppVarType(_oVarNew.oNewRef, _nLineNum) + "(" + convertFuncCallParam(_oVarNew)  + ") )";
 					
-
+					
+					if (_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef, VarStaticClass).oRefClass.bIsPod ){
+						var _sParam : String = convertFuncCallParam(_oVarNew);
+					
+						
+						//Embed -> (gzEmbed)//	return convertCppVarType(_oVarNew.oNewRef, _nLineNum, false, null, _oVarNew) + "::c"  +   cast(_oVarNew.oNewRef, VarStaticClass).oRefClass.sName  + "(" + _sParam + ")";
+						//return "new " + convertCppVarType(_oVarNew.oNewRef, _nLineNum, false, null, _oVarNew) + "::c"  +   cast(_oVarNew.oNewRef, VarStaticClass).oRefClass.sName  + "(" + _sParam + ")";
+						if (_sParam > "") {
+							_sParam = ", " + _sParam;
+						}
+						return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) +  "::New(this" + _sParam + ")";
+					}
+					
 					if (_oVarNew.oNewRef.eType == EuVarType._StaticClass && cast(_oVarNew.oNewRef, VarStaticClass).oRefClass.bIsVector ){
 						var _sParam : String = convertFuncCallParam(_oVarNew);
 						return convertCppVarType(_oVarNew.oNewRef, _nLineNum, false, null, _oVarNew) + "::New<"  +   TypeText.typeToCPP(_oVarNew.oTemplateVar)   + ">({" + _sParam + "})";
@@ -879,11 +891,14 @@ package language.project.convertCpp ;
 						if (_sParam > "") {
 							_sParam = ", " + _sParam;
 						}
+						
 						if (_oConvertIn.eType == EuVarType._CallClass && !cast(_oConvertIn,VarCallClass).bScopeOwner) {
 							return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) + "::Get(thread)->New(this" + _sParam  + ").get()";//this is temp
 						}else {
 							return  convertCppVarType(_oVarNew.oNewRef, _nLineNum,false,null,_oVarNew) +  "::Get(thread)->New(this" + _sParam + ")"; //this is temp
 						}
+						
+						
 					}
 					//return  checkVarConvertIn(_oVarCallClass, _oConvertIn,  _oVarCallClass.sName);
 					

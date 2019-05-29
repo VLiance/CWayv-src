@@ -110,9 +110,9 @@ package language.project.convertCpp ;
 					//class Example {
 				//Extend
 				var _sExtend  : String  = "";
-				if(!_oSClass.bIsPod){
+				//if(!_oSClass.bIsPod){
 					_sExtend   =  getExtendClassToString(_oSClass); //return bUseDefineIN
-				}
+				//}
 				
 				if (_oSClass.sName == "Class" && _oSClass.oSLib.sIdName == "GZ"){
 					
@@ -350,9 +350,11 @@ gzDef_Vec_Other(_Name, _nSize);
 				
 				
 				
+			
+				
 				///////////////////////////////
 				///////// Thread Static //////
-				if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic &&  !_oSClass.bIsResults){
+				if (!_oSClass.bIsPod && !_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic &&  !_oSClass.bIsResults){
 				//if (!_oSClass.oPackage.oSFrame.bSkipStatic){
 
 					pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " cs" + _oSClass.sName + getOverplaceString(_oSClass)  + "  {");
@@ -415,6 +417,26 @@ gzDef_Vec_Other(_Name, _nSize);
 				
 				
 				pushLine("namespace " +  _oSClass.sName  + "{");
+				
+				
+					if (_oSClass.bIsPod ){ //Structure --> Same as fCreateConstrutorWrapper?
+						var _sLoc : String =  "c" + _oSClass.sName;
+						pushLine("inline "  + "gzUp<" + _sLoc  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
+						addTab();
+						pushLine("gzUp<" + _sLoc  + ">_oTemp = gzUp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
+						//pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
+						pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
+						if (_oSClass.bHaveOverplace) {
+							pushLine("return _oTemp.get();");//
+						}else{
+							pushLine("return _oTemp;");//
+						}
+						
+						subTab();
+						pushLine("}");
+							
+					}
+					
 			//	fCreateConstrutorWrapper();
 				fAddThreadFonction(_oSClass);
 				fAddAtomicFonction(_oSClass);
@@ -576,9 +598,11 @@ gzDef_Vec_Other(_Name, _nSize);
 			var _i:UInt = _aList.length;
 			for (i in 0 ..._i) {
 				var _oExtend : SClass  = _aList[i];
-				var _sPath : String = _oExtend.oPackage.sPath; 
-				_sPath = _sPath.split("\\").join("/");  
-				pushLine("#include \"" + _oExtend.oSLib.sWriteName + "/" + _sPath + _oExtend.sName + ".h\"");
+				if(!_oExtend.bIsCustomCppString){
+					var _sPath : String = _oExtend.oPackage.sPath; 
+					_sPath = _sPath.split("\\").join("/");  
+					pushLine("#include \"" + _oExtend.oSLib.sWriteName + "/" + _sPath + _oExtend.sName + ".h\"");
+				}
 			}
 		}
 		
@@ -1140,6 +1164,11 @@ gzDef_Vec_Other(_Name, _nSize);
 
 		
 		public function fAddPodExtends(_oSClass:SClass):Void {
+			
+			for( _oExt   in _oSClass.aExtendClass) { if (_oExt.bIsCustomCppString){
+				return;
+			}}
+			
 			if (!_oSClass.bIsPod) { //Error if not found before
 				Debug.fError("Extend class for pod must be pod : " + _oSClass.sName);
 			}

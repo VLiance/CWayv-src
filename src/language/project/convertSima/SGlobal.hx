@@ -40,6 +40,7 @@ package language.project.convertSima ;
 		public static var aNFString : Array<Dynamic> = [];
 		public static var aNFEaseNumber : Array<Dynamic> = [];
 		public static var aNFVector : Array<Dynamic> = [];
+		public static var aNFFixeArray : Array<Dynamic> = [];
 		
 		public static var aNFGate: Array<Dynamic> = [];
 		
@@ -116,6 +117,9 @@ package language.project.convertSima ;
 			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fSetSpeed", ["_nSpeed:Number"], "Void", "", true));
 			aNFVector.push(new SNatFunction(_oSClassNative, EuVarType._CallClass, "", "fSetLimit", ["_nLimit:Number"], "Void", "", true));
 			
+			
+		  //aNFFixeArray.push(new SNatFunction(_oSClassNative,  EuVarType._Float,    "GZ_uEase_", "fLimit", ["fLimit : Float"], "Void", "&("));
+			aNFFixeArray.push(new SNatFunction(_oSClassNative, EuVarType._LineArray, "GZ_CArray_", "fToStr", ["_nSize:UIntX"], "String",  ""));
 			
 		}
 		

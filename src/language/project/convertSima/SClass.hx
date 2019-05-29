@@ -63,7 +63,9 @@ package language.project.convertSima;
 		public var sThreadClass : String = "";
 		public var oThreadClass : SClass;
 		public var bCpp : Bool = false;
+		public var bIsCustomCppString : Bool = false;
 
+		
 		//public var oSFrame : SFrame;
 	
 		public var sName : String;
@@ -487,10 +489,20 @@ package language.project.convertSima;
 						aExtendClass.push(oExtend);
 					
 				}
+
 				
-				
+			//}else if (sExtendNotIni.indexOf("\"") != -1) {	
+			}else if (sExtendNotIni.charAt(0) == '"') {
+
+					var oExtend : SClass =  new SClass(oSProject.Main, oSProject, oPackage, Text.between3(sExtendNotIni, 1, EuBetween.EndString));
+					
+					
+					oExtend.bIsCustomCppString = true;
+					//SFind.findClass(this, "Class");
+					aExtendClass.push(oExtend);
 				
 			}else{
+
 				var _aStrList : Array<Dynamic> = sExtendNotIni.split(",");
 			
 				var _i:UInt = _aStrList.length;

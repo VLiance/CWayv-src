@@ -262,6 +262,14 @@ package language.project.convertSima
 					return findNativeFunction(SGlobal.aNFString, _sFunc);
 				//break;
 				
+				//case EuVarType._LineArray:
+				//	return findNativeFunction(SGlobal.aNFLineArray, _sFunc);
+					
+				case EuVarType._FixeArray:
+					return findNativeFunction(SGlobal.aNFFixeArray, _sFunc);	
+				//break;
+				
+
 				case EuVarType._Number:
 					return findNativeFunction(SGlobal.aNFEaseNumber, _sFunc);
 				//break;

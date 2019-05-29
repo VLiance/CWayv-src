@@ -158,7 +158,7 @@ package language.project.convertCpp ;
 				return;
 			}
 			
-			if (!_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic && !_oSClass.bIsResults ){
+			if (!_oSClass.bIsPod && !_oSClass.bExtension && !_oSClass.oPackage.oSFrame.bSkipStatic && !_oSClass.bIsResults ){
 			//if (!_oSClass.oPackage.oSFrame.bSkipStatic){
 				
 			//if(oSClass.bHaveOverplace == false){

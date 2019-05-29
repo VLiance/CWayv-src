@@ -297,7 +297,7 @@ class SPackage extends SBloc
 		}
 		public function fHaveStackType() : Bool {
 			for (_oClass in aClassList){
-				if ( _oClass.bIsVector  || _oClass.bIsResults ){
+				if ( _oClass.bIsPod  || _oClass.bIsVector  || _oClass.bIsResults ){
 					return true;
 				}
 			}
