@@ -14,6 +14,7 @@ package language.enumeration ;
 					
 			 Class 	 ;
 			 Class_H 	 ;
+			 Class_H_Aft 	 ;
 			
 			 Namespace 	 ;
 			 Namespace_H 	 ;
@@ -69,6 +70,9 @@ package language.enumeration ;
 					//break;
 					case "cpp_class_h" :
 						return EuCppLineType.Class_H;
+						
+					case "cpp_class_h_" :
+						return EuCppLineType.Class_H_Aft;
 					//break;
 					
 					case "cpp_static" :

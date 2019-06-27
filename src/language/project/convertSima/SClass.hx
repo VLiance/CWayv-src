@@ -193,6 +193,7 @@ package language.project.convertSima;
 		
 		public var aCppLineListClass : Array<Dynamic> = [];
 		public var aCppLineListClass_H : Array<Dynamic> = [];
+		public var aCppLineListClass_H_aft : Array<Dynamic> = [];
 		public var aCppLineInitializerList_H : Array<VarCppLine> = [];
 		public var aCppLineInitializer_H : Array<VarCppLine> = [];
 		
@@ -764,6 +765,7 @@ package language.project.convertSima;
 			aCppLineGlsl  = [];
 			aCppLineListClass  = [];
 			aCppLineListClass_H  = [];
+			aCppLineListClass_H_aft  = [];
 			aCppLineInitializerList_H  = [];
 			aCppLineInitializer_H  = [];
 			aCppLineListNamespace  = [];
@@ -884,6 +886,10 @@ package language.project.convertSima;
 					
 					case EuCppLineType.Class_H : 
 						aCppLineListClass_H.push(_oCpp);
+						
+					case EuCppLineType.Class_H_Aft : 
+						aCppLineListClass_H_aft.push(_oCpp);
+						
 					//break;
 					
 					case Initializer_list :

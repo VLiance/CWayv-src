@@ -554,7 +554,7 @@ package language.project.convertCpp ;
 					pushLine("{");
 					
 					pushLine("//Special var ini"); //TODO create function to call for complexe initiliazation (in .cpp)
-					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction); //TODO must be before Cpp section initilizer
+					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction, _oSFunction.oSClass.aIniGlobalVarList); //TODO must be before Cpp section initilizer
 				
 					fAddCppLines(_oSClass.aCppLineInitializer_H);
 					pushLine("};");

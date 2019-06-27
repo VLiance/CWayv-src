@@ -129,7 +129,9 @@ package language;
 		public function fBuildEntryPointsFile(_oFile : CwmFile, _oEntry: BuildEntry):Void {
 			//var _oMainLib : SLib = oSProject.fFindLib(_oEntry.sLib_IdName);
 			var _oMainLib : SLib = oSProject.fFindLib(_oEntry.sFolder);
-			oSProject.setMainLib(_oMainLib, null, null, "MainEntry");
+			
+			oSProject.setMainLib(_oMainLib, null, null, _oEntry.sFileName );
+			//oSProject.setMainLib(_oMainLib, null, null,  "MainEntry");
 		}
 		
 		/////////////////////////////////////////////////////////////////////////////////////////////////

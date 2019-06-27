@@ -35,6 +35,7 @@ package language.cwMake.line;
 		public var sLib_IdName : String = "";  //sLib = File FolderName  -> To REMOVE ???????
 		public var sFile : String = "";
 		public var sFileName : String = "";
+		public var sFileExt : String = ""; ///Todo
 		public var sPath : String = "";
 
 
@@ -56,6 +57,10 @@ package language.cwMake.line;
 				var _sSubPath : String = sPath.substring(0,sPath.length-1);
 				sFolder = _sSubPath.substring(_sSubPath.lastIndexOf("/") + 1, _sSubPath.length);
 			}
+			
+			var _nLastDotIndex = sFileName.lastIndexOf(".");
+			sFileName = sFileName.substring(0, _nLastDotIndex);
+			///Todo sFileExt
 			
 			//Debug.fTrace("sFileName: " +sFileName );
 			//Debug.fTrace("sPath: " +sPath );

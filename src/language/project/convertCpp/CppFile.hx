@@ -129,6 +129,9 @@ package language.project.convertCpp ;
 			//getGateList(oSClass);
 			getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Public ,false,false,EuConstant.Normal);
 			getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Private,false,false,EuConstant.Normal);
+			getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public,false,false,EuConstant.Normal);
+			getVarToConvert(_oSClass.aStaticVarList, EuSharing.Private,false,false,EuConstant.Normal);
+			
 
 			pushLine("////// Current Lib Access  ////");
 			//pushLine("namespace " + oSClass.oSLib.sWriteName + "{"); 
@@ -224,6 +227,7 @@ package language.project.convertCpp ;
 		}
 		
 		private function extractDestructor(_oSClass:SClass):Void {
+			//pushLine("printf(\"\\n --Destroy:" +  _oSClass.sName +"\"); ");
 			if (_oSClass.oFuncDestrutor != null) {
 				ConvertLines.convertBlocLines(this, _oSClass.oFuncDestrutor);
 			}
@@ -968,15 +972,27 @@ package language.project.convertCpp ;
 			pushLine("#endif");
 		}
 		public function fAddIniClass(_oSClass:SClass) {
+			
+			
 			pushLine("void Ini_Class(){");
+			
+			ConvertLines.convertSpecialVarConstructorIni(this, _oSClass, _oSClass.aIniStaticVarList);
+			/**
 			for ( _oVar  in _oSClass.aAtomicVarList) {//VarObj
 			//	if (_oVar is CommonVar) {
 				if ( Std.is(_oVar, CommonVar))  {
 					var _oStaticVar : CommonVar = cast(_oVar);
-					pushLine( _oStaticVar.sName + ".Ini();");
+					//pushLine( _oStaticVar.sName + ".Ini();");
+					
+					pushLine( _oStaticVar.sName + "=0;");//Todo make true ini
+					
+				
 				}
 			}
+			*/
+			
 			pushLine("}");
+			
 		}
 		
 		

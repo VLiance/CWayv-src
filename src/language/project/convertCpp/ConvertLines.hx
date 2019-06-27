@@ -471,10 +471,12 @@ package language.project.convertCpp ;
 					if (_bPriority) {
 					
 						//return fGetConvertInType(LineObj(_oVar).oResultingType, _oConvertIn) + "(" + convertLineToCpp(LineObj(_oVar)) + ")";
-						return "(" + TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType , null, _oContainer) + ")";
+						//return "(" + TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType , null, _oContainer) + ")";
+						return "(" + TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType , null, _oVar) + ")";
 					}else {
 						//return convertLineToCpp(LineObj(_oVar), _oContainer);
-						return TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType, null, _oContainer );
+					//	return TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType, null, _oContainer );
+						return TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType, null, _oVar );
 					}
 				//break;
 				
@@ -487,7 +489,8 @@ package language.project.convertCpp ;
 				
 				case EuVarType._ParamInput : 
 					var _oParamInput : ParamInput = cast(_oVar);
-					return checkVarConvertIn( _oVar , _oParamInput.oConvertInType, convertLineToCpp(cast(_oVar,LineObj), _oContainer), _oContainer);
+					//return checkVarConvertIn( _oVar , _oParamInput.oConvertInType, convertLineToCpp(cast(_oVar,LineObj), _oContainer), _oContainer);
+					return checkVarConvertIn( _oVar , _oParamInput.oConvertInType, convertLineToCpp(cast(_oVar,LineObj), _oContainer), _oVar);
 				//break;
 				
 			
@@ -1039,7 +1042,8 @@ package language.project.convertCpp ;
 					}
 					
 					 //Auto singleton
-					if (_oContainer == null && _oNextVar == null && _oConvertIn == null ) {
+					//if (_oContainer == null && _oNextVar == null && _oConvertIn == null ) {
+					if (_oContainer != null && _oContainer.eType == EuVarType._LineInput && _oNextVar == null && _oConvertIn == null ) {
 						return _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName + "::SetInst(thread)";
 					}
 					
@@ -1173,9 +1177,10 @@ package language.project.convertCpp ;
 				var _j:UInt = _aVarList.length;
 				for (j in 0 ..._j){
 					var _oFixeSquare : VarObj  =  _aVarList[j];
-					if(j == _aVarList.length-1  && (_oContainer == null || _oContainer.eType != EuVarType._LineInput) && _oLineArray.oArray.eType != EuVarType._FixeArray) {
+					if ((j == _aVarList.length - 1  && _oLineArray.oArray.eType != EuVarType._FixeArray) &&  (_oContainer == null || _oContainer.eType != EuVarType._LineInput)) {
 						//Reading operation
-						_sArray +=  "(" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + ")";
+						_sArray +=  "(" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + ")" ;
+					
 					}else{
 						//Writing operation
 						_sArray +=  "[" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + "]" ;
@@ -1397,7 +1402,8 @@ package language.project.convertCpp ;
 		private static function makeInputVarString(_oLineInput:LineInput):String {
 			//Get main var
 			sMakeInputVarString_After = "";//Second return, always must be reseted
-			var _sInputVarString : String = convertCppVarType(_oLineInput.oVarInput, 0); //line before =
+			var _sInputVarString : String = convertCppVarType(_oLineInput.oVarInput, 0, false, null,_oLineInput); //line before =
+			//var _sInputVarString : String = convertCppVarType(_oLineInput.oVarInput, 0, false, null,null); //line before =
 			
 	
 			/////// Intelli PTR ////////////
@@ -1777,9 +1783,9 @@ package language.project.convertCpp ;
 		
 		
 		
-		public static function convertSpecialVarConstructorIni(_oFile:CommonCpp,  _oSBloc:SBloc) :Void {
+		public static function convertSpecialVarConstructorIni(_oFile:CommonCpp,  _oSBloc:SBloc, _aVarList  : Array<Dynamic>) :Void {
 			var _oSClass : SClass = _oSBloc.oSClass;
-			var _aVarList  : Array<Dynamic>  = _oSClass.aIniGlobalVarList;
+			//var _aVarList  : Array<Dynamic>  = _oSClass.aIniGlobalVarList;
 			var _i:UInt = _aVarList.length;
 			for (i in 0 ...  _i) {
 				createSpecialVar(_oFile, _aVarList[i], _oSBloc);

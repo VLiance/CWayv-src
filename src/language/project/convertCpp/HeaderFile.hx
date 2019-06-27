@@ -116,7 +116,8 @@ package language.project.convertCpp ;
 				
 				if (_oSClass.sName == "Class" && _oSClass.oSLib.sIdName == "GZ"){
 					
-					_sExtend = ": gzAny";
+					//_sExtend = ": gzAny";
+					_sExtend = ": public gzSharedCount";
 				}
 				
 
@@ -144,7 +145,9 @@ package language.project.convertCpp ;
 				
 				//getGateList(_oSClass);
 				getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Public, true,false,EuConstant.Normal);
-			
+				getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, true, false, EuConstant.Normal);
+				
+				
 				//pushLine(_oSClass.sEndNamespace);
 				
 							//pushLine("class " + _oSClass.oSLib.sWriteName + "_"  + _oSClass.sName + _sExtend +" {");
@@ -288,6 +291,9 @@ gzDef_Vec_Other(_Name, _nSize);
 				pushLine("//Var");
 				getVarToConvert_(_oSClass.aGlobalVarList, EuSharing.Public);
 				
+				
+				fAddCppLines(_oSClass.aCppLineListClass_H_aft);
+				
 				/*
 				//Static public var
 				pushLine("//Static Var")
@@ -396,7 +402,7 @@ gzDef_Vec_Other(_Name, _nSize);
 						//pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::cClass* _parent): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_parent), zInst(0) {};");
 						pushLine("inline cs" + _oSClass.sName +"(Lib_GZ::Base::Thread::cThread* _thread): " +   _oSClassOp.sNsAccess + "cs"  + _oSClassOp.sName  + "(_thread) {};");
 					}
-					pushLine("inline ~cs" + _oSClass.sName +"(){};");
+					pushLine("inline virtual ~cs" + _oSClass.sName +"(){};");
 					
 					subTab();
 					//pushLine("private:");
@@ -978,11 +984,14 @@ gzDef_Vec_Other(_Name, _nSize);
 					
 					pushLine("inline " + _sVirtual + "gzSp<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 					addTab();
-					pushLine("gzSp<" + _sLoc  + ">_oTemp = gzSp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
+					//pushLine("gzSp<" + _sLoc  + ">_oTemp = gzSp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
+					///pushLine("gzSp<" + _sLoc  + ">_oTemp(new " + _sLoc + "(_parent));");
+					pushLine( _sLoc  + "* _oTemp = new " + _sLoc + "(_parent);");
 					//pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
 					pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
 					if (_oSClass.bHaveOverplace) {
-						pushLine("return _oTemp.get();");//
+						//pushLine("return _oTemp.get();");//
+						pushLine("return _oTemp;");//
 					}else{
 						pushLine("return _oTemp;");//
 					}
