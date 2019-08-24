@@ -32,22 +32,35 @@ package language.project.convertCpp ;
 			super(_Main,_oCppProject, _oSPckg);
 			
 			
+						//		pushLine( "#warning aaaaaa");
+			pushLine( "#ifndef tHDEFgen_" +  _oSPckg.oSLib.sWriteName);
+			pushLine( "#define tHDEFgen_" +  _oSPckg.oSLib.sWriteName);
+			//	pushHeaderDefine(_oSPckg); //TODO ? With tHDEFgen_?
+				
+							//	pushLine( "#warning bb");
 				
 			pushLine(fAddLicence());
 		
 		
 			pushLine( "namespace " + _oSPckg.oSLib.sWriteName + "{class c"  + _oSPckg.sName +";}" );
-			pushHeaderDefine(_oSPckg);
+	
+			
+			
+						
+
 			
 			pushLine("#include \"Lib_GZ/GZ_inc.h\"");
-			pushLine("#include \"Lib_GZ/SysUtils/glWin.h\"");
-			pushLine("#include \"Lib_GZ/Sys/Debug.h\"");
+			pushLine("#include \"Lib_GzOpenGL_Windows/glWin.h\"");
+			pushLine("#include \"Lib_GZ/Debug/Debug.h\"");
 			
 			
 			for(_oSClass in _oSPckg.aClassList){
 				convertGpuFunctions(_oSClass);
 			}
 			//convertHeader();already called in extended
+			
+			
+			//pushLine( "#endif");
 		}
 		
 		
@@ -75,7 +88,7 @@ package language.project.convertCpp ;
 			//addTab();
 			addSpace();	
 		
-			pushLine("#if !( defined GZ_tWeb_Emsc ||  defined GZ_tCpcDos  ||  defined GZ_tLite  ) ");
+			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_CpcDos  ||  defined D_Platform_Lite  ) ");
 				pushLine("#define GL_fGetError glCall_fGetError");
 				pushLine("typedef gzUInt (APIENTRY* FUNC_fGetError)();");
 				pushLine("extern FUNC_fGetError glCall_fGetError;");
@@ -85,15 +98,17 @@ package language.project.convertCpp ;
 				
 			addSpace();	
 			
-			pushLine("#if !( defined GZ_tWeb_Emsc ||  defined GZ_tCpcDos  ||  defined GZ_tLite  ) ");
+
+			
+			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_CpcDos  ||  defined D_Platform_Lite  ) ");
 			gpuFunctionToConvert(_oSClass);
 			pushLine("#endif");
 					
-			pushLine("#ifdef GZ_tWeb_Emsc");
+			pushLine("#ifdef D_Platform_Web_Emsc");
 			gpuWebFunctionToConvert(_oSClass);
 			pushLine("#endif");
 			
-			pushLine("#if ( defined GZ_tCpcDos ||  defined GZ_tLite ) ");
+			pushLine("#if ( defined D_Platform_CpcDos ||  defined D_Platform_Lite ) ");
 			//pushLine("#ifdef GZ_tCpcDos");
 		//	pushLine("gzBool gzN(bool _bVal){return false;};");
 		//	pushLine("gzUInt gzN(gzUInt _bVal){return 0;};");
@@ -131,13 +146,17 @@ package language.project.convertCpp ;
 		
 
 		private function gpuFunctionToConvert(_oSClass:SClass):Void {
+					
 		
+			
 			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i : UInt = _aFunction.length;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+
+				//if (_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if (_oSFunction.bSpecialGenerate  && _oSFunction.sName != "fGetError"){
 					gpuConvertFunctionHeader(_oSClass, _oSFunction);
 				}
 			}
@@ -152,7 +171,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+			//	if(_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if(_oSFunction.bSpecialGenerate && _oSFunction.sName != "fGetError"){
 					gpuConvertWebFunctionHeader(_oSClass, _oSFunction);
 				}
 			}
@@ -161,6 +181,9 @@ package language.project.convertCpp ;
 		}
 		
 		private function gpuConvertFunctionHeader(_oSClass:SClass, _oSFunction:SFunction):Void {
+	
+			
+			
 			var _sReturn : String;
 			var _sFuncNameFunc : String = "FUNC_" + _oSFunction.sName;
 			var _sFuncNameGL : String = "glCall_" + _oSFunction.sName;
@@ -205,7 +228,7 @@ package language.project.convertCpp ;
 			if (_sParam != "") {
 				_sParam += ", ";
 			}
-			pushLine( _sReturn + " " + _sFuncNameDbg +  "(" + _sParam + "cosnt char* _cFile , gzUInt _nLine);");
+			pushLine( _sReturn + " " + _sFuncNameDbg +  "(" + _sParam + "const char* _cFile , gzUInt _nLine);");
 			addSpace();
 			
 		}
@@ -296,7 +319,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				//if(_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if(_oSFunction.bSpecialGenerate && _oSFunction.sName != "fGetError"){
 					gpuEmptyFunctionToConvertHeader(_oSClass, _oSFunction);
 				}
 			}

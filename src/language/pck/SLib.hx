@@ -86,7 +86,9 @@ package language.pck ;
 				if (FileSys.fIsDirectory(_sFolder + _sPath)  ){
 					//_sRelative +=  _aFileDir[i] + "/";
 				//	fGetFolderFileList(_sPath + "/" );
-					fGetFolderFileList(_sFolder , _sPath +  "/");
+					if( !(_sFile.length > 3 && _sFile.charAt(0) == 'L'  && _sFile.charAt(1) == 'i'  && _sFile.charAt(2) == 'b'  && _sFile.charAt(3) == '_'  )){ //Don't include Lib_ in Lib : like Lib_GzOpenGL/_SubLib/Lib_GzOpenGL_Windows // TODO check if it's useless
+						fGetFolderFileList(_sFolder , _sPath +  "/");
+					}
 					
 				}else{ //It's a file
 					

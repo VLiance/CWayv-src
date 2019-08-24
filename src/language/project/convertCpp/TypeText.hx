@@ -774,9 +774,9 @@ package language.project.convertCpp ;
 							}
 						 }
 						 if (_oResultType.eType == EuVarType._String) {
-							return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ".fToChar())"; //String extract adresse
+							return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ".fToUTF8().fFinalize().get())"; //String extract adresse
 						 }
-	
+		//#define GZ_CStr_get(_sString) ((char*)_sString.)   //Use only as RValue
 						return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ")";
 					//break;
 					

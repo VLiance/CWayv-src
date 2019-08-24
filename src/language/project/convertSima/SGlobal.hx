@@ -91,7 +91,7 @@ package language.project.convertSima ;
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fRevFind", ["sSearch : String", "_nStartIndex : Int = 0"], "Int","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fSplit", ["_sDelimiter : String"], "DArray<String>","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fReplace", ["sSearch : String","sReplace : String","_nStartIndex : Int = 0"], "Int","", true));
-			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fReplaceAll", ["sSearch : String","sReplace : String","_nStartIndex : Int = 0"], "Int","", true));
+			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fReplaceAll", ["sSearch : String","sReplace : String","_nFromIndex : Int = 0"], "String","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fRevReplace", ["sSearch : String","sReplace : String","_nStartIndex : Int = 0"], "Int","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fRevReplaceAll", ["sSearch : String","sReplace : String","_nStartIndex : Int = 0"], "Int","", true));
 			aNFString.push(new SNatFunction(_oSClassNative, EuVarType._String, "", "fPathGetRelative", ["sRelative : String"], "String", "", true));

@@ -63,7 +63,7 @@ package language.project.convertCpp ;
 		private function convertGpuFunctions(_oSClass:SClass):Void {
 		
 			pushLine(fAddLicence());
-			pushLine("#include \"Lib_GZ_OpenGL/OpenGL.h\"");
+			pushLine("#include \"Lib_GzOpenGL/OpenGL.h\"");
 	/*
 			pushLine("#include \"SysGpuInfo.h\"");
 			pushLine("#include \"SysGpuFunc.h\"");
@@ -116,12 +116,12 @@ package language.project.convertCpp ;
 			*/
 			addSpace();
 			
-			pushLine("#if !( defined GZ_tWeb_Emsc ||  defined GZ_tCpcDos  ||  defined GZ_tLite ) ");
+			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined  D_Platform_CpcDos  ||  defined D_Platform_Lite ) ");
 				pushLine("FUNC_fGetError glCall_fGetError = 0;");
 				gpuFunctionToConvert(_oSClass);
 								
 				addSpace();
-				pushLine("gzBool Lib_GZ_OpenGL::SysGpuFunc::fGetGpuFunctions(){");
+				pushLine("gzBool Lib_GzOpenGL::SysGpuFunc::fGetGpuFunctions(){");
 				addSpace();
 				
 
@@ -138,7 +138,7 @@ package language.project.convertCpp ;
 				addSpace();
 				gpuCreateDbg(_oSClass);
 			pushLine("#else");
-				pushLine("gzBool Lib_GZ_OpenGL::SysGpuFunc::fGetGpuFunctions(){return false;}");
+				pushLine("gzBool Lib_GzOpenGL::SysGpuFunc::fGetGpuFunctions(){return false;}");
 			pushLine("#endif");
 			
 			
@@ -155,7 +155,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bSpecialGenerate && _oSFunction.bStatic  && _oSFunction.sName != "fGetError"){
+				//if(_oSFunction.bSpecialGenerate && _oSFunction.bStatic  && _oSFunction.sName != "fGetError"){
+				if(_oSFunction.bSpecialGenerate   && _oSFunction.sName != "fGetError"){
 					gpuConvertFunctionCpp(_oSClass, _oSFunction);
 				}
 			}
@@ -191,7 +192,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bSpecialGenerate && _oSFunction.bStatic  && _oSFunction.sName != "fGetError"){
+				//if(_oSFunction.bSpecialGenerate && _oSFunction.bStatic  && _oSFunction.sName != "fGetError"){
+				if(_oSFunction.bSpecialGenerate  && _oSFunction.sName != "fGetError"){
 					gpuAssignFunctionCpp(_oSClass, _oSFunction);
 				}
 			}
@@ -234,7 +236,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bSpecialGenerate && _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				//if(_oSFunction.bSpecialGenerate && _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if(_oSFunction.bSpecialGenerate && _oSFunction.sName != "fGetError"){
 					gpuCreateDbgFunc(_oSClass, _oSFunction);
 				}
 			}
@@ -277,7 +280,7 @@ package language.project.convertCpp ;
 				addTab();
 				if (_oSFunction.bSpecifiquePlatforme) {
 						
-					pushLine(" #ifdef GZ_tWindows");
+					pushLine(" #ifdef D_Platform_Windows");
 					pushLine(" System::fResetLastError();");
 				}
 				if(_oSFunction.oReturn.eType != EuVarType._Void){
