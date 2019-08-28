@@ -305,7 +305,7 @@ package language.project.convertCpp ;
 			var _sName : String =  _oSFunction.sName.substring(2); //Remove f letter
 			_sName = _sFirstLetter + _sName;
 			
-			var _sFuncNameDbg : String = "oGL.call<" + _sReturn + ">(\"" +_sName + "\"";
+			var _sFuncNameDbg : String = "OpenGL::oGL.call<" + _sReturn + ">(\"" +_sName + "\"";
 			
 			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg  + _sCallParam2 + ")");
 	
