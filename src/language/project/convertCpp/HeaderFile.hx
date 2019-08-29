@@ -469,6 +469,29 @@ gzDef_Vec_Other(_Name, _nSize);
 		}
 		
 		
+		public	var bFirstVars = true;
+		public function fGetVars(_oSClass:SClass):String {
+			var _sVars : String = "";
+			for (_oVar in  _oSClass.aGlobalVarList) { 
+				if (!bFirstVars){
+					_sVars += ", ";
+				}bFirstVars = false;
+				
+				_sVars += _oVar.fGetName() ;
+			}
+			return _sVars;
+		}
+		
+			public function fGetExtendsVars(_oSClass:SClass):String {
+				var _sVars : String = "";
+				for (_oExtClass in  _oSClass.aExtendClass){
+					_sVars += fGetExtendsVars(_oExtClass);
+				}
+				_sVars += fGetVars(_oSClass);
+				return _sVars;
+			}
+		
+		
 		
 		public function fAddVectorDef(_oSClass:SClass, _sVecName:String, _sAdditionalVar:String = "", _nAdditionalVarSize = 0, _sAdditionalFunc:String = "", _bHaveDefault = true){
 			//var _sVecName : String = _oSClass.sName;
@@ -477,8 +500,6 @@ gzDef_Vec_Other(_Name, _nSize);
 			for (_oVar in  _oSClass.aExtendVarList){
 				
 			}*/
-			
-			
 			
 			if(_bHaveDefault){
 				pushLine("template <class T, class SubT = T>");
@@ -489,8 +510,15 @@ gzDef_Vec_Other(_Name, _nSize);
 			pushLine("union{");
 			pushLine("T aTab[" + _sVecSize + "];");
 			
-			var _bFirst = true;
+			bFirstVars = true;
+			//var _bFirst = true;
 			var _sVars : String = "";
+
+			_sVars += fGetExtendsVars(_oSClass); //Order is important
+			//_sVars += fGetVars(_oSClass, _sVars);
+			
+			
+			/*
 			for (_oVar in  _oSClass.aGlobalVarList) {  //Same as aExtendVarList
 					if (!_bFirst){
 						_sVars += ", ";
@@ -498,14 +526,16 @@ gzDef_Vec_Other(_Name, _nSize);
 					
 					_sVars += _oVar.fGetName() ;
 			}
-			for (_oVar in  _oSClass.aExtendVarList) { //Same as above
-					if (!_bFirst){
-						_sVars += ", ";
-					}_bFirst = false;
-					
-					_sVars += _oVar.fGetName() ;
+			for (_oClassExt in  _oSClass.aExtendClass) { //Same as above
+					for (_oVar in  _oClassExt.aGlobalVarList) {  //Same as aExtendVarList
+						if (!_bFirst){
+							_sVars += ", ";
+						}_bFirst = false;
+						
+						_sVars += _oVar.fGetName() ;
+					}
 			}
-
+			*/
 			pushLine("struct { T " + _sVars + _sAdditionalVar + "; };" );
 			/////////
 			pushLine("};");
