@@ -278,7 +278,11 @@ package language.project.convertSima
 				case EuVarType._SClass:
 					var _oSClass : SClass = cast(_oSource);
 					if (_oSClass.bIsVector){
-						return findNativeFunction(SGlobal.aNFVector, _sFunc);
+					
+						var _oFound : VarObj = findNativeFunction(SGlobal.aNFVector, _sFunc, false);
+						if (_oFound != null){
+							return _oFound;
+						}
 					}
 				default:
 

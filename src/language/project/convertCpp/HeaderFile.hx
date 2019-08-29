@@ -472,7 +472,14 @@ gzDef_Vec_Other(_Name, _nSize);
 		
 		public function fAddVectorDef(_oSClass:SClass, _sVecName:String, _sAdditionalVar:String = "", _nAdditionalVarSize = 0, _sAdditionalFunc:String = "", _bHaveDefault = true){
 			//var _sVecName : String = _oSClass.sName;
-			var _sVecSize : UInt = _oSClass.aGlobalVarList.length + _nAdditionalVarSize;
+			var _sVecSize : UInt = _oSClass.aGlobalVarList.length + _nAdditionalVarSize + _oSClass.aExtendVarList.length;
+			/*
+			for (_oVar in  _oSClass.aExtendVarList){
+				
+			}*/
+			
+			
+			
 			if(_bHaveDefault){
 				pushLine("template <class T, class SubT = T>");
 			}else{
@@ -484,19 +491,19 @@ gzDef_Vec_Other(_Name, _nSize);
 			
 			var _bFirst = true;
 			var _sVars : String = "";
-			for (_oVar in  _oSClass.aGlobalVarList) {
-				
-				//if (_oVar.eType == EuVarType._Float){
+			for (_oVar in  _oSClass.aGlobalVarList) {  //Same as aExtendVarList
 					if (!_bFirst){
 						_sVars += ", ";
 					}_bFirst = false;
 					
 					_sVars += _oVar.fGetName() ;
-				
-					/*
-				}else{
-					Debug.fError("Vector require float type"); // TODO other type?
-				}*/
+			}
+			for (_oVar in  _oSClass.aExtendVarList) { //Same as above
+					if (!_bFirst){
+						_sVars += ", ";
+					}_bFirst = false;
+					
+					_sVars += _oVar.fGetName() ;
 			}
 
 			pushLine("struct { T " + _sVars + _sAdditionalVar + "; };" );
@@ -540,7 +547,10 @@ gzDef_Vec_Other(_Name, _nSize);
 		private function getClassExtendDefineAll(_oSPck:SPackage):String {
 			var _sResult: String = "";
 			for (_oSClass in _oSPck.aClassList ){
-				_sResult += getClassExtendDefine(_oSClass);
+				if(!_oSClass.bIsVector){
+					_sResult += getClassExtendDefine(_oSClass);
+				}
+				
 			}
 			return _sResult;
 		

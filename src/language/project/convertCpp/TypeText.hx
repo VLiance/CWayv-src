@@ -145,7 +145,11 @@ package language.project.convertCpp ;
 		
 		
 		public static function typeToCPP(_oVar:VarObj, _bFunReturn:Bool = false, _bIsolate:Bool = false, _bForceBit:Bool = false, _bFuncParam:Bool = false, _bNotScopeOwner : Bool = false, _bParam_owner: Bool = false, _bAddEasing:Bool = true):String {
-	
+			
+			if (_oVar == null){
+				return "!UndefinedVar!";
+			}
+			
 			var _eType : EuVarType = _oVar.eType;
 			var _sParamAdd : String = "";
 			if (_bFuncParam) {
@@ -1066,7 +1070,7 @@ package language.project.convertCpp ;
 					
 					
 				case EuVarType._Number:
-					return   "gzStrN(" + _sVar + ")";
+					return   "gzStrN(" + _sVar + ")"; //Temp
 				
 				case EuVarType._Float:
 					return   "gzStrF(" + _sVar + ")";

@@ -10,6 +10,12 @@ package language.vars.varObj ;
 		public var oSClass  : SClass;
 		public var oClassExtend  : SClass;
 
+		
+		override public function fGetName():String {
+			return oVar.fGetName();
+		}
+		
+		
 		public function new(_oSClass:SClass, _oVar:VarObj, _oClassExtend:SClass) {
 			super();
 			eType =  EuVarType._ExtendVar;
