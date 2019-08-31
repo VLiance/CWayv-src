@@ -64,6 +64,10 @@ package language.project.convertCpp ;
 		
 			pushLine(fAddLicence());
 			pushLine("#include \"Lib_GzOpenGL/OpenGL.h\"");
+			pushLine("#include \"Lib_GzOpenGL/OpGpuInfo.h\"");
+			pushLine("namespace Lib_GzOpenGL{namespace OpenGL{extern void fResetLastError();}}");
+			pushLine("namespace Lib_GzOpenGL{namespace OpenGL{extern gzStr fGetLastErrorString(gzUInt _nError);}}");
+	
 	/*
 			pushLine("#include \"SysGpuInfo.h\"");
 			pushLine("#include \"SysGpuFunc.h\"");
@@ -281,7 +285,7 @@ package language.project.convertCpp ;
 				if (_oSFunction.bSpecifiquePlatforme) {
 						
 					pushLine(" #ifdef D_Platform_Windows");
-					pushLine(" System::fResetLastError();");
+					pushLine(" Lib_GzOpenGL::OpenGL::fResetLastError();");
 				}
 				if(_oSFunction.oReturn.eType != EuVarType._Void){
 					pushLine(_sReturn + "_Ret = " + _sFuncNameGL + "(" + getFunctionParam(_oSFunction, false, true) + ");");
@@ -295,14 +299,14 @@ package language.project.convertCpp ;
 					_sParamValue = " + "  + _sParamValue;
 				}
 				
-				pushLine("GZ_Debug_fError(_SysGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
+				pushLine("GZ_Debug_fError(Lib_GzOpenGL::cOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
 				//pushLine("MessageBox(0,TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),MB_OK | MB_ICONINFORMATION);");
 				pushLine("}");
 				
 				if(_oSFunction.bSpecifiquePlatforme){
 					pushLine("nErr = GetLastError();");		
 					pushLine("if(nErr){" );
-					pushLine("GZ_Debug_fError(System::fGetLastErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
+					pushLine("GZ_Debug_fError(Lib_GzOpenGL::OpenGL::fGetLastErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
 					pushLine("}");
 				}
 

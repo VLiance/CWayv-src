@@ -1123,13 +1123,11 @@ package language.project.convertCpp ;
 					return   "gzStrC(" + _sVar + ")";
 				//break;
 				
-				case "h" :
-				case "e" : //Temp?
+				case "h" | "e" : //Temp?
 					return   "gzStrUI(" + _sVar + ")";
 				//break;
 				
-				case "a" :
-				case "p" :
+				case "p" | "a" :
 					if (_oString.eType == EuVarType._FixeArray) {
 						if (cast(_oString,VarFixeArray).nDimention != 1) {
 							return   "gzU8(\"*\")";

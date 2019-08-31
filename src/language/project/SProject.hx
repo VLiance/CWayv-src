@@ -311,7 +311,8 @@ package language.project ;
 			var _i:UInt = aLibList.length;
 			for (i in 0 ..._i) {
 				var _oSLib : SLib = aLibList[i];
-				//if (_oSLib.sName == _sLibName) {
+			
+				//if (_oSLib.sName == _sLibName) { 
 				if (_oSLib.sIdName == _sLibName) {
 					_bLibExist = true;
 					if(_oSLib.aFileListKey[_sPath]){

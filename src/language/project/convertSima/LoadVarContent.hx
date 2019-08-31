@@ -667,8 +667,7 @@ package language.project.convertSima ;
 					//Only first var for now, TODO better interpretation
 					var _oVar : VarObj = cast(_oSubEnum,ParamInput).aVarList[0];
 					switch (_oVar.eType) {
-						case EuVarType._UInt: 
-						case EuVarType._Int: 
+						case EuVarType._UInt | EuVarType._Int: 
 							_oEnum.aAlreadyIniVal.push(	cast(_oVar,VarInt).nValue);
 						//break;
 						case EuVarType._Hex: 
