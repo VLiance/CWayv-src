@@ -780,8 +780,16 @@ package language.project.convertCpp ;
 						 if (_oResultType.eType == EuVarType._String) {
 							return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ".fToUTF8().fFinalize().get())"; //String extract adresse
 						 }
+						 
+						 if (_oResultType.eType == EuVarType._LineArray) {
+							 if (  cast(_oResultType, LineArray).oArray.eType == EuVarType._DArray ){ //Todo make function in LineArray to get type
+									_sVar = _sVar + ".get()";
+							 };
+						 }
+						 
+
 		//#define GZ_CStr_get(_sString) ((char*)_sString.)   //Use only as RValue
-						return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ")";
+						return typeToCPP(_oConvertInType, false, true) + "(" + _sVar +")";
 					//break;
 					
 					case EuVarType._ResultModifier :
@@ -804,6 +812,17 @@ package language.project.convertCpp ;
 							
 							
 					//break;
+					/*
+					case EuVarType._DArray:
+						
+						 if (_oResultType.eType == EuVarType._FixeArray) {
+							 
+							 _sVar = _sVar + ".get()";
+						 }
+											
+					return typeToCPP(_oConvertInType, false, true) + "(!" + _sVar + "!!)"; //Normal
+				*/
+					
 					
 					case EuVarType._DataArr:
 						var _oDataArray : VarDataArray  = cast(_oConvertInType);
