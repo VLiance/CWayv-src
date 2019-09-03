@@ -299,7 +299,7 @@ package language.project.convertCpp ;
 					_sParamValue = " + "  + _sParamValue;
 				}
 				
-				pushLine("GZ_Debug_fError(Lib_GzOpenGL::cOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
+				pushLine("GZ_Debug_fError(Lib_GzOpenGL::pOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
 				//pushLine("MessageBox(0,TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),MB_OK | MB_ICONINFORMATION);");
 				pushLine("}");
 				
