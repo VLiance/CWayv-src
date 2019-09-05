@@ -187,7 +187,7 @@ package language.project.convertCpp ;
 				
 			}
 			
-			return "val(" + _sParamString + ")";
+			return "gzVal(" + _sParamString + ")";
 		}
 		
 		

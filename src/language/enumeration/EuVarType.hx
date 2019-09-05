@@ -22,6 +22,7 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 		_QElement			; 
 		_Bool 				;
 		_Hex 					;
+		_Val 					; //Javascript type
 		_Int 					;
 		_UInt 					; //Must beat Int + Hex
 		_Long 					;
@@ -139,7 +140,6 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 		_CppLine 				;
 		_Gate 				;
 		_Balise 				;
-		_Val 					; //Javascript type
 		_Rc 				;
 		_String 				;
 	}

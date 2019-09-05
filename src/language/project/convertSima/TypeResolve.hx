@@ -757,6 +757,9 @@ package language.project.convertSima ;
 				//break;
 				case  EuVarType._Delegate :
 					return _oVar;
+					
+		//		case  EuVarType._Val :
+			//		return _oVar;
 				//break;
 				default:
 				

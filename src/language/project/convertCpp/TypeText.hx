@@ -385,8 +385,12 @@ package language.project.convertCpp ;
 					return "gzVec" + _oVarVector.sSize;	
 					
 					//return _sStatic + "gzUInt32";
-	
+			
 				//break;
+				
+				case EuVarType._None :
+					Debug.fFatal("None type!");
+				
 				/*
 				case EuVarType._StaticClass :
 					var _oStaticClass : VarStaticClass  = VarStaticClass(_oVar);
@@ -394,7 +398,7 @@ package language.project.convertCpp ;
 				//break;
 				*/
 				default:
-				//	return "unknowType(" + _eType.getName + ")";
+					//return "unknowType(" +_oVar.fGetType() + ")";
 			
 			}
 			
@@ -604,9 +608,13 @@ package language.project.convertCpp ;
 					return "CallClass";
 				//break;
 				
+				case EuVarType._Val ://Not Used
+					return "gzVal";
+				//break;
 			
 				default :
-					return "";
+					return ""; //TODO
+					//return "!null type!";
 					Debug.fError("typeToCPP null type : " + _eType);
 					Debug.fStop();
 				//break;
@@ -1407,6 +1415,9 @@ package language.project.convertCpp ;
 				//break;
 				case EuVarType._String :
 					return "gzStr";
+					
+				case EuVarType._Val :
+					return "gzVal";
 				//break;
 				case EuVarType._Void :
 					return "void";

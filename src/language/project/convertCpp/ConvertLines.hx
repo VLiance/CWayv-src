@@ -100,7 +100,7 @@ package language.project.convertCpp ;
 				
 		public static function convertFunctionLines(_oFile:CommonCpp, _oSFunc:SFunction, _bTab:Bool = false):Void {
 		
-			if (_oSFunc.aLineList.length == 0 && !_oSFunc.bConstructor && !_oSFunc.oSClass.oSLib.bReadOnly && !_oSFunc.oSClass.oPackage.oSFrame.bWrapper) {
+			if (_oSFunc.aLineList.length == 0 && !_oSFunc.bConstructor && !_oSFunc.oSClass.oSLib.bReadOnly && !_oSFunc.oSClass.oPackage.oSFrame.bWrapper && !_oSFunc.bSpecialGenerate ) {
 				_oFile.pushLine("GZ_mIsImplemented(\"" +  _oSFunc.oSClass.oSLib.sIdName + "::" +  _oSFunc.oSClass.sName +  "::" + _oSFunc.sName  + "\")");
 				/*
 				_oFile.pushLine("static gzBool bTraced = false;");

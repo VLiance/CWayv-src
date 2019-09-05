@@ -50,7 +50,11 @@ package language.project.convertCpp ;
 
 			
 			pushLine("#include \"Lib_GZ/GZ_inc.h\"");
-			pushLine("#include \"Lib_GzOpenGL_Windows/glWin.h\"");
+			
+			pushLine("#ifdef D_Platform_Windows");
+			pushLine("#include \"Lib_GzOpenGL_Windows/GlWin.h\"");
+			pushLine("#endif");
+			
 			pushLine("#include \"Lib_GZ/Debug/Debug.h\"");
 			
 			
@@ -305,7 +309,7 @@ package language.project.convertCpp ;
 			var _sName : String =  _oSFunction.sName.substring(2); //Remove f letter
 			_sName = _sFirstLetter + _sName;
 			
-			var _sFuncNameDbg : String = "OpenGL::oGL.call<" + _sReturn + ">(\"" +_sName + "\"";
+			var _sFuncNameDbg : String = "oGL.call<" + _sReturn + ">(\"" +_sName + "\"";
 			
 			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg  + _sCallParam2 + ")");
 	
