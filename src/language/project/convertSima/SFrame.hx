@@ -35,6 +35,7 @@ package language.project.convertSima ;
 		public var oSPackage : SPackage;
 		public var bSkipContent : Bool = false;
 		public var bSkipStatic : Bool = false;
+		public var bAddDebugFile : Bool = false;
 		public var bWrapper : Bool = false;
 		public var aFile : Array<Dynamic>;
 		public var aGenerate : Array<Dynamic> = [];
@@ -208,6 +209,12 @@ package language.project.convertSima ;
 				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
 				bSkipStatic= true;
 				return true;
+			}
+			var _nIndex : Int = _sLine.indexOf("#addDebugFile");
+			if (_nIndex >= 0) {
+				//oSClass.nLine = _nLineNum; //Pacakge line not the class??
+				bAddDebugFile = true;
+				return false;
 			}
 			
 			var _nIndex : Int = _sLine.indexOf("#Wrapper");

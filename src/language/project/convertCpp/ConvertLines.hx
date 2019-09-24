@@ -1708,6 +1708,12 @@ package language.project.convertCpp ;
 				}*/
 				
 			}
+			
+			if (_oFuncCall.oFunction.oSClass.oPackage.oSFrame.bAddDebugFile && !_oFuncCall.oFunction.bConstructor){
+				_sReturn += "  GZ_DbgFile";
+			}
+			
+			
 			return _sReturn;
 		}
 		
