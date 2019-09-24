@@ -1391,7 +1391,8 @@ package language.project.convertCpp ;
 				_sStar += "*";
 			}
 			
-			return "(" + _sType + _sStar  + ")GZ_fMalloc(" + _nSize +  ", sizeof(" + _sType + "))";	
+			//return "(" + _sType + _sStar  + ")GZ_fMalloc(" + _nSize +  ", sizeof(" + _sType + "))";	
+			return "(" + _sType + _sStar  + ")GZ_fCalloc(" + _nSize +  ", sizeof(" + _sType + "))";	 //Calloc by default, it's safer
 			
 		}
 

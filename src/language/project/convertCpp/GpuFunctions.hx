@@ -216,23 +216,25 @@ package language.project.convertCpp ;
 			
 
 			//Param
-			var _sParam : String = getFunctionParam(_oSFunction, false);
+			var _sParam : String = getFunctionParam(_oSFunction, false,false,true,false, true);
 
 			//Normal push
 			//pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true);
+			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true,false, true);
 			var _sCallParam2 : String = _sCallParam1;
 			if (_sCallParam2 != "") {
 				_sCallParam2 += ", ";
 			}
 			
-			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(" + _sCallParam2 + "__FILE__, __LINE__)");
+			//pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "__FILE__, __LINE__)");
+			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "_cFile, _nLine)");
 			pushLine("typedef " + _sReturn +  "(APIENTRY* " + _sFuncNameFunc + ")(" + _sParam + ");");
 			pushLine("extern " +   _sFuncNameFunc + " " + _sFuncNameGL + ";");
 			if (_sParam != "") {
 				_sParam += ", ";
 			}
-			pushLine( _sReturn + " " + _sFuncNameDbg +  "(" + _sParam + "const char* _cFile , gzUInt _nLine);");
+			pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _cFile , gzUInt _nLine);");
+			//pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _cFile , gzUInt _nLine);");
 			addSpace();
 			
 		}
@@ -254,8 +256,8 @@ package language.project.convertCpp ;
 			var _sParam : String = getFunctionParam(_oSFunction, false);
 
 			//Normal push
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true);
-			var _sCallParam2 : String = getFunctionParam(_oSFunction, false, true, false, true);
+			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true, false, true );
+			var _sCallParam2 : String = getFunctionParam(_oSFunction, false, true, false, true, true);
 			//var _sCallParam2 : String = _sCallParam1;
 			
 			/*
@@ -312,7 +314,7 @@ package language.project.convertCpp ;
 			var _sFuncNameDbg : String = "oGL.call<" + _sReturn + ">(\"" +_sName + "\"";
 			
 			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg  + _sCallParam2 + ")");
-	
+			
 		}
 		
 		

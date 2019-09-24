@@ -135,7 +135,7 @@ package language.project.convertCpp ;
 		}
 		
 		
-		private function getFunctionParam(_oSFunction:SFunction, _bHeader:Bool = false, _bOnlyVar:Bool = false, _bFirst:Bool = true, _bWebGL:Bool = false):String {
+		private function getFunctionParam(_oSFunction:SFunction, _bHeader:Bool = false, _bOnlyVar:Bool = false, _bFirst:Bool = true, _bWebGL:Bool = false, _bNotClassFunc:Bool = false):String {
 			var _sInputVarString : String = "";
 			var _sParam : String = "";
 			var _aParam : Array<Dynamic> = _oSFunction.aParamList;
@@ -175,6 +175,28 @@ package language.project.convertCpp ;
 			
 			}
 			
+			var _bEmpty : Bool = false;
+			if (_sParam == ""){
+				_bEmpty = true;
+			}
+			
+			if (!_oSFunction.bConstructor &&  !_bNotClassFunc  &&  _oSFunction.oSClass.sName == "OpenGL"){ //!TODO add a "pragma to auto add debug line --> OGL temps get line info
+				
+				if(_bOnlyVar){
+					_sParam += "  GZ_DbgFile";
+				}else{
+					if (_bHeader){
+						_sParam += "  GZ_DbgArgP";
+					}else{
+						_sParam += "  GZ_DbgArg";
+					}
+					
+				}
+				if(_bEmpty){
+					_sParam += "_";
+				}
+			}
+
 			return _sParam;
 		}
 		
@@ -504,6 +526,8 @@ package language.project.convertCpp ;
 			
 			//Param
 			var _sParam : String = getFunctionParam(_oSFunction, true);
+			
+		
 			
 			if (_oSFunction.bAddDlgWrapper) {
 				var _sFuncType : String;

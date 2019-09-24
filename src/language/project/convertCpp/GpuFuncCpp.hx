@@ -276,11 +276,11 @@ package language.project.convertCpp ;
 			
 			
 			//Param
-			var _sParam : String = getFunctionParam(_oSFunction, false);
+			var _sParam : String = getFunctionParam(_oSFunction, false, false, true, false, true);
 			if (_sParam != "") {
 				_sParam += ", ";
 			}
-			pushLine(_sReturn + " " + _sFuncNameDbg +  "(" + _sParam + "const char* _file , gzUInt _line){");
+			pushLine(_sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _file , gzUInt _line){");
 				addTab();
 				if (_oSFunction.bSpecifiquePlatforme) {
 						
@@ -288,9 +288,9 @@ package language.project.convertCpp ;
 					pushLine(" Lib_GzOpenGL::OpenGL::fResetLastError();");
 				}
 				if(_oSFunction.oReturn.eType != EuVarType._Void){
-					pushLine(_sReturn + "_Ret = " + _sFuncNameGL + "(" + getFunctionParam(_oSFunction, false, true) + ");");
+					pushLine(_sReturn + "_Ret = " + _sFuncNameGL + "(" + getFunctionParam(_oSFunction, false, true, true, false, true) + ");");
 				}else {
-					pushLine( _sFuncNameGL  + "(" + getFunctionParam(_oSFunction, false, true) + ");");
+					pushLine( _sFuncNameGL  + "(" + getFunctionParam(_oSFunction, false, true, true, false, true) + ");");
 				}
 				pushLine("gzInt nErr = GL_fGetError();" );
 				pushLine("if(nErr){" );
@@ -298,15 +298,16 @@ package language.project.convertCpp ;
 				if (_sParamValue != "") {
 					_sParamValue = " + "  + _sParamValue;
 				}
-				
-				pushLine("GZ_Debug_fError(Lib_GzOpenGL::pOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
+				//Lib_GZ::Debug::Debug::GetInst(thread)->fError(
+				//GZ_Debug_fError(
+				pushLine("Lib_GZ::Debug::Debug::GetInst(thread)->fError(Lib_GzOpenGL::pOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
 				//pushLine("MessageBox(0,TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),MB_OK | MB_ICONINFORMATION);");
 				pushLine("}");
 				
 				if(_oSFunction.bSpecifiquePlatforme){
 					pushLine("nErr = GetLastError();");		
 					pushLine("if(nErr){" );
-					pushLine("GZ_Debug_fError(Lib_GzOpenGL::OpenGL::fGetLastErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
+					pushLine("Lib_GZ::Debug::Debug::GetInst(thread)->fError(Lib_GzOpenGL::OpenGL::fGetLastErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\" Line: \") + gzStrUI(_line) );");
 					pushLine("}");
 				}
 
@@ -330,7 +331,7 @@ package language.project.convertCpp ;
 					_sReturn = "return ";
 				}
 				var _sFuncNameGL : String = "GL_" + _oSFunction.sName;
-				pushLine(_sReturn + _sFuncNameGL  + "(" + getFunctionParam(_oSFunction, false, true) + ");");
+				pushLine(_sReturn + _sFuncNameGL  + "(" + getFunctionParam(_oSFunction, false, true, true,false,true) + ");");
 			}
 		}
 		
