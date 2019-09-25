@@ -155,6 +155,9 @@ package language.project.convertCpp ;
 			
 			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i : UInt = _aFunction.length;
+			
+			
+			///Both
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
@@ -164,6 +167,38 @@ package language.project.convertCpp ;
 					gpuConvertFunctionHeader(_oSClass, _oSFunction);
 				}
 			}
+			
+			pushLine("#ifdef D_Debug");
+			addTab();
+			///Release
+			for (i in 0 ...  _i) {
+				var _oSFunction : SFunction = _aFunction[i];
+				//Only private/public function
+
+				//if (_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if (_oSFunction.bSpecialGenerate  && _oSFunction.sName != "fGetError"){
+					gpuConvertFunctionHeaderDebug(_oSClass, _oSFunction);
+				}
+			}
+			subTab();
+			pushLine("#else");
+			addTab();
+			///Debug
+			for (i in 0 ...  _i) {
+				var _oSFunction : SFunction = _aFunction[i];
+				//Only private/public function
+
+				//if (_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if (_oSFunction.bSpecialGenerate  && _oSFunction.sName != "fGetError"){
+					gpuConvertFunctionHeaderRelease(_oSClass, _oSFunction);
+				}
+			}
+			subTab();
+			pushLine("#endif");
+		
+			
+			
+			
 			
 			addSpace();
 		}
@@ -184,10 +219,10 @@ package language.project.convertCpp ;
 			addSpace();
 		}
 		
+
+
 		private function gpuConvertFunctionHeader(_oSClass:SClass, _oSFunction:SFunction):Void {
 	
-			
-			
 			var _sReturn : String;
 			var _sFuncNameFunc : String = "FUNC_" + _oSFunction.sName;
 			var _sFuncNameGL : String = "glCall_" + _oSFunction.sName;
@@ -223,17 +258,83 @@ package language.project.convertCpp ;
 			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true,false, true);
 			var _sCallParam2 : String = _sCallParam1;
 			if (_sCallParam2 != "") {
-				_sCallParam2 += ", ";
+				_sCallParam2 = ", " + _sCallParam2;
 			}
 			
 			//pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "__FILE__, __LINE__)");
-			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "_cFile, _nLine)");
+			//pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "_cFile, _nLine)");
+			//pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread" + _sCallParam2 + " GZ_DbgParam)");
 			pushLine("typedef " + _sReturn +  "(APIENTRY* " + _sFuncNameFunc + ")(" + _sParam + ");");
 			pushLine("extern " +   _sFuncNameFunc + " " + _sFuncNameGL + ";");
-			if (_sParam != "") {
-				_sParam += ", ";
+			//if (_sParam != "") {
+			//	_sParam = ", " + _sParam;
+			//}
+			
+			
+			//pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread" + _sParam + " GZ_DbgArg);");
+			//pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _cFile , gzUInt _nLine);");
+			addSpace();
+			
+		}
+		
+		private function gpuConvertFunctionHeaderRelease(_oSClass:SClass, _oSFunction:SFunction):Void {
+			var _sFuncNameGL : String = "glCall_" + _oSFunction.sName;
+			var _sFuncNameUSE : String = "GL_" + _oSFunction.sName;
+			
+			pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
+		}
+		
+		private function gpuConvertFunctionHeaderDebug(_oSClass:SClass, _oSFunction:SFunction):Void {
+	
+			var _sReturn : String;
+			var _sFuncNameFunc : String = "FUNC_" + _oSFunction.sName;
+			var _sFuncNameGL : String = "glCall_" + _oSFunction.sName;
+			var _sFuncNameDbg : String = "glDbg_" + _oSFunction.sName;
+			var _sFuncNameUSE : String = "GL_" + _oSFunction.sName;
+			var _sLib : String = _oSClass.oSLib.sWriteName;
+	
+			//Return
+			if (_oSFunction.bConstructor) {
+				//_sReturn = _sLib +"_"; //Main function	
+				_sReturn = ""; //Main function	
+			}else {
+				//_sReturn = "Void "; //temp
+				_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
 			}
-			pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _cFile , gzUInt _nLine);");
+			
+			/* Namespace
+			if (_oSFunction.eFuncType  == EuFuncType.Static) {
+				_sReturn = "static " + _sReturn;
+			}*/
+		
+			//Virtual function (extend class)
+			if (_oSClass.bExtension  && !_oSFunction.bConstructor  ) { // _nFuncId != 0  
+				_sReturn = "virtual " + _sReturn;
+			}
+			
+
+			//Param
+			var _sParam : String = getFunctionParam(_oSFunction, false,false,true,false, true);
+
+			//Normal push
+			//pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
+			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true,false, true);
+			var _sCallParam2 : String = _sCallParam1;
+			if (_sCallParam2 != "") {
+				_sCallParam2 = ", " + _sCallParam2;
+			}
+			
+			//pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "__FILE__, __LINE__)");
+			//pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread," + _sCallParam2 + "_cFile, _nLine)");
+			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg + "(thread" + _sCallParam2 + " GZ_DbgParam)");
+			//pushLine("typedef " + _sReturn +  "(APIENTRY* " + _sFuncNameFunc + ")(" + _sParam + ");");
+			//pushLine("extern " +   _sFuncNameFunc + " " + _sFuncNameGL + ";");
+			if (_sParam != "") {
+				_sParam = ", " + _sParam;
+			}
+			
+			
+			pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread" + _sParam + " GZ_DbgArg);");
 			//pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _cFile , gzUInt _nLine);");
 			addSpace();
 			

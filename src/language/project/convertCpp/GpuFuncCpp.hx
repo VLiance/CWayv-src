@@ -235,6 +235,8 @@ package language.project.convertCpp ;
 		
 		private function gpuCreateDbg(_oSClass:SClass):Void {
 		
+			pushLine("#ifdef D_Debug");
+			addTab();
 			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i : UInt = _aFunction.length;
 			for (i in 0 ...  _i) {
@@ -245,6 +247,9 @@ package language.project.convertCpp ;
 					gpuCreateDbgFunc(_oSClass, _oSFunction);
 				}
 			}
+			subTab();
+			pushLine("#endif");
+		
 			
 			addSpace();
 		}
@@ -278,9 +283,11 @@ package language.project.convertCpp ;
 			//Param
 			var _sParam : String = getFunctionParam(_oSFunction, false, false, true, false, true);
 			if (_sParam != "") {
-				_sParam += ", ";
+				_sParam = ", " + _sParam;
 			}
-			pushLine(_sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread," + _sParam + "const char* _file , gzUInt _line){");
+			pushLine(_sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread" + _sParam + " GZ_DbgArg){");
+					//	pushLine( _sReturn + " " + _sFuncNameDbg +  "(Lib_GZ::Base::Thread::cThread* thread" + _sParam + " GZ_DbgArg);");
+			
 				addTab();
 				if (_oSFunction.bSpecifiquePlatforme) {
 						
