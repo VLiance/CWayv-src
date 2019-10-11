@@ -48,7 +48,7 @@ package language.project.convertCpp ;
 		}
 		
 		
-		private function getVarToConvert(_aVarList : Array<Dynamic>, _nSharing:EuSharing, _bStatic:Bool = false, _bStaticInClass:Bool = false, _nConstant : EuConstant):Void {
+		private function getVarToConvert(_aVarList : Array<Dynamic>, _nSharing:EuSharing, _bStatic:Bool = false, _bStaticInClass:Bool = false, _nConstant : EuConstant, _bInHeader : Bool = false):Void {
 			//addTab();
 		
 			
@@ -78,13 +78,29 @@ package language.project.convertCpp ;
 					
 					var  _oCommonVar :CommonVar = cast(_oVar,CommonVar);
 				//Only private/public var
+				
+				
+				
 				if (_oCommonVar.eSharing == _nSharing && _oCommonVar.eConstant == _nConstant) {
 					/*
 					if (_bStatic ) {
 					//	_sIni = " = " +  _oVar.;
 					}*/
-					 pushLine(_sExtern + convertVar(_oCommonVar,_bAddLib) + _sIni + ";");
+					
+					if (_oCommonVar.bAtomicComplexe) {
+						if(_bInHeader ){ //Inline header only
+							pushLine("gzAtom(" + TypeText.typeToCPP(_oVar) + ", " +  _oCommonVar.sName   + ");");
+						}
+						
+					}else{
+						pushLine(_sExtern + convertVar(_oCommonVar, _bAddLib) + _sIni + ";");
+					}
+					 
+					 
+					 
 				}
+				
+				
 				
 				
 			}

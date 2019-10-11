@@ -52,7 +52,9 @@ package language.project.convertCpp ;
 			pushLine("#include \"Lib_GZ/GZ_inc.h\"");
 			
 			pushLine("#ifdef D_Platform_Windows");
+			pushLine("#ifndef D_Platform_CpcDos");
 			pushLine("#include \"Lib_GzOpenGL_Windows/GlWin.h\"");
+			pushLine("#endif");
 			pushLine("#endif");
 			
 			pushLine("#include \"Lib_GZ/Debug/Debug.h\"");
@@ -446,7 +448,8 @@ package language.project.convertCpp ;
 			var _sLib : String = _oSClass.oSLib.sWriteName;
 	
 			//Param
-			var _sParam : String = getFunctionParam(_oSFunction, false);
+			//var _sParam : String = getFunctionParam(_oSFunction, false);
+			var _sParam : String = getFunctionParam(_oSFunction, false, false, true, false, true);
 
 			
 			var _sReturn : String = "aasss";
@@ -488,7 +491,8 @@ package language.project.convertCpp ;
 			
 			
 			//Normal push
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true);
+			//var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true);
+			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true, false,true);
 			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sReturn);
 		}
 		

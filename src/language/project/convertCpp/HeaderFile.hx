@@ -144,8 +144,8 @@ package language.project.convertCpp ;
 			//	pushLine("extern gzUInt _nId;");
 				
 				//getGateList(_oSClass);
-				getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Public, true,false,EuConstant.Normal);
-				getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, true, false, EuConstant.Normal);
+				getVarToConvert(_oSClass.aAtomicVarList, EuSharing.Public, true,false,EuConstant.Normal, true);
+				getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, true, false, EuConstant.Normal, true);
 				
 				
 				//pushLine(_oSClass.sEndNamespace);
@@ -379,7 +379,7 @@ gzDef_Vec_Other(_Name, _nSize);
 					fCreateConstrutorWrapper(_oSClass);
 					
 					pushLine("//Public static"); //Only public
-					getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, false, false,EuConstant.Normal);
+					getVarToConvert(_oSClass.aStaticVarList, EuSharing.Public, false, false,EuConstant.Normal, true);
 					
 					addSpace();
 			//		pushLine("//Static function");
@@ -387,7 +387,7 @@ gzDef_Vec_Other(_Name, _nSize);
 					
 					
 					
-					getVarToConvert(_oSClass.aStaticVarList, EuSharing.Private, false, false,EuConstant.Normal);
+					getVarToConvert(_oSClass.aStaticVarList, EuSharing.Private, false, false,EuConstant.Normal, true);
 					
 				//	pushLine("//Auto Singleton");
 				//	pushLine("gzSp<" + "c" + _oSClass.sName  + "> zInst;");

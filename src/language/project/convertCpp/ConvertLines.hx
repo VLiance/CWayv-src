@@ -783,7 +783,13 @@ package language.project.convertCpp ;
 					if(!_oVarNatFunc.bIntegrateFunc){
 						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn, _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum )  + _sParm +  ")", _oNativeFuncCall.oSource);	
 					}else{
-						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn,  _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum , false, null, _oNativeFuncCall.oSource) + "."  + _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sAddToParam + _sParm.substring(2) +  ")", _oNativeFuncCall.oSource);	
+						var _sDot : String = "." ;
+						
+						if ( (Std.is(_oNativeFuncCall.oSource.fRealVar(), CommonVar) && cast(_oNativeFuncCall.oSource.fRealVar(), CommonVar ).bAtomicComplexe   )  ){
+							_sDot = "().";
+						}
+						
+						return  checkVarConvertIn(_oVarNatFunc, _oConvertIn,  _oVarNatFunc.sBeforeSource + convertCppVarType(_oNativeFuncCall.oSource, _oNativeFuncCall.nLineNum , false, null, _oNativeFuncCall.oSource) + _sDot  + _oVarNatFunc.sConvertName + "(" + _oVarNatFunc.sAddToParam + _sParm.substring(2) +  ")", _oNativeFuncCall.oSource);	
 					}
 				//break;
 				
@@ -1599,7 +1605,13 @@ package language.project.convertCpp ;
 						_sReturn += "";
 					}else if ( (_oRealVar.eType == EuVarType._CallClass && (cast(_oRealVar, VarCallClass ).oCallRef.bIsVector || cast(_oRealVar, VarCallClass ).oCallRef.bIsResults ) )  
 					||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._DArray ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
-						_sReturn += "."; 
+						
+						if ( (Std.is(_oVar, CommonVar) && cast(_oVar, CommonVar ).bAtomicComplexe)  ){
+								_sReturn += "().";  //Atomic have fonction acess to remove Static Initialisation
+						}else{
+							_sReturn += "."; 
+						}
+						
 					}else {
 						_sReturn += "->";
 					}

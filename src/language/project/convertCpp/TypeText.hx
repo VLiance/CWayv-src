@@ -247,7 +247,9 @@ package language.project.convertCpp ;
 				case EuVarType._FixeArray:
 					var _oFixeArray : VarFixeArray  = cast(_oVar);
 					if (_bIsolate) {
+						
 						return "(" + getFixeArrayType(_oFixeArray) + _oFixeArray.sNbDimStar + ")" ;
+						
 					}else {
 						return getFixeArrayType(_oFixeArray) + _oFixeArray.sNbDimStar;
 					}
@@ -795,9 +797,15 @@ package language.project.convertCpp ;
 							 };
 						 }
 						 
+						 if (_oResultType.eType == EuVarType._CallClass) {
+							  if (  cast(_oResultType, VarCallClass).oCallRef.bIsVector ){ //Todo make function in LineArray to get type
+									_sVar = _sVar + ".get()";//TODO
+							  }
+						 }
+						 
 
 		//#define GZ_CStr_get(_sString) ((char*)_sString.)   //Use only as RValue
-						return typeToCPP(_oConvertInType, false, true) + "(" + _sVar +")";
+						return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ")" ;
 					//break;
 					
 					case EuVarType._ResultModifier :
@@ -1083,6 +1091,10 @@ package language.project.convertCpp ;
 			//	case EuVarType._LineArray:
 			//		return   "gzStrC((char*)" + _sVar + ")"; //Not good we have no lenght
 				
+			
+				//case EuVarType._Val: //TODO is really a int?
+					//return   "gzStrI(" + _sVar + ")";
+			
 				case EuVarType._Int:
 					return   "gzStrI(" + _sVar + ")";
 				//break;
@@ -1121,6 +1133,9 @@ package language.project.convertCpp ;
 					return   getStringFunc( _oQElement.oResultVarsType , _sVar  +  "->Val",_oContainer);
 				//break;
 				default:
+					
+					
+
 				
 			}
 			

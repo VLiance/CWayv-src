@@ -21,6 +21,11 @@ package language.vars.varObj ;
 			return "NI";
 		}
 		
+		
+		public function fRealVar():VarObj { //Extend var beacome return de extended one
+			return this;
+		}
+		
 		public function fGetType():String {
 			return EuVarType_.fGetName(eType);
 		}

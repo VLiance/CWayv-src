@@ -50,7 +50,9 @@ package language.project.convertCpp ;
 			
 		
 			for (_oPckg in oLib.aPackage) {for (_oSClass in  _oPckg.aClassList) {
-				pushLine("//#include \"" + _oSClass.sFilePath + ".h\"");
+				if(!_oSClass.bIsResults && !_oSClass.bIsVector && !_oSClass.bIsPod && !_oSClass.bExtension  && !_oSClass.bThread  && !_oPckg.oSFrame.bWrapper){
+					pushLine("#include \"" + _oSClass.oPackage.sFilePath + ".h\"");
+				}
 			}}
 			
 			//pushLine("class uLib;");//Temp?
@@ -62,7 +64,10 @@ package language.project.convertCpp ;
 		//	pushLine(oLib.sWriteName + "::zpLib = " +  oLib.sWriteName  +"::NewLib();");
 			
 			for (_oPckg in oLib.aPackage) {for (_oSClass in  _oPckg.aClassList) {
-				pushLine("//" + _oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
+				//pushLine("//" + _oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
+				if(!_oSClass.bIsResults && !_oSClass.bIsVector && !_oSClass.bIsPod && !_oSClass.bExtension  && !_oSClass.bThread  && !_oPckg.oSFrame.bWrapper){
+					pushLine(_oSClass.sNsAccess + _oSClass.sName + "::AddClass();" );
+				}
 			}}
 			
 			pushLine("}");

@@ -1,5 +1,6 @@
 package language.project.convertSima ;
 
+	import language.enumeration.EuLocation;
 	import language.pck.FileImport;
 	import language.enumeration.EuBetween;
 	import language.enumeration.EuConstant;
@@ -696,6 +697,12 @@ package language.project.convertSima ;
 				_oVar.bStatic = true;
 				if (_sNextWord == "atomic" ){
 					_oVar.bAtomic = true;
+					if (!TypeResolve.isVarCommon( _oVar)){
+						if( _oVar.eLocation != EuLocation.LocalParam){
+							_oVar.bAtomicComplexe = true;
+						}
+					}
+					
 					//oCurrSClass.pushGlobalVar(_oVar,_sInitialistion);
 					oCurrSClass.pushAtomicVar(_oVar, _sInitialistion);
 				}else{

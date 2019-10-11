@@ -15,6 +15,10 @@ package language.vars.varObj ;
 			return oVar.fGetName();
 		}
 		
+		override public function fRealVar():VarObj {
+			return oVar;
+		}
+		
 		
 		public function new(_oSClass:SClass, _oVar:VarObj, _oClassExtend:SClass) {
 			super();

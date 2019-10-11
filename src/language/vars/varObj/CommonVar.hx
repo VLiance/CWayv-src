@@ -21,6 +21,7 @@ package language.vars.varObj ;
 		public var bWeak	    : Bool = false;
 		public var bEmbed	    : Bool = false;
 		public var bAtomic	    : Bool = false;
+		public var bAtomicComplexe	    : Bool = false;
 		
 		public var oAssociate  : VarObj; //Easing
 		///public var eResultingType  : UInt;
