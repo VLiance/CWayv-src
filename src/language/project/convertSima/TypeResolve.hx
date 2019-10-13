@@ -578,6 +578,7 @@ package language.project.convertSima ;
 				_bLineReturn = true;
 			}
 			
+			//what
 			_oLine.oConvertInType = resolveVarConvertion(_oResultingType, _oInputType, _oLine.bNewCreation, null, _bLineReturn);
 			
 			
@@ -592,7 +593,7 @@ package language.project.convertSima ;
 			
 			var _oType : VarObj = findDominantVar(_oLine);
 
-			_oLine.oConvertInType = _oType;
+			_oLine.oConvertInType = _oType; //Not good //Overrited later in "convertCppVarType" type line from param lookup
 			_oLine.oResultingType = _oType;
 			
 			//applyConcatOp(_oLine, _oType); Old string use concat
@@ -1225,13 +1226,19 @@ package language.project.convertSima ;
 		
 		public static function fStringToClass(_oResultString:VarString, _oRcClass:SClass ,  _oToCallClass:VarCallClass ):VarObj {
 			
-			
+			//Convert Static Rc path ex "Exe|Myfile" to RcObj
 			
 				var _oResultRc : VarRc = new VarRc(_oResultString.oSBloc);
 				_oResultRc.oResultStringRef = _oResultString;
 				_oResultRc.oToCallClass = _oToCallClass;
 				_oResultRc.oRcClass = _oRcClass;
-			
+				
+				
+		_oResultRc.bPureVirtual = true;
+		return _oResultRc;	 ///Dynamique virtual Rc loaded now! 
+				
+				
+				/*
 				var _aVDrive : Array<Dynamic> =  _oResultString.sValue.split("|");
 				if (_aVDrive.length == 0) {
 					Debug.fError("Ressource require Drive or Virtual Drive, you need a first sentence followed by '|' ");
@@ -1267,9 +1274,8 @@ package language.project.convertSima ;
 				_oResultString.oSBloc.oSClass.aEmbedFileList.push(_oResultRc);
 				
 				
-	
-				
 				return _oResultRc;
+				*/
 		}
 		
 		

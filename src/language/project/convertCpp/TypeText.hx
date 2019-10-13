@@ -152,9 +152,14 @@ package language.project.convertCpp ;
 			
 			var _eType : EuVarType = _oVar.eType;
 			var _sParamAdd : String = "";
+			var _sRefAddBef : String = "";
+			var _sRefAddAft : String = "";
 			if (_bFuncParam) {
 				//_sParamAdd = "P";
 				_sParamAdd = "_";
+				_sRefAddBef = ""; //Pod type not required? (No constructor / destructor)
+				//_sRefAddBef = "const "; //Pod type not required? (No constructor / destructor)
+				_sRefAddAft = "&";
 			}
 			
 			
@@ -176,7 +181,7 @@ package language.project.convertCpp ;
 						if (_oCallClass.oTemplateVar){
 							
 						}*/
-						return _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +TypeText.typeToCPP(_oCallClass.oTemplateVar,false,false,false,false,false,false,false) + ">";
+						return _sRefAddBef + _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +TypeText.typeToCPP(_oCallClass.oTemplateVar,false,false,false,false,false,false,false) + ">" + _sRefAddAft;
 						//if (_bFuncParam) { //Not used&
 					
 					}else if (_oCallClass.oCallRef.bIsResults) {
@@ -653,7 +658,13 @@ package language.project.convertCpp ;
 		}
 		
 		
-		public static function getConvertFunc(_sVar:String, _oConvertInType : VarObj,  _oResultType : VarObj,  _oMod : VarResultModifier = null, _oContainer:VarObj = null):String {
+		
+
+		
+		
+		
+		
+		public static function getConvertFunc(_sVar:String, _oConvertInType : VarObj,  _oResultType : VarObj,  _oMod : VarResultModifier = null, _oContainer:VarObj = null, _nLineNum:UInt = 0):String {
 			
 			_oResultType = TypeResolve.getResultingType(_oResultType); //For LineReturn ... maybe others
 			
@@ -675,7 +686,9 @@ package language.project.convertCpp ;
 					//break;
 					
 					
-					case EuVarType._Rc :
+					case EuVarType._Rc : ///here!
+						return ConvertLines.fConvert_Rc(_oConvertInType, _oContainer,_nLineNum, false ); //TODO not sur of params
+						/*
 						var _oVarRc : VarRc = cast( _oConvertInType);
 						if (_oVarRc.bEmbedObj) {
 							if (_oMod != null && _oMod.bScopeExtract) {
@@ -685,7 +698,8 @@ package language.project.convertCpp ;
 							}
 						}
 		
-						return _sVar;
+						return ("  + _sVar + ")";
+						*/
 					//break;
 					
 					

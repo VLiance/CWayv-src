@@ -16,7 +16,9 @@ package language.vars.special ;
 		public function new(_oSBloc:SBloc, _sParam:String) {
 			super(_oSBloc, _sParam, EuVarType._DataArr);
 		}
-		
+		override public function fGetType():String {
+			return "VarDataArray";
+		}
 
 	}
 

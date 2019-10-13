@@ -16,6 +16,11 @@ package language.vars.special ;
 		public function new(_oSBloc:SBloc, _sParam:String) {
 			super(_oSBloc, _sParam, EuVarType._QueueArray);
 		}
+		
+		override public function fGetType():String {
+			return "VarQueueArray";
+		}
+		
 
 	}
 	

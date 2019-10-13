@@ -18,7 +18,9 @@ package language.vars.varObj ;
 		
 		}
 		
-		
+		override public function fGetType():String {
+			return "VarString";
+		}
 		
 		/*
 		override public function fGetType():String {

@@ -26,6 +26,11 @@ package language.vars.special ;
 			}
 		}
 		
+		override public function fGetType():String {
+			return "VarFixeArray";
+		}
+		
+		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			var _oArray : VarFixeArray = new VarFixeArray(null, "");
 			_oArray.oSBloc = _oSBloc;

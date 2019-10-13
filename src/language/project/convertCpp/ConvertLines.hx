@@ -448,6 +448,22 @@ package language.project.convertCpp ;
 		}
 		
 		
+		public static function fConvert_Rc(_oConvertInRc : VarObj, _oVar :VarObj,  _nLineNum : UInt, _bPriority: Bool, _oContainer:VarObj = null, _oNextVar: VarObj = null):String {
+			var _oVarRc : VarRc = cast( _oConvertInRc);
+			if (_oVarRc.bPureVirtual) { ///here!
+				
+				if (!_oVarRc.oToCallClass.bScopeOwner) {
+					return  "Lib_GZ::File::RcImg::Get(thread)->New(this," +  convertCppVarType(_oVar,_nLineNum, _bPriority,  _oVarRc.oResultStringRef, _oContainer, _oNextVar)   + ").get()";
+				}else {
+					return  "Lib_GZ::File::RcImg::Get(thread)->New(this," +  convertCppVarType(_oVar,_nLineNum, _bPriority,  _oVarRc.oResultStringRef, _oContainer, _oNextVar)   + ")";
+				}
+			
+			}else if (_oVarRc.bEmbedObj) {
+				return _oVarRc.sEmbedRc + ".get()"; //Already an object
+			}
+			Debug.fError("none");		
+			return "Error:convert_Rc";
+		}
 		
 		
 		public static function convertCppVarType( _oVar:VarObj, _nLineNum: UInt, _bPriority:Bool = false, _oConvertIn : VarObj = null, _oContainer:VarObj = null, _oNextVar: VarObj = null):String {
@@ -472,11 +488,31 @@ package language.project.convertCpp ;
 					
 						//return fGetConvertInType(LineObj(_oVar).oResultingType, _oConvertIn) + "(" + convertLineToCpp(LineObj(_oVar)) + ")";
 						//return "(" + TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType , null, _oContainer) + ")";
-						return "(" + TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType , null, _oVar) + ")";
+						return "(" + TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType , null, _oVar, _nLineNum) + ")";
 					}else {
+				
+						var _oLine : LineObj =  cast(_oVar, LineObj);
+						if(_oConvertIn != null){
+							_oLine.oConvertInType = _oConvertIn; //Overrite for the real one
+						}
+						/*
+						var _sWhat : String = _oLine.fGetType() + "/" +  _oLine.oConvertInType.fGetType() + "/" + _oLine.oResultingType.fGetType();
+						if (_oLine.oCastInType != null){
+							 _sWhat +=  "/" +_oLine.oCastInType.fGetType();
+						}
+					
+						if (Std.is(_oLine, LineInput)){
+							_sWhat += "["	+ cast(_oVar, LineInput).oVarInput + "]";
+						}
+						
+						if (_oConvertIn != null){
+							 _sWhat +=  "/!" +_oConvertIn.fGetType() + "!";
+						}*/
+				
+						
 						//return convertLineToCpp(LineObj(_oVar), _oContainer);
 					//	return TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType, null, _oContainer );
-						return TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType, null, _oVar );
+						return "/*|" + _oLine.oConvertInType.fGetType()  + "|*/" +  TypeText.getConvertFunc( convertLineToCpp(cast(_oVar,LineObj), _oContainer) , _oConvertIn, cast(_oVar,LineObj).oResultingType, null, _oVar );
 					}
 				//break;
 				
@@ -659,19 +695,7 @@ package language.project.convertCpp ;
 					var _oVarString : VarString = cast(_oVar);
 					
 					if (_oConvertIn != null && _oConvertIn.eType == EuVarType._Rc) {
-						var _oVarRc : VarRc = cast( _oConvertIn);
-						if (_oVarRc.bPureVirtual) {
-							
-							if (!_oVarRc.oToCallClass.bScopeOwner) {
-								return  "Lib_GZ::File::RcImg::Get(thread)->New(this," +  convertCppVarType(_oVar,_nLineNum, _bPriority,  _oVarRc.oResultStringRef, _oContainer, _oNextVar)   + ").get()";
-							}else {
-								return  "Lib_GZ::File::RcImg::Get(thread)->New(this," +  convertCppVarType(_oVar,_nLineNum, _bPriority,  _oVarRc.oResultStringRef, _oContainer, _oNextVar)   + ")";
-							}
-						
-						}else if (_oVarRc.bEmbedObj) {
-							return _oVarRc.sEmbedRc + ".get()"; //Already an object
-						}
-						Debug.fError("none");		
+						return fConvert_Rc(_oConvertIn, _oVar, _nLineNum, _bPriority, _oContainer, _oNextVar); //here
 					}
 
 					if (_oVarString.sName == null) { //Take is value instead
@@ -707,14 +731,22 @@ package language.project.convertCpp ;
 							
 							
 						}else {
+						
 							//return "GZ_fNStr(" + SProject.oCurr.sStringType + "\"" + _oVarString.sValue + "\")";
 							//return  "gzLStr(" + SProject.oCurr.sStringType + "\"" + _oVarString.sValue + "\", "  +   String( Text.getStringLength( _oVarString.sValue ) ) + ")";				
 							return  "gzU8(\"" + _oVarString.sValue + "\")";			
 						}
 					}
 					
+					//////////////////////////////////////
+						var _sWhat : String = "null";
+							if (_oConvertIn != null){
+								_sWhat = _oConvertIn.fGetType();
+							}
+							_sWhat = "/*" + _sWhat + "*/";
+						//////////////// ToRem	
 					
-					return checkVarConvertIn(_oVar, _oConvertIn,   _oVarString.sName, _oContainer);
+					return _sWhat +checkVarConvertIn(_oVar, _oConvertIn,   _oVarString.sName, _oContainer);
 					/*
 					if (_oConvertIn != null) {
 						if (_oConvertIn.eType == EuVarType._String) { //TODO TODO TODO Use Convert in ?String?
@@ -1704,6 +1736,7 @@ package language.project.convertCpp ;
 				var _oVar : VarObj = _aParamList[i];
 				
 				
+	
 				var _sLine : String = convertCppVarType(_oVar, _oFuncCall.nLineNum, false ,  _oConvertIn);
 				/*
 				if (_bForceCast && _oConvertIn.eType == EuVarType._None) {

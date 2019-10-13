@@ -70,7 +70,7 @@ package language.vars.special ;
 		
 		
 		override public function fGetType():String {
-			return "Array<Dynamic>";
+			return "VarArray";
 		}
 		
 		override public function copy(_oSBloc:SBloc):VarObj {
