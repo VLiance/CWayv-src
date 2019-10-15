@@ -9,6 +9,7 @@ package language.project.convertSima ;
 	import language.vars.logicObj.CompareObj;
 	import language.vars.special.SNatAttribut;
 	import language.vars.special.VarArray;
+	import language.vars.special.VarArrayView;
 	import language.vars.special.VarDataArray;
 	import language.vars.special.VarFixeArray;
 	import language.vars.special.VarQElement;
@@ -200,6 +201,16 @@ package language.project.convertSima ;
 					return null;
 				//break;
 				
+				case EuVarType._ArrayView :
+					if(_sLine.charAt(_nCurrentIndex) == "<"){
+						var _sNextArray : String = Text.between3(_sLine, _nCurrentIndex + 1, EuBetween.Template  ); 
+						return  new VarArrayView(_oSBloc, _sNextArray);
+					}else {
+						Debug.fError("ArrayView does'nt specify type <> in class : " + _oSBloc.oSClass.sName);
+						Debug.fStop();
+					}
+					return null;
+				
 				
 				case EuVarType._QueueArray :
 					if (_sLine.charAt(_nCurrentIndex) == "<") {
@@ -218,7 +229,7 @@ package language.project.convertSima ;
 						var _sNextFixeArray : String = Text.between3(_sLine, _nCurrentIndex + 1, EuBetween.Template  ); 
 						return  new VarFixeArray(_oSBloc, _sNextFixeArray);
 					}else {
-						Debug.fError("FixeArraydoes'nt specify type <> in class : " + _oSBloc.oSClass.sName);
+						Debug.fError("FixeArray does'nt specify type <> in class : " + _oSBloc.oSClass.sName);
 						Debug.fStop();
 					}
 					return null;

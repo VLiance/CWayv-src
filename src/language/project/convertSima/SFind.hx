@@ -269,6 +269,10 @@ package language.project.convertSima
 					return findNativeFunction(SGlobal.aNFFixeArray, _sFunc);	
 				//break;
 				
+				
+				case EuVarType._ArrayView:
+					return findNativeFunction(SGlobal.aNFArrayView, _sFunc);	
+				//break;
 
 				case EuVarType._Number:
 					return findNativeFunction(SGlobal.aNFEaseNumber, _sFunc);
@@ -611,7 +615,7 @@ package language.project.convertSima
 			}else if (_sVar.charAt(0) == "e") { //Enum
 					return findEnum(_oClass, _sVar, true);
 					
-			}else if (_sVar.charAt(0) == "x") { //ExClass
+			}else if (_sVar.length> 2 && _sVar.charAt(0) == "x") { //ExClass //TODO test uppercase
 				//Debug.fStop();
 					return findExClass(_oClass, _sVar);// _sVar.substring(1)); //Remove the x and search for classe
 		

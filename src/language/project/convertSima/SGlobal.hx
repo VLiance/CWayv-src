@@ -41,6 +41,7 @@ package language.project.convertSima ;
 		public static var aNFEaseNumber : Array<Dynamic> = [];
 		public static var aNFVector : Array<Dynamic> = [];
 		public static var aNFFixeArray : Array<Dynamic> = [];
+		public static var aNFArrayView : Array<Dynamic> = [];
 		
 		public static var aNFGate: Array<Dynamic> = [];
 		

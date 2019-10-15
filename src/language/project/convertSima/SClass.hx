@@ -456,7 +456,7 @@ package language.project.convertSima;
 			}else {
 				var _eType : EuVarType = _oVar.eType;
 				//ADD TO INITIALISATION
-				if(_eType == EuVarType._String || _eType == EuVarType._Rtu ||  _eType == EuVarType._RtuMap || _eType == EuVarType._DArray || _eType == EuVarType._DataArr || _eType == EuVarType._FixeArray  || _eType == EuVarType._QueueArray  ||  _eType ==  EuVarType._QElement){
+				if(_eType == EuVarType._String || _eType == EuVarType._Rtu ||  _eType == EuVarType._RtuMap || _eType == EuVarType._DArray || _eType == EuVarType._DataArr|| _eType == EuVarType._ArrayView   || _eType == EuVarType._FixeArray  || _eType == EuVarType._QueueArray  ||  _eType ==  EuVarType._QElement){
 					_aLoc.push(_oVar);
 				}else {
 					_aLocNotIni.push(_oVar);

@@ -84,6 +84,7 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 		_Queue 				;
 		_QueueArray 			; //44
 		_FixeArray 			; 
+		_ArrayView 			; 
 		_ClassCallSpecialFunction ;
 		_SpecialVar			;
 		_NotSet 				;
@@ -225,6 +226,7 @@ package language.enumeration ; import language.vars.varObj.CommonVar; import lan
 					case _Queue : return "Queue";
 					case _QueueArray : return "QueueArray"; //44
 					case _FixeArray : return "FixeArray"; 
+					case _ArrayView : return "ArrayView"; 
 					case _ClassCallSpecialFunction : return "ClassCallSpecialFunction";
 					case _SpecialVar: return "SpecialVar";
 					case _NotSet : return "NotSet";

@@ -37,6 +37,7 @@ package language.project.convertCpp ;
 	import language.vars.special.UnitObj;
 	import language.vars.special.UseEnum;
 	import language.vars.special.VarArray;
+	import language.vars.special.VarArrayView;
 	import language.vars.special.VarDataArray;
 	import language.vars.special.VarFixeArray;
 	import language.vars.special.VarQElement;
@@ -987,6 +988,12 @@ package language.project.convertCpp ;
 					
 				//break;
 				
+				
+				case EuVarType._ArrayView :
+					var _oVarArrayView : VarArrayView = cast(_oVar);
+					return checkVarConvertIn(_oVar, _oConvertIn, _oVarArrayView.sName, _oContainer);	
+					
+					
 				case EuVarType._FixeArray :
 					var _oVarFixeArray : VarFixeArray = cast(_oVar);
 					return checkVarConvertIn(_oVar, _oConvertIn, _oVarFixeArray.sName, _oContainer);
@@ -1085,7 +1092,14 @@ package language.project.convertCpp ;
 						return _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName + "::SetInst(thread)";
 					}
 					
-					return _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName;
+					
+					
+					if( _oNextVar == null && _oContainer != null  && _oContainer.eType != EuVarType._New){//Not sure
+						return    _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName + "::GetInst(thread)";
+					}else{
+						return  _oVarStaticClass.oRefClass.sNsAccess +  _oVarStaticClass.sName;
+					}
+					
 				
 
 				//break;

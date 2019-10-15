@@ -158,7 +158,7 @@ package language.project.convertCpp ;
 				//_sParamAdd = "P";
 				_sParamAdd = "_";
 				_sRefAddBef = ""; //Pod type not required? (No constructor / destructor)
-				//_sRefAddBef = "const "; //Pod type not required? (No constructor / destructor)
+				_sRefAddBef = "const "; //Pod type not required? (No constructor / destructor)
 				_sRefAddAft = "&";
 			}
 			
@@ -181,7 +181,7 @@ package language.project.convertCpp ;
 						if (_oCallClass.oTemplateVar){
 							
 						}*/
-						return _sRefAddBef + _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +TypeText.typeToCPP(_oCallClass.oTemplateVar,false,false,false,false,false,false,false) + ">" + _sRefAddAft;
+						return _oCallClass.oCallRef.sNsAccess + "gzVec" + _sIsEase + _oCallClass.oCallRef.sName + "<" +TypeText.typeToCPP(_oCallClass.oTemplateVar,false,false,false,false,false,false,false) + ">" + _sRefAddAft;
 						//if (_bFuncParam) { //Not used&
 					
 					}else if (_oCallClass.oCallRef.bIsResults) {
@@ -281,7 +281,7 @@ package language.project.convertCpp ;
 								_sParamAdd = "F";
 							}
 							
-							return "gz" + _sParamAdd + "Data<" +  getArrayType(_oDataArray) + ">";
+							return _sRefAddBef +  "gz" + _sParamAdd + "Data<" +  getArrayType(_oDataArray) + ">" + _sRefAddAft;
 						}
 					}else {
 						return "gz" + _sParamAdd + "Data" + _oDataArray.nDimention + "D(" +  getArrayType(_oDataArray) + ")";
@@ -294,13 +294,19 @@ package language.project.convertCpp ;
 				//break;
 				
 				
+				
+				case EuVarType._ArrayView:
+					var _oArray : VarArray  = cast(_oVar);
+					return _sRefAddBef + "gzArrayView<" +  getArrayType(_oArray) + ">" + _sRefAddAft;
+				
+					
 				case EuVarType._DArray:
 					var _oArray : VarArray  = cast(_oVar);
 					
 					if (_oArray.nDimention == 1) {
-						return "gzArray<" +  getArrayType(_oArray) + ">";
+						return  _sRefAddBef + "gzArray<" +  getArrayType(_oArray) + ">" + _sRefAddAft;
 					}else {
-						return "gzArray" + _oArray.nDimention + "D(" +  getArrayType(_oArray) + ")";
+						return   "gzArray" + _oArray.nDimention + "D(" +  getArrayType(_oArray) + ")";
 					}
 					//if(_bFunReturn){
 					//	return "ArrayPtr*";//Little hack here all returning array is arrayPtr to simplify
@@ -951,8 +957,12 @@ package language.project.convertCpp ;
 					//return "(" + _sVar + ")"; //TODO test if UpCast is legal
 					return  _sVar ; //TODO test if UpCast is legal
 				
-				}else if (_oConvertInType.eType == EuVarType._CallClass && cast(_oConvertInType,VarCallClass).bScopeOwner) {
-					return  "gzSCast<" + _oSClass.sNsAccess + "c" +   _oSClass.sName + ">(" + _sVar + ")";
+				}else if (_oConvertInType.eType == EuVarType._CallClass && cast(_oConvertInType, VarCallClass).bScopeOwner) {
+					
+					
+					return  "/*!"+ _oResultType.fGetType()  + "!*/"+  "gzSCast<" + _oSClass.sNsAccess + "c" +   _oSClass.sName + ">(" + _sVar + ")";
+					 
+					
 				}else {
 					return "(" +_oSClass.sNsAccess + "c" +   _oSClass.sName + "*" + ")" +  "(" + _sVar + ")";
 				}

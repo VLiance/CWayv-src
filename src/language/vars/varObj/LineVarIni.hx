@@ -45,8 +45,8 @@ package language.vars.varObj ;
 					}
 					
 				}else { //Global
-					if(_sName.length == 1 ) {
-						Debug.fError("Global var: " + _sName + " require to have a length > 1 char");
+					if(_sName.length == 1 && !_oCommun.oSBloc.oSClass.bIsVector) {
+						Debug.fError("Global var: " + _sName + " require to have a length > 1 char ");
 					}
 					if (_sFirstChar == "_") { //OKi
 						Debug.fError("Global var: " + _sName + " require to have no local scope underscopre prefix '_'");

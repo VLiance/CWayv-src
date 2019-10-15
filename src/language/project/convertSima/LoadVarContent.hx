@@ -463,7 +463,8 @@ package language.project.convertSima ;
 					case EuVarType._FixeArray 
 					| EuVarType._QueueArray  
 					| EuVarType._DArray 
-					| EuVarType._DataArr : 
+					| EuVarType._DataArr 
+					| EuVarType._ArrayView : 
 						if(cast(_oVar,CommonVar).bStatic){
 							_oSClass.pushIniVar(_oSClass.aIniStaticVarList, _oVar, _sIni, _oSClass.aNotIniStaticVarList); 
 						}else {

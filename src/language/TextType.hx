@@ -252,6 +252,9 @@ package language;
 				
 				case "CArray" :
 					return EuVarType._FixeArray;
+					
+				case "ArrayView" :
+					return EuVarType._ArrayView;
 				//break;
 				
 				case "QElement"  :
