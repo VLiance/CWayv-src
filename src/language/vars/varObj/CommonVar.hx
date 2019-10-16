@@ -20,6 +20,7 @@ package language.vars.varObj ;
 		public var bSpecial	    : Bool = false;
 		public var bWeak	    : Bool = false;
 		public var bEmbed	    : Bool = false;
+		public var bUnion	    : Bool = false;
 		public var bAtomic	    : Bool = false;
 		public var bAtomicComplexe	    : Bool = false;
 		

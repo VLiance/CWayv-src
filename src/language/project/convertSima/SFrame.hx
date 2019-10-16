@@ -678,6 +678,12 @@ package language.project.convertSima ;
 			//Get sharing, at the end to not lose nCurrentIndex
 			var _sSharing : String = Text.between3(_sLine, 0,EuBetween.Word); 
 			
+			if (_sSharing == "union"){
+				_oVar.bUnion = true;
+				_sSharing = Text.between3(_sLine, Text.nCurrentIndex,EuBetween.Word);
+			}
+			
+			
 			_oVar.sName = _sName;
 			//_oVar.eType = _eReadType;
 			_oVar.eConstant = eConstant;
