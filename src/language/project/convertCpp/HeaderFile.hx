@@ -693,7 +693,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				}else{
 					
 
-					if (  _oCurrSPack.fHaveConstant()) {
+					if (  _oCurrSPack.fHaveConstant() ) { //||_oCurrSPack.fHaveUnit()
 						
 					//	_sLib  = _oImport.oSLib.sWritePath;	
 						 //////////////// Have Lite _.h ////////////

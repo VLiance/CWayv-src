@@ -159,6 +159,7 @@ package language.project.convertSima ;
 			new SNatAttribut(_oSClassNative, aNAQueueArray,  EuVarType._QueueArray, "nSize", "GnTotal()", "Int",  ""  );
 			new SNatAttribut(_oSClassNative, aNAArray, 		 EuVarType._DArray, "nSize", "GnSize()", "UIntX",  ""  );
 			new SNatAttribut(_oSClassNative, aNADataArr, 	 EuVarType._DataArr, "nSize", "GnSize()", "UIntX",  ""  );
+			new SNatAttribut(_oSClassNative, aNFArrayView, 	 EuVarType._DataArr, "nSize", "GnSize()", "UIntX",  ""  );
 			
 			
 			

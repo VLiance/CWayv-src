@@ -459,6 +459,9 @@ package language.project.convertSima
 					
 				//break;	
 				
+				case EuVarType._ArrayView:
+					_oVar = findNativeAttribut( SGlobal.aNFArrayView, _sVar);
+				//break;	
 				
 				case EuVarType._DataArr:
 					_oVar = findNativeAttribut( SGlobal.aNADataArr, _sVar);
