@@ -1647,12 +1647,12 @@ package language.project.convertCpp ;
 						
 						
 						_bBefStaticClass = true;
-					}else if (_oVar.eType == EuVarType._Enum || _oVar.eType == EuVarType._UseEnum || _oVar.eType == EuVarType._ExClass ) {
+					}else if (_oRealVar.eType == EuVarType._Enum || _oRealVar.eType == EuVarType._UseEnum || _oRealVar.eType == EuVarType._ExClass ) {
 						_sReturn += "";
 					}else if ( (_oRealVar.eType == EuVarType._CallClass && (cast(_oRealVar, VarCallClass ).oCallRef.bIsVector || cast(_oRealVar, VarCallClass ).oCallRef.bIsResults ) )  
-					||  _oVar.eType == EuVarType._Vector || _oVar.eType == EuVarType._String ||  _oVar.eType == EuVarType._DArray ||  _oVar.eType == EuVarType._ArrayView  ||  _oVar.eType == EuVarType._QElement ||  _oVar.eType == EuVarType._Gate) {	//SNatAttribute?
+					||  _oRealVar.eType == EuVarType._Vector || _oRealVar.eType == EuVarType._String ||  _oRealVar.eType == EuVarType._DArray ||  _oRealVar.eType == EuVarType._ArrayView  ||  _oRealVar.eType == EuVarType._QElement ||  _oRealVar.eType == EuVarType._Gate) {	//SNatAttribute?
 						
-						if ( (Std.is(_oVar, CommonVar) && cast(_oVar, CommonVar ).bAtomicComplexe)  ){
+						if ( (Std.is(_oRealVar, CommonVar) && cast(_oRealVar, CommonVar ).bAtomicComplexe)  ){
 								_sReturn += "().";  //Atomic have fonction acess to remove Static Initialisation
 						}else{
 							_sReturn += "."; 
