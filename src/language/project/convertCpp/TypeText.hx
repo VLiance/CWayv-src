@@ -29,6 +29,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.VarGate;
 	import language.vars.varObj.VarHoldEnum;
 	import language.vars.varObj.VarInt;
+	import language.vars.varObj.VarNumber;
 	import language.vars.varObj.VarObj;
 	import language.vars.varObj.VarParent;
 	import language.vars.varObj.VarRc;
@@ -373,6 +374,14 @@ package language.project.convertCpp ;
 				//break;
 				
 				
+				case EuVarType._Number :
+					var _oVarNumber : VarNumber  = cast(_oVar);
+					if(	!_bIsolate){
+						return "T"; ///!TODO verify
+					}
+					//return "";
+					//return "gzFloat"; ///!TODO!!!!!!!!!! déduire le type
+				 
 				case EuVarType._Float :
 					var _oVarFloat : VarFloat  = cast(_oVar);
 					var _sType : String = "gzFloat" + EuBit_.getStringBit(_oVarFloat, _bForceBit);

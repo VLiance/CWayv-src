@@ -555,6 +555,12 @@ import haxe.crypto.BaseCode;
 			_nCurrentIndex = Text.nCurrentIndex;
 			
 			var _oSClassObj : VarObj = SFind.findVarObj(_oSBloc.oSClass, _sClassName);
+			
+			if (!Std.is(_oSClassObj, VarStaticClass)){
+				Debug.fFatal("'new' must be used on a Class, error on: " + _oSClassObj.fGetName() + "[" + _oSClassObj.fGetType() + "]");
+				return;
+			}
+			
 			var _oSClass : SClass = cast(  cast(_oSClassObj,VarStaticClass).oRefClass  );
 			
 			if (_oSClass.bExtension) {

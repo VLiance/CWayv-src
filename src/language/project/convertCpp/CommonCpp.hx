@@ -5,6 +5,7 @@ package language.project.convertCpp ;
 	import language.enumeration.EuVarType;
 	import language.enumeration.EuSharing;
 	import language.enumeration.EuOperator;
+	import language.project.convertSima.ExtractBlocs;
 	import language.project.convertSima.SBloc;
 	import language.project.convertSima.SClass;
 	import language.pck.SLib;
@@ -109,6 +110,270 @@ package language.project.convertCpp ;
 
 			//addSpace();
 		}
+		
+		
+		private function convertFunctionClass(_oSFunction : SFunction, _nFuncIndex : Int , _bInline : Bool = false ):Void {
+				var _oSClass : SClass = _oSFunction.oSClass;
+			ExtractBlocs.oCurrSClass = _oSFunction.oSClass;
+			ExtractBlocs.nCurrLine = _oSFunction.nLine;
+			//Return
+			//ConvertLines.oCurrClass = oSClass; //Warning -> Global
+			var _sStack : String = " gz_(" + _nFuncIndex + ")";
+			
+			
+			var _sMainFunctionLib : String = "";
+			var _sReturn : String;
+			var _sInline : String = "";
+			var _sIni : String;
+			
+			var _sLib : String = _oSClass.oSLib.sWriteName;
+			//var _sExtendClass : String = "";
+	
+			//var _sClass : String = _sLib + "_" +  oSClass.sName + "::";
+			var _sClass : String =    _oSClass.sName + "::";
+			if (_bInline){
+				_sInline = "inline ";
+				_sClass = "";
+			}
+			
+			
+			
+			if (_oSFunction.bConstructor) {
+				//Constructor
+				//_sMainFunctionLib = _sLib + "_"
+				_sMainFunctionLib = "c";
+				//_sReturn = "";
+				//_sExtendClass =  getExtendClassToString(oSClass);
+				//_sIni = convertConstructorIni();
+				
+			}else {
+				//_sIni = "";
+				//Todo useClass param
+				/*
+				var _nRet :UInt = _oSFunction.oReturn;
+				
+				if (_nRet == cTypeArray || _nRet == cTypeCallClass || _nRet ==  cTypeIU || _nRet ==  cTypeRtu) {
+					_sReturn = _sClass + typeToCPP(aCurrentClassFunction[_nFuncId], false,true) + " ";
+					
+				}else {
+					//Basic type
+					_sReturn = numTypeToCPP(_nRet, false) + " ";
+				}*/
+				
+				//Basic type
+				//_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " ";
+			}
+
+			_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " ";
+			
+			var _sFuncName : String = _sMainFunctionLib + _oSFunction.sName;
+			
+			
+			//Param
+			var _sParam : String =  getFunctionParam(_oSFunction);
+
+			//Static
+			var _sStatic : String =  "c";
+			 //In lib def with namwspace now
+			 
+		
+			if ( _oSFunction.eFuncType == EuFuncType.Pure){
+				_sStatic = "p";
+				pushLine("#ifndef tFDef_" + _oSFunction.oSClass.oPackage.sHeaderName + "_" + _oSFunction.sName);
+			}else if (_oSFunction.bStatic ) {
+				//_sStatic = "cs";
+				_sStatic = "c"; //Now auto sigleton, mabe make pure static?
+			}
+			
+			if (_bInline){
+				_sStatic = "";
+			}
+			
+			
+			//if (_oSFunction.eFuncType == EuFuncType.Main &&  oSClass.bExtension) { //Special case for class extension They have no param
+		///	if (_oSFunction.bConstructor ) {
+			if (_oSFunction.bConstructor ) {
+				
+		/* Use inline constructor instead for performances, TODO Verify  
+				var _sEmbedIni :String = fGetEmbedVarIni(oSClass);
+				
+				
+				if( !oSClass.bIsPod){
+				
+					//pushLine(_sReturn + _sClass + _sFuncName + "()" + _sIni + "{");
+
+					if(!fIsHaveStack(oSClass)){
+						//pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getExtendClassToStringIni(oSClass) + _sEmbedIni +"{");
+						pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)") + _sEmbedIni +"{");
+					}else {
+						//pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getExtendClassToStringIni(oSClass) + _sEmbedIni );
+						pushLine(_sReturn + "c" + _sClass + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)") + _sEmbedIni );
+						//pushLine(":");
+						fGetStackIniAll(_oSFunction);
+						pushLine("{" + _sStack);
+					}
+				}else {
+					pushLine(_sReturn + "c" + _sClass + _sFuncName + "()" +  _sEmbedIni );
+					fGetStackIniAll(_oSFunction);
+					pushLine("{" + _sStack);
+				}
+				
+			 */	
+			}else {
+				//pushLine(_sReturn + _sClass + _sFuncName + "(" + _sParam + ")" + _sIni + "{");
+				var _sAddNamespace : String = "";
+				if (_oSFunction.bHaveCpp){ //Have Cpp
+					//Add Namespace for extended class constant //TODO add if they avec <namespace> code
+					_sAddNamespace = "using namespace " + _oSFunction.oSClass.sName +  ";";
+					for (_oClass in _oSFunction.oSClass.aExtendAllClassList){
+						if (_oClass.aConstList.length != 0){
+								_sAddNamespace +=  "using namespace " + _oClass.sNsAccess + _oClass.sName +  ";";
+						}
+					}
+				}
+				pushLine(_sInline + _sReturn + _sStatic + _sClass  + _sFuncName + "(" + _sParam + "){" + _sStack + _sAddNamespace);
+			}
+			
+			addTab();
+			//addSpace();
+			
+	
+			if (_oSFunction.bConstructor) {
+		
+				//if(!oSClass.bIsPod){
+				
+			/* Use inline constructor instead for performances, TODO Verify  
+					iniGlobalVar();
+			
+					//pushLine("//Special var ini");
+					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
+					iniAssociateVar();
+					
+					//Special for calss extention type, we don't initialise constructor now becauswe we have an illogical execution order
+					//if( oSClass.bExtension){ //Now Always
+						addSpace();
+						subTab();
+						pushLine("}");
+						addSpace();
+				//}
+			*/
+				
+				//pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" + "{" + _sStack);
+				pushLine(_sInline + _sReturn + "c" + _sClass + Setting.sConstructorKeyword  + "(" + _sParam + ")" + "{" + _sStack);
+				//pushLine(_sInline + _sReturn +  _sStatic + _sClass + Setting.sConstructorKeyword  + "(" + _sParam + ")" + "{" + _sStack);
+
+				
+				addTab();
+			//	pushLine("//Special var ini");
+			//	ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction); //TODO must be before Cpp section initilizer
+					
+				//}
+				iniEmbedVar(_oSClass); //TODO?
+			}
+			//addSpace();
+			
+			//Do all function lines
+			ConvertLines.convertFunctionLines(this, _oSFunction);
+		//	ConvertLines.convertBlocLines(this, _oSFunction);
+			addOverrideFunctionLines(_oSFunction); //Exmple Opengl generated function
+			
+
+			fAddMissingReturnInFunction(_oSFunction);
+		
+			
+			
+			subTab();
+			
+			//ConvertLines.oCurrClass = null;  //Warning -> Global
+			pushLine("}");
+			if (_oSFunction.eFuncType == EuFuncType.Pure){
+				pushLine("#endif");
+			}
+			addSpace();
+		}
+		
+		
+		public function addOverrideFunctionLines(_oSFunction : SFunction):Void {
+			
+			
+		}
+		
+		public  function fAddMissingReturnInFunction(_oSFunc:SFunction):Void { //Add nullable retrun to give cpp compiler happy
+			if (_oSFunc.oReturn.eType != EuVarType._Void) {
+				//var _bRet : Bool = false;
+				for(  _oLineRet   in  _oSFunc.aLineReturnList  ) {//LineReturn
+					//pushLine("_oLineRet;" + _oLineRet.eType);
+					if (_oLineRet.oSBloc ==  _oSFunc) {
+						return;
+						//_bRet = true;
+					}
+			
+				}
+				//pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";" + _oSFunc.oReturn.eType);
+				pushLine("return " + fFixReturnCallType(_oSFunc.oReturn) + ";");
+
+			}
+		}
+		public  function fFixReturnCallType(_oType : VarObj):String {
+			switch(_oType.eType) {
+				case EuVarType._Bool :
+					return "false";
+				//break;
+				
+				case EuVarType._UInt 
+				| EuVarType._Int :
+					return "0";
+				//break;
+				case EuVarType._Float :
+						return "0.0";
+				//break;
+				case EuVarType._String :
+						return "gzU8(\"\")";
+				//break;
+				
+				case EuVarType._Val :
+					return "GzNullVal";
+				//break;
+				default :
+					return "NULL";
+					//return "zNull";
+				//break;
+			}
+			return "";
+		}
+		
+		
+		
+		private function iniEmbedVar(_oSClass:SClass):Void {
+			var _aList : Array<Dynamic> = _oSClass.aEmbedVarList;
+			var _i : UInt = _aList.length;
+			var _sIni : String = "";
+			for (i in 0 ...  _i) {
+				var _oVar : VarCallClass = _aList[i];
+				pushLine(_oVar.sName + "->Ini_c" +  _oVar.oCallRef.sName + "(" +  fGetDefaultParam(_oVar.oCallRef) + ");");
+			}
+		}
+		
+		private function fGetDefaultParam(_oSClass:SClass):String {
+			var _defaultIni : String = "";
+			for (  _oVar in _oSClass.oFuncConstructor.aParamList ) {//VarObj
+				switch (_oVar.eType) {
+					case EuVarType._String :
+						_defaultIni += "";
+					//break;
+					
+					default :
+						_defaultIni += "0";
+					//break;
+					
+					
+				}
+				_defaultIni += ",";
+			}
+			return _defaultIni.substring(0, _defaultIni.length-1);
+			
+		}
+		
 		
 		
 		private function convertVar(_oVar : CommonVar, _bAddLib:Bool = false):String {
