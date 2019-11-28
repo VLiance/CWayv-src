@@ -48,6 +48,8 @@ package language.pck ;
 				
 		public var sCppModTime : String = "";
 		public var sCppGetTime : String = "";
+		public var sClassListCheckSum : String = "";
+		public var sCppGetClassListChecksum : String = "";
 		
 		public var oGroup : GroupSLib ;
 		
@@ -99,6 +101,38 @@ package language.pck ;
 			}
 			
 		}
+		
+		
+		
+		public function fCalculateCheckSum(){
+			sClassListCheckSum = "";
+			var _nCheckSum : UInt = 0;
+			
+			
+			for (_oPckg in aPackage) {for (_oSClass in  _oPckg.aClassList) {
+				if(!_oSClass.bIsResults && !_oSClass.bIsVector && !_oSClass.bIsPod && !_oSClass.bExtension  && !_oSClass.bThread  && !_oPckg.oSFrame.bWrapper){
+					//pushLine("#include \"" + _oSClass.oPackage.sFilePath + ".h\"");
+					var _sPath : String = _oSClass.oPackage.sFilePath;
+					for (i in 0  ... _sPath.length ){
+						_nCheckSum += _sPath.charCodeAt(i);
+					}
+
+				}
+			}}
+						
+			sClassListCheckSum =  Std.string(_nCheckSum); 
+		}
+		
+		/*
+		public function calculateCheckSum():Void {
+			for (_oPckg in oLib.aPackage) {for (_oSClass in  _oPckg.aClassList) {
+			
+			}}
+		}*/
+		
+		
+		
+		
 		
 		
 	}

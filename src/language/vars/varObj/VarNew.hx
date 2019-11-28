@@ -36,19 +36,20 @@ package language.vars.varObj ;
 			eNewTemplateType = TextType.stringToType(_sParam);
 			
 			oTemplateVar = TypeResolve.createVarWithType(oSBloc, _sParam, "", Text.nCurrentIndex,true);  //TODO create only one vartype and reuseit
-				
-				
-			if (oVarSetObj.eType == EuVarType._CallClass){
-				var _oCallClass : VarCallClass = cast(oVarSetObj, VarCallClass);
-				
-				
 			
+			if (oVarSetObj != null){ //Can be null like: 	var _oRegion : Rect<Float> = new Rect<Float>(_oSrcPos , new Dim<Float>(_oTileset.nTileWidth,_oTileset.nTileHeight));
+				if (oVarSetObj.eType == EuVarType._CallClass){
+					var _oCallClass : VarCallClass = cast(oVarSetObj, VarCallClass);
+					
+					
 				
-				_oCallClass.eTemplateType = eNewTemplateType;
-				_oCallClass.bEaseType = TextType.bEaseType;
-			//	Debug.fFatal("!!! " + cast(oVarSetObj, VarCallClass).sName);
-				
-				
+					
+					_oCallClass.eTemplateType = eNewTemplateType;
+					_oCallClass.bEaseType = TextType.bEaseType;
+				//	Debug.fFatal("!!! " + cast(oVarSetObj, VarCallClass).sName);
+					
+					
+				}
 			}
 		}
 	

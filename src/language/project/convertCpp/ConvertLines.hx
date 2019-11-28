@@ -80,6 +80,7 @@ package language.project.convertCpp ;
 	import language.vars.varObj.VarNumber;
 	import language.vars.varObj.VarObj;
 	import language.vars.varObj.VarRc;
+	import language.vars.varObj.VarResultModifier;
 	import language.vars.varObj.VarRtu;
 	import language.vars.varObj.VarStaticClass;
 	import language.vars.varObj.VarString;
@@ -744,7 +745,7 @@ package language.project.convertCpp ;
 							if (_oConvertIn != null){
 								_sWhat = _oConvertIn.fGetType();
 							}
-							_sWhat = "/*" + _sWhat + "*/";
+							_sWhat = "/*" + _sWhat + "*/"; //BUG _oRc->oFile->/*None*/sFullPath
 						//////////////// ToRem	
 					
 					return _sWhat +checkVarConvertIn(_oVar, _oConvertIn,   _oVarString.sName, _oContainer);
@@ -956,7 +957,15 @@ package language.project.convertCpp ;
 			
 				
 				case EuVarType._Null :
-					return  checkVarConvertIn(_oVar, _oConvertIn,  "GZ_NullObj", _oContainer);
+					//	obj/cw/Lib_GzOpenGL/GpuObj/OpGpuRcImg.cpp:62:80: warning: ISO C++ says that these are ambiguous, even though the worst conversion for the first is better than the worst conversion for the second:
+					// if (oGpuTexLayer == /*!Null!*/gzSCast<Lib_GZ::Gpu::Base::cTexture>(GZ_NullObj)){
+
+					if (_oConvertIn.eType == EuVarType._CallClass && cast(_oConvertIn, VarCallClass).bScopeOwner) {
+						return  "GZ_NullObj"; //Cpp Don't like template cast on Null
+					}else{
+						return  checkVarConvertIn(_oVar, _oConvertIn,  "GZ_NullObj", _oContainer)    ; //Seam not good
+					}
+					//return  "GZ_NullObj";
 				//break;
 				
 				

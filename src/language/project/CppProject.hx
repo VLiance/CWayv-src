@@ -763,8 +763,12 @@ package language.project ;
 			if (oGpuFunc && _oSLib == oSProject.oGzLib) { //Special for sysGPU
 				_oCompileList.pushLine("//" + oGpuFunc.sCppModTime);
 			}*/
+			
+			_oSLib.fCalculateCheckSum();
+			_oCompileList.pushLine("//" + _oSLib.sClassListCheckSum);
 			_oCompileList.pushLine("//" + _oSLib.sCppModTime);
 			_oCompileList.pushLine("//" + fGetModifiedCompilateurInfo());
+			
 			
 			if (_nCount != 0) {
 				var _sPath : String = oProject.oCWaveMake.sExportBasePath + sCppDir + _oSLib.sWritePath +  "_" + _oSLib.sIdName + ".gcpp";
@@ -777,6 +781,14 @@ package language.project ;
 			_oSLib.sCppModTime = fGetModifiedFilesInfoLib(_oSLib);
 			var _sPath : String = oProject.oCWaveMake.sExportBasePath  + sCppDir  + _oSLib.sWritePath  + _oSLib.sWriteName;
 				
+			
+			_oSLib.fCalculateCheckSum();
+			if (_oSLib.sCppGetClassListChecksum != _oSLib.sClassListCheckSum  || _oSLib.sCppGetTime !=  _oSLib.sCppModTime || _oSLib.sCompGetTime != sCompilateurModInfo){
+				var _oLibIni : LibIni = new LibIni(Main, _oSLib);
+				MyFile.fwritefile(_sPath + ".icpp",  _oLibIni.aFile); //TODO RECREATE FILE IF CLASS LIST CHANGE!!
+			}
+			
+			
 			if (_oSLib.sCppGetTime !=  _oSLib.sCppModTime || _oSLib.sCompGetTime != sCompilateurModInfo) {
 				
 			
@@ -786,9 +798,7 @@ package language.project ;
 				var _oLibH : LibH = new LibH(Main, _oSLib);
 				MyFile.fwritefile(_sPath + ".h",  _oLibH.aFile); 
 				
-				var _oLibIni : LibIni = new LibIni(Main, _oSLib);
-				MyFile.fwritefile(_sPath + ".icpp",  _oLibIni.aFile); //TODO RECREATE FILE IF CLASS LIST CHANGE!!
-				
+			
 				/*
 				Debug.fTrace("    ------------------------------------------  ");
 				Debug.fTrace("bReadOnly: "  + _oSLib.bReadOnly);
@@ -884,13 +894,23 @@ package language.project ;
 			var _sCompLine : String;
 			var _sCompTime : String;
 			
+			
+			
+			//Lib Checksum
+			 _sCompLine  = _aRead[_aRead.length - 3];
+			if (_sCompLine.charAt(0) == "/" ) {
+				_oSLib.sCppGetClassListChecksum = _sCompLine.substr(2);
+			}else {
+				Debug.fWarning("Lib Checksum mismatch: " + _oSLib.sName);
+			}
+			
 			//Lib
 			 _sCompLine  = _aRead[_aRead.length - 2];
 			if (_sCompLine.charAt(0) == "/" ) {
 				_sCompTime = _sCompLine.substr(2);
 				_oSLib.sCppGetTime = _sCompTime;
 			}else {
-				Debug.fError("Lib TimeStamp mismatch: " + _oSLib.sName);
+				Debug.fWarning("Lib TimeStamp mismatch: " + _oSLib.sName);
 			}
 			
 			//Compialteur
@@ -899,7 +919,7 @@ package language.project ;
 				 _sCompTime = _sCompLine.substr(2);
 				_oSLib.sCompGetTime = _sCompTime;
 			}else {
-				Debug.fError("Lib Compiler TimeStamp mismatch: " + _oSLib.sName);
+				Debug.fWarning("Lib Compiler TimeStamp mismatch: " + _oSLib.sName);
 			}
 		}
 		

@@ -35,6 +35,7 @@ package language.project.convertCpp ;
 	class LibIni extends FileForm
 	{
 		var oLib : SLib;
+		var nCheckSum : UInt;
 	
 		public function new(_Main:Root, _oSLib : SLib) { 
 	
@@ -43,7 +44,12 @@ package language.project.convertCpp ;
 			convertClass();
 		}
 		
-		private function convertClass():Void {
+			
+
+		
+		
+		public function convertClass():Void {
+			nCheckSum = 0;
 			
 		//	pushLine("//GroundZero Engine Demo File -- An example to show the capabilities of GZE, modify this file as you like --");
 			pushLine("#include \"" + oLib.sWriteName + "/" + oLib.sWriteName + ".h\"");
