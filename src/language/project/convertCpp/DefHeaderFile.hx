@@ -130,14 +130,16 @@ package language.project.convertCpp ;
 					pushLine("enum Type {");
 					getEnumSubVar(_oEnum);
 					pushLine("};");
-					pushLine("Type t_;inline " + _oEnum.sName + "(Type t) : t_(t) {}operator Type () const {return t_;}");
+					//pushLine("Type t_;inline " + _oEnum.sName + "(Type t) : t_(t) {}operator Type () const {return t_;}");
+					pushLine("gzInt t_;inline " + _oEnum.sName + "(gzInt t) : t_(t) {}inline " + _oEnum.sName + "(Type t) : t_(t) {}operator Type () const {return (Type)t_;}");
 					pushLine("inline " +  _oEnum.sName  + "(){};");
 					subTab();
 					pushLine("};");
 				}
 			}
 		}
-		
+		 //static_cast<int>(Color::Blue);
+		 
 		private function getEnumSubVar(_oEnum : EnumObj):Void {
 			addTab();
 				var _aEnumVar:Array<Dynamic> = _oEnum.aVarList;

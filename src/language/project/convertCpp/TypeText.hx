@@ -817,7 +817,7 @@ package language.project.convertCpp ;
 							}
 						 }
 						 if (_oResultType.eType == EuVarType._String) {
-							return typeToCPP(_oConvertInType, false, true) + "(" + _sVar + ".fToUTF8().fFinalize().get())"; //String extract adresse
+							return typeToCPP(_oConvertInType, false, true) + "((" + _sVar + ").fToUTF8().fFinalize().get())"; //String extract adresse
 						 }
 						 
 						 if (_oResultType.eType == EuVarType._LineArray) {
