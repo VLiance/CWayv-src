@@ -3,6 +3,7 @@ package language.project.convertCpp ;
 	import language.base.InObject;
 	import language.base.Root;
 	import language.base.Debug;
+	import language.project.convertSima.ExtractBlocs;
 	/**
 	 * ...
 	 * @author ...
@@ -46,12 +47,25 @@ package language.project.convertCpp ;
 		
 		private var bInsert  : Bool = false;
 		public function pushLine(_sLine : String):Void {
+			var _sLineNum:String = "";
+			if(ExtractBlocs.oCurrSClass != null && ExtractBlocs.nCurrLine != 0){
+				//var _sPath = ExtractBlocs.oCurrSClass.oPackage.sReadedFilePath;
+				//_sPath = _sPath.split("\\").join("/");
+				_sLineNum += " //|" + (ExtractBlocs.nCurrLine + "|" ) ;
+			}
+
 			if (bInsert) {
 				bInsert = false;
 				nLine ++;
 			}
-			aFile[nLine] = sTab + _sLine;
+			aFile[nLine] = sTab + _sLine + _sLineNum; 
 			nLine ++;
+			
+			
+			
+	
+			
+			
 		}
 		public function insertLine(_sLine : String):Void {
 			if (aFile[nLine] == null) {
