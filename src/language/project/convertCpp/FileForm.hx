@@ -22,6 +22,7 @@ package language.project.convertCpp ;
 			super(_Main);
 	
 			//
+			
 			iniTab();
 			
 		}
@@ -51,7 +52,7 @@ package language.project.convertCpp ;
 			if(ExtractBlocs.oCurrSClass != null && ExtractBlocs.nCurrLine != 0){
 				//var _sPath = ExtractBlocs.oCurrSClass.oPackage.sReadedFilePath;
 				//_sPath = _sPath.split("\\").join("/");
-				_sLineNum += " //|" + (ExtractBlocs.nCurrLine + "|" ) ;
+				_sLineNum += " //#" + (ExtractBlocs.nCurrLine + "#" ) ;
 			}
 
 			if (bInsert) {

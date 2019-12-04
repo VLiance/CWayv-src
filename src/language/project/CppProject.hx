@@ -730,6 +730,9 @@ package language.project ;
 			}
 		}
 		public function writeCwListLib(_oSLib : SLib):Void {
+			
+			ExtractBlocs.oCurrSClass = null;
+			
 			if (_oSLib.bReadOnly){//Not for interfaces
 				return;
 			}
