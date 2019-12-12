@@ -103,12 +103,17 @@ package language;
 				_bReadOnly = false;
 			}*/
 			
-			Debug.fTrace("--LIB : " + _oLib.oLib.sName + "  File " + _oFile.sName );
+
 			
 				//	Debug.fTrace("--LIB : " + _oLib.bReadOnly + "  File " + _oFile.bReadOnly );
 		//	oSProject.addLib(_oLib, _oLib.sReadCWavePath, _oLib.sWriteCppPath, _oLib.sLibCWaveName, _bReadOnly, _oLib.sLibCppName, _oLib.sIdName, _oLib.bLoadAll, _oLib.sPlatform);
 			oSProject.addLib(_oLib);
 		
+			
+		
+			Debug.fInfo("LibC~: " + _oLib.oLib.sName + " ["  +_oLib.oLib.sReadPath + "]");
+		//	Debug.fInfo(": ["  +_oLib.oLib.sWritePath + "]");
+			///Debug.fInfo(": ["  +_oLib.oLib.aFileList + "]");
 			
 		}
 		//	b(_sReadPath:String, _sWritePath:String, _sLibName:String, _bReadOnly:Bool, _sWriteName:String = null,

@@ -149,6 +149,8 @@ package language.project ;
 			for (_oPckg in  oSProject.aPackage) {
 				if(!_oPckg.oSLib.bReadOnly && !_oPckg.oSFrame.bWrapper  && (_oPckg.oSLib.sPlatform == "" || _oPckg.oSLib.sPlatform == _sPlaformTarget)){
 					
+					
+			
 					//Extract functions if not already
 					_oPckg.fExtractClasFunction();
 					

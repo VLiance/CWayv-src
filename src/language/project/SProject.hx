@@ -224,7 +224,9 @@ package language.project ;
 				var _oTempPackage : SPackage = new SPackage(Main, this, null,_oLib, "", "LibClass", "TempClass");
 				for ( _oFile  in _oLib.aFileList  ) {
 					//Debug.fTrace(_oFile.sPath + " ||  " + _oFile.bIsProbablyOverPlace);
-					
+		
+										//	Debug.fInfo(_oFile.sPath + ":" + _oLib.bForceLoadAll + ":" +   _oFile.bIsProbablyOverPlace +  ":" + _oFile.bIsLibFile);
+							
 					/*
 					var _bIsProbablyOverPlace : Bool = false;
 					var _nIndexOp : Int = _sPath.lastIndexOf(".") + 1;
@@ -233,6 +235,8 @@ package language.project ;
 					}*/
 					//Debug.fTrace("aa " + _sPath.substring(_sPath.lastIndexOf(".")+1));
 					if (_oLib.bForceLoadAll || _oFile.bIsProbablyOverPlace || _oFile.bIsLibFile){
+						
+			
 					//	Debug.fTrace("bForceLoadAll ");
 						SFrame.extractImport(_oLib.sName + "." + _oFile.sCwPath, _oTempPackage, 0, _oLib, _oFile.bIsProbablyOverPlace,  _oFile.bIsLibFile); //Focre create a import from itself file to include all file, Ugly lib import TODO
 					}

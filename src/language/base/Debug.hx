@@ -127,6 +127,17 @@ import language.project.convertSima.ExtractBlocs;
 			
 			
 			
+		public static function fInfo(_oText:Dynamic):Void {
+			//	Sys.println("W: " +_oText);
+				System.fPrint("I| " +_oText);
+				/*
+			if(CWaveArg.bManaged){
+				System.sendStringMessage(CWaveArg.nHandleID, "W: " + String(_oText));
+			}else {
+				debugTrace(oListBox3, _oText, 0);
+			}*/
+		}
+		
 		public static function fWarning(_oText:Dynamic):Void {
 			//	Sys.println("W: " +_oText);
 				System.fPrint("W| " +_oText);
