@@ -59,6 +59,7 @@ package language.project ;
 		private var bConvertFullDebug : Bool;
 		private var sTab : String; 
 		private var aCppFile : Array<Dynamic> = [];
+		private var aUsedLib : Array<Dynamic> = [];
 		private var aHFile : Array<Dynamic> = [];
 		private var aOverPlace : Array<Dynamic> = [];
 		private var aCppBuilList : Array<Dynamic>;
@@ -90,6 +91,15 @@ package language.project ;
 		
 		public var  sCompilerPath : String = "TODO/";
 		
+		
+		public function fAddUsedLib(_oLib:SLib){
+			for (_oCurrLib in aUsedLib){
+				if (_oLib == _oCurrLib){
+					return;
+				}
+			}
+			aUsedLib.push(_oLib);
+		}
 
 		public function new(_Main:Root, _oProject:ProjectData,  _oSProject:SProject, _sPath:String, _sLibPath:String, _sAppName : String, _bConvertFullDebug : Bool, _sPlaformTarget : String, _sBuildType:String) {
 			super(_Main);
@@ -143,6 +153,22 @@ package language.project ;
 					aCommunStruct.push(new HCommonStructFile(Main, this, oSProject.oSDelegate, oSProject, _oLib ));
 				}
 			}*/
+			
+			aUsedLib = [];
+			//Detect subclass
+			for (_oPckg in  oSProject.aPackage) {
+				if ( (_oPckg.oSLib.sPlatform == "" || _oPckg.oSLib.sPlatform == _sPlaformTarget)){
+					fAddUsedLib(_oPckg.oSLib);
+					//	Debug.fInfo("TEST: " + _oPckg.sFilePath +  "  --  " + _oPckg.oSLib.sName);
+				}
+			}
+			
+			//for (_oLib in oSProject.aLibList){
+			//	Debug.fInfo("HAVE: " + _oLib.sName);
+			//}
+			for (_oLib in aUsedLib){
+				Debug.fAssist("[C~:Lib]|" + _oLib.sName + "|");
+			}
 			
 			//Create all class
 		//	var _i:UInt = oSProject.aClass.length;for (i in 0 ..._i) {var _oSClass : SClass =  oSProject.aClass[i];
