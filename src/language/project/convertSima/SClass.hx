@@ -203,6 +203,7 @@ package language.project.convertSima;
 		
 		public var aCppLineListStatic : Array<Dynamic> = [];
 		public var aCppLineListStatic_H : Array<Dynamic> = [];
+		public var aCppVecUnion : Array<Dynamic> = [];
 		
 		
 		public var oPackage : SPackage;
@@ -773,6 +774,7 @@ package language.project.convertSima;
 			aCppLineListNamespace_End_H = [];
 			aCppLineListStatic = [];
 			aCppLineListStatic_H  = [];
+			aCppVecUnion  = [];
 			
 		//	aSImportList  = [];
 		//	aSImportListRequireFullDefinition  = [];
@@ -917,6 +919,10 @@ package language.project.convertSima;
 						aCppLineListStatic_H.push(_oCpp);
 					//break;
 
+					case EuCppLineType.VecUnion:
+						aCppVecUnion.push(_oCpp);
+					//break;
+					
 					case EuCppLineType.ClassStatic : //NotUsed
 						aCppLineListStatic_H.push(_oCpp);
 					//break;

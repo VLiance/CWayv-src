@@ -28,6 +28,7 @@ package language.enumeration ;
 			
 			
 			 Glsl 	 ;
+			 VecUnion 	 ;
 			
 			
 			
@@ -87,6 +88,9 @@ package language.enumeration ;
 						
 					case "cpp_initializer" :
 						return EuCppLineType.Initializer;
+						
+					case "cpp_vec_union" :
+						return EuCppLineType.VecUnion;
 					
 					case "glsl" :
 					

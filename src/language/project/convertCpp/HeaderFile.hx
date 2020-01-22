@@ -371,7 +371,7 @@ gzDef_Vec_Other(_Name, _nSize);
 					addTab();
 					//AddCppCode
 					fAddCppLines(_oSClass.aCppLineListStatic_H);
-					
+									
 					
 				//	pushLine("inline cs" + _oSClass.sName + "(Lib_GZ::Base::cClass* _parent):cStThread(_parent){};");
 				//	pushLine("inline ~cs" + _oSClass.sName + "(){};");
@@ -510,6 +510,8 @@ gzDef_Vec_Other(_Name, _nSize);
 			pushLine("union{");
 			pushLine("T aTab[" + _sVecSize + "];");
 			
+		
+			
 			bFirstVars = true;
 			//var _bFirst = true;
 			var _sVars : String = "";
@@ -537,6 +539,11 @@ gzDef_Vec_Other(_Name, _nSize);
 			}
 			*/
 			pushLine("struct { T " + _sVars + _sAdditionalVar + "; };" );
+			
+			
+			
+			fAddCppLines(_oSClass.aCppVecUnion);
+			
 			/////////
 			pushLine("};");
 			pushLine("gzDef_Vec_Func(" + _sVecName +", " +  _sVecSize +")");
