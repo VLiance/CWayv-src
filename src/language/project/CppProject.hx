@@ -59,7 +59,7 @@ package language.project ;
 		private var bConvertFullDebug : Bool;
 		private var sTab : String; 
 		private var aCppFile : Array<Dynamic> = [];
-		private var aUsedLib : Array<Dynamic> = [];
+		private var aUsedLib : Array<SLib> = [];
 		private var aHFile : Array<Dynamic> = [];
 		private var aOverPlace : Array<Dynamic> = [];
 		private var aCppBuilList : Array<Dynamic>;
@@ -167,7 +167,11 @@ package language.project ;
 			//	Debug.fInfo("HAVE: " + _oLib.sName);
 			//}
 			for (_oLib in aUsedLib){
-				Debug.fAssist("[C~:Lib]|" + _oLib.sName + "|");
+				if(_oLib.sParentModule != ""){
+					Debug.fAssist("[C~:Lib]|(" + _oLib.sParentModule + ")" + _oLib.sIdName + "|" + _oLib.sParentLibName + "|[" + _oLib.sReadPath + "]|");
+				}else{
+					Debug.fAssist("[C~:Lib]|" + _oLib.sIdName + "|[" + _oLib.sReadPath + "]|" );
+				}
 			}
 			
 			//Create all class

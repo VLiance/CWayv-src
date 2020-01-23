@@ -21,6 +21,8 @@ package language.pck ;
 		public var oCwmLib  	: CwmLib;
 		
 		public var sName  	: String;
+		public var sParentLibName  	: String = "";
+		public var sParentModule  	: String = "";
 		public var sIdName  	: String;
 		public var sWriteName  	: String;
 		public var sReadPath  	: String;

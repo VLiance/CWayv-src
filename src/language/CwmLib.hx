@@ -52,16 +52,24 @@ package language;
 			oLib = new SLib();
 			oLib.oCwmLib = this;
 			
-			
-		//	Debug.fTrace("--CwmLib _sLine "  + _sLine);
-			
+
 			_sLine = StringTools.replace(_sLine, "\\", "/");
+
+			//Extract parent module
+			if (_sLine.charAt(_sLine.length-1) == ")"){
+				var _nLastIndex : Int = _sLine.lastIndexOf("(");
+				if (_nLastIndex >= 0){
+					oLib.sParentModule = _sLine.substring(_nLastIndex+1, _sLine.length-1);
+				}
+				_sLine = _sLine.substring(0, _nLastIndex);
+			}
 			
-		
+			
 			
 		
 			oLib.sReadPath = _sLine;
 			
+		
 
 			var _sSubPath : String = _sLine;
 			if (oLib.sReadPath.charAt(	oLib.sReadPath.length-1 ) ==  "/"){
@@ -69,11 +77,39 @@ package language;
 			}
 			
 			oLib.sName  = _sSubPath.substring(_sSubPath.lastIndexOf("/") + 1, _sSubPath.length);
+			
+			
+			//Extract parent lib
+			if (oLib.sName.charAt(0) == '['){
+				var _nIndex : Int = oLib.sName.indexOf("]");
+				if (_nIndex > 0){
+					oLib.sParentLibName =  oLib.sName.substring(1,  _nIndex) ;
+					var _sNext : String =  oLib.sName.substring( _nIndex + 1) ;
+					oLib.sName = 	oLib.sParentLibName + _sNext;
+					
+					if (oLib.sParentLibName.indexOf("Lib_") == 0){
+						oLib.sParentLibName = oLib.sParentLibName.substring(4);
+					}
+					
+					//Path Correction
+					oLib.sReadPath =  _sSubPath.substring(0, _sSubPath.lastIndexOf("/") + 1) + oLib.sName + "/";
+				}
+			}
+			////////////
+			
+			
+			
+			
+			
+			
 		//	oLib.sIdName  = oLib.sWriteName = oLib.sName;
 			
 		//	oLib.sIdName  = oLib.sName.substring(oLib.sName.indexOf("_") + 1, oLib.sName.length);
 			
 			oLib.sIdName  =	oLib.sName;
+			
+		
+			
 			
 			
 			if(oLib.sName.indexOf("Lib_") >= 0){

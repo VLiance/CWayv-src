@@ -61,6 +61,7 @@ package language.cwMake.line ;
 			
 			if(Text.between3(_aParamList[0], 0, EuBetween.CodeDelim) != null){
 				sLibCWaveName = Text.between3(_aParamList[0], Text.nCurrentIndex  , EuBetween.EndString )  ;
+			
 				sIdName = sLibCWaveName;
 				sRcName = sIdName; //by default
 			}else {
