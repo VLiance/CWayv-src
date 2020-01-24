@@ -55,7 +55,7 @@ package language;
 
 			_sLine = StringTools.replace(_sLine, "\\", "/");
 
-			//Extract parent module
+			//Extract parent module //Not USED?
 			if (_sLine.charAt(_sLine.length-1) == ")"){
 				var _nLastIndex : Int = _sLine.lastIndexOf("(");
 				if (_nLastIndex >= 0){

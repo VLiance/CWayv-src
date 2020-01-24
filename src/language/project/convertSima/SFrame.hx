@@ -35,6 +35,7 @@ package language.project.convertSima ;
 	//	public var oSCurrClass : SClass;
 		public var oSPackage : SPackage;
 		public var bSkipContent : Bool = false;
+		public var bNoPackageFoundBrace : Bool = false;
 		public var bSkipStatic : Bool = false;
 		public var bAddDebugFile : Bool = false;
 		public var bWrapper : Bool = false;
@@ -105,9 +106,10 @@ package language.project.convertSima ;
 				
 				i++;
 			}
-			if (i == _i) {
-				Debug.fWarning("No Package in: " + oSPackage.sName);
-				return false;
+			if (i == _i || bNoPackageFoundBrace) {
+				//Debug.fWarning("No Package in: " + oSPackage.sName);
+				//return false;
+				i = 0; //Reset from start, package is now not required
 			}
 			
 			//Get import and find startclass
@@ -240,7 +242,13 @@ package language.project.convertSima ;
 				oSPackage.nPackageLine = _nLineNum;
 				return true;
 			}
-
+			
+			var _nIndex : Int = _sLine.indexOf("{ ");
+			if (_nIndex >= 0) {
+				bNoPackageFoundBrace = true;
+				return true; //We stop at first brace to save some parsing
+			}
+			
 			return false;
 		}
 		
@@ -364,7 +372,7 @@ package language.project.convertSima ;
 			var _bIsVector: Bool = false;
 			
 			
-		var _eClassType: EuClassType = EuClassType.Invalid;
+			var _eClassType: EuClassType = EuClassType.Invalid;
 			var _nIndex : Int = Text.search(_sLine, cStartPublic); //Start class
 			if (_nIndex >= 0) {
 				
