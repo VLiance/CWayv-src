@@ -1132,7 +1132,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				 pushLine("{};"); 
 				 
 				 pushLine("inline virtual void fRun(){");
-				  pushLine("((" + "c" + _oFunc.oSClass.sName + "*)parent)->" + _oFunc.sName + "(" +  getFunctionParam(_oFunc, false, true)+ ");");
+				  pushLine("((" + "c" + _oFunc.oSClass.sName + "*)parent.get())->" + _oFunc.sName + "(" +  getFunctionParam(_oFunc, false, true)+ ");");
 				 pushLine("};");
 				 
 				subTab();
