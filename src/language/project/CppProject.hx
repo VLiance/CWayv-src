@@ -372,9 +372,9 @@ package language.project ;
 		
 		public function fGetLibStr(_oSLib : SLib): String {
 			if(_oSLib.oParentLib != null){
-				return "[" + _oSLib.oParentLib.sName + ":" + _oSLib.sName + "] ";
+				return "[" + _oSLib.oParentLib.sIdName + ":" + _oSLib.sIdName + "] ";
 			}else{
-				return "["  + _oSLib.sName + "] ";
+				return "["  + _oSLib.sIdName + "] ";
 			}
 		}
 		
