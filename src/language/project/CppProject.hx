@@ -170,7 +170,12 @@ package language.project ;
 				if(_oLib.sParentModule != ""){
 					Debug.fAssist("[C~:Lib]|(" + _oLib.sParentModule + ")" + _oLib.sIdName + "|" + _oLib.sParentLibName + "|[" + _oLib.sReadPath + "]|");
 				}else{
-					Debug.fAssist("[C~:Lib]|" + _oLib.sIdName + "|[" + _oLib.sReadPath + "]|" );
+					if (_oLib.sParentLibName != ""){
+						Debug.fAssist("[C~:Lib]|" + _oLib.sParentLibName + "|[" + _oLib.sReadPath + "]|");
+					}else{
+						Debug.fAssist("[C~:Lib]|" + _oLib.sIdName + "|[" + _oLib.sReadPath + "]|" );
+					}
+					
 				}
 			}
 			
@@ -364,6 +369,16 @@ package language.project ;
 		
 		
 		
+		
+		public function fGetLibStr(_oSLib : SLib): String {
+			if(_oSLib.oParentLib != null){
+				return "[" + _oSLib.oParentLib.sName + ":" + _oSLib.sName + "] ";
+			}else{
+				return "["  + _oSLib.sName + "] ";
+			}
+		}
+		
+		
 		var sCompilateurModInfo : String;
 		public function writeAllFiles():Void {
 			
@@ -403,7 +418,7 @@ package language.project ;
 							Debug.fWarning("Generated Cpp file as been modified by user (allowed in debug): " + _oCurrentPackage.sFilePath);
 							//aVerifyCppBuildList.push(sGenPath);//not sure??
 							aCppBuilList.push(sGenPath);//not sure??
-							Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
+							Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "|" + fGetLibStr(_oCurrentPackage.oSLib)  + sCppWritePathCl.split("\\").join("/") );
 						}else{
 						
 							//Debug.fError(_oCurrentClass.sName +  " sCppGetTime| " + _oCurrentClass.sCppGetTime + " sCppModTime " + _oCurrentClass.sCppModTime );
@@ -417,7 +432,7 @@ package language.project ;
 									MyFile.fwritefile(sCppWritePathDH, _oCurrentPackage.oDefHeader.aFile);
 								}
 								
-								Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
+								Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "|" + fGetLibStr(_oCurrentPackage.oSLib)   + sCppWritePathCl.split("\\").join("/") );
 							}else{
 							
 								Debug.fAssist( "---| " + sCppWritePathCl.split("\\").join("/") );//?
@@ -433,11 +448,10 @@ package language.project ;
 
 					}else {
 						
-						Debug.fAssist( Setting.sShortName +  Setting.sUpToDate +  "| " + sCppWritePathCl.split("\\").join("/") );
+						Debug.fAssist( Setting.sShortName +  Setting.sUpToDate +  "|" + fGetLibStr(_oCurrentPackage.oSLib)  + sCppWritePathCl.split("\\").join("/") );
 						//Debug.fAssist("Skip File : " + _oCurrentClass.sName);
 						aVerifyCppBuildList.push(sGenPath);
 					}
-					
 					
 				}
 			}
@@ -851,11 +865,11 @@ package language.project ;
 
 				_oSLib.sCppModTime = fGetModifiedFilesInfoLib(_oSLib);
 				
-				Debug.fAssist( Setting.sShortName + Setting.sToCpp  +  "| " + _sPath.split("\\").join("/") );
+				Debug.fAssist( Setting.sShortName + Setting.sToCpp  +  "|" + fGetLibStr(_oSLib)   + _sPath.split("\\").join("/") );
 					//Debug.fAssist( Setting.sShortName + Setting.sToCpp  + "| " + sCppWritePathCl.split("\\").join("/") );
 					
 			}else{
-				Debug.fAssist(  Setting.sShortName +  Setting.sUpToDate +  "| " + _sPath.split("\\").join("/") );
+				Debug.fAssist(  Setting.sShortName +  Setting.sUpToDate +  "|"  + fGetLibStr(_oSLib)  + _sPath.split("\\").join("/") );
 			//	Debug.fAssist(  Setting.sShortName +  Setting.sUpToDate +  "|Lib:" + _oSLib.sIdName +  ": " + _sPath );
 				//	Debug.fAssist( Setting.sShortName +  Setting.sUpToDate +  "| " + sCppWritePathCl.split("\\").join("/") );
 			}

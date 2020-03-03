@@ -86,20 +86,24 @@ Debug.fTrace("---------------------- : " );
 			for (i in 0... _sArgumentsList.length-1){ //-1 (Require at least one input value)
 				
 				var _sInput : String = _sArgumentsList[i + 1];
+				_sInput = _sInput.split('\\').join('/'); //Normalise
 				
 				switch (_sArgumentsList[i]) {
 					
 					case "-L"   //Lib
 					   | "-l":
 						oModule.fAddLib(_sInput);
+						bHaveToCompileFile = true;
 						
 					case "-I"   //Interface
 					   | "-i":
 						oModule.fAddLib(_sInput,true); //Interface are readonly
 						
 						
-					case "-E"   //Compile enyty file & dependances
-						| "-e" :
+					case "-E":  //EMBED GZE  //Compile enyty file & dependances
+						
+						
+					case "-e" : //Temp, to bo removed (old compatibility)
 						oModule.fAddCompileEntry(_sInput);
 						bHaveToCompileFile = true;
 						

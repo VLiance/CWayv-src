@@ -143,9 +143,11 @@ package language.project ;
 			//oProjectData.sRootPath
 			//Read
 			
-			
-			
-			
+			//Resolve parent lib
+			for (_oLib in aLibList){
+				_oLib.fResolveParent(this);
+			}
+
 			
 			if(oMainLib != null){
 				//var _aRead : Array<Dynamic> = mFile.readFile(oProjectData.sRootPath + sProjectFile + sMainFile + ".as");
@@ -173,6 +175,8 @@ package language.project ;
 			//After all class loaded////  See SClass fReload same?
 			///////////////////////////
 		
+			
+			
 			SGlobal.iniGlobal(Main, this);
 			Debug.fTrace("loadClassVarContent");
 			LoadVarContent.loadClassVarContent(this, aPackage);

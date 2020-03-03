@@ -973,7 +973,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				pushLine("namespace " + _oDlg.sDelegateStringFull + "{");
 				addTab();
 				pushLine("///////");
-				pushLine("GZ_mDlgIni(" + _sReturn + ", GZ_PARAM" + _sParamDlgIni + "){printf(\" (Not set) \"); return " + _sDefaultReturn + ";};");
+				pushLine("GZ_mDlgIni(" + _sReturn + ", GZ_PARAM" + _sParamDlgIni + "){GZ_printf(\" (Not set) \"); return " + _sDefaultReturn + ";};");
 				pushLine(" class Dlg { GZ_mDlgClass(" + _oDlg.sDelegateString + ")");
 				addTab();
 				pushLine("///////////////////");
@@ -1163,7 +1163,7 @@ gzDef_Vec_Other(_Name, _nSize);
 			}
 			
 			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" +  _sInitialiserList  + "{" );
-			pushLine("printf(\"\\nCopy" + _oSClass.sName  +"\");");
+			//pushLine("GZ_printf(\"\\nCopy" + _oSClass.sName  +"\");");
 				pushLine("};" ); 
 	
 			//pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o, gzBool _b)" + getExtendClassToString(_oSClass,"(_o, _b)") + fCopyAllVar(_oSClass, true)  + "{};" ); 

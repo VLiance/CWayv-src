@@ -176,6 +176,15 @@ package language;
 		
 		
 		public function fAddLib(_sLine: String,  _bReadOnly : Bool = false) :CwmLib {
+
+			//Extract entry point file if have one
+			if (_sLine.length > 3 && _sLine.charAt(_sLine.length - 3) == '.' && _sLine.charAt(_sLine.length - 2) == 'c'  && _sLine.charAt(_sLine.length - 1) == 'w'){ //We specified entry point
+			
+				fAddCompileEntry(_sLine);
+				_sLine = _sLine.substring(0, _sLine.lastIndexOf('/') + 1);
+			}
+			
+
 			var _oCwmLib : CwmLib = new CwmLib(this, _sLine, _bReadOnly);
 			
 			//Test if already exist, we cannot have 2 lib with same readpath

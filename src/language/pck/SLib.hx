@@ -1,6 +1,7 @@
 package language.pck ;
 	import language.CwmLib;
 	import language._system.FileSys;
+	import language.project.SProject;
 	import language.project.convertSima.SClass;
 	import language.project.convertSima.SPackage;
 	import language.project.run.ArrayLocation;
@@ -21,6 +22,7 @@ package language.pck ;
 		public var oCwmLib  	: CwmLib;
 		
 		public var sName  	: String;
+		public var oParentLib 	: SLib ;
 		public var sParentLibName  	: String = "";
 		public var sParentModule  	: String = "";
 		public var sIdName  	: String;
@@ -105,6 +107,20 @@ package language.pck ;
 		}
 		
 		
+		
+		public function fResolveParent(_oPrj:SProject){
+					//Debug.fWarning("-----Test " + sParentLibName);
+			if (sParentLibName != ""){
+				var  _sParentName : String = sParentLibName.toLowerCase();
+				for (_oLib in _oPrj.aLibList){
+					if (_oLib.sIdName.toLowerCase() == _sParentName){ //TODO optimize
+				
+						oParentLib = _oLib;
+						return;
+					}
+				}
+			}
+		}
 		
 		public function fCalculateCheckSum(){
 			sClassListCheckSum = "";

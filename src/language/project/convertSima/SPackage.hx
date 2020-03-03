@@ -199,7 +199,8 @@ class SPackage extends SBloc
 			
 				//if (oSLib.oLibFileImport != null){ //Copy --> TODO make other lib importe
 				
-				for(_oLib in oSProject.aLibList){
+				for (_oLib in oSProject.aLibList){
+					
 					if ( _oLib.oLibFileImport != null){ //Copy --> TODO make other lib importe
 						var _oLibImport:FileImport = newSImport();
 						//Debug.fTrace("¸**Lib " + oSClass.sName + " " +  oSLib.oLibFileImport.sName);
