@@ -14,6 +14,7 @@ package language.project.convertCpp ;
 	import language.project.convertSima.SPackage;
 	import language.project.convertSima.TypeResolve;
 	import language.vars.special.UnitObj;
+	import language.vars.special.VarFixeArray;
 	import language.vars.varObj.CommonVar;
 	import language.vars.varObj.Delegate;
 	import language.vars.varObj.EaseOut;
@@ -372,6 +373,35 @@ package language.project.convertCpp ;
 			}
 			return _defaultIni.substring(0, _defaultIni.length-1);
 			
+		}
+		
+		
+				
+		
+		public function freeAll(_oSClass:SClass):String {
+			
+			var _sResult : String = "";
+			//addTab();
+			var _aVarList  : Array<Dynamic>  = _oSClass.aIniGlobalVarList;
+			var _i:UInt = _aVarList.length;
+			for (i in 0 ...  _i) {
+				_sResult += freeAllVarObj(_aVarList[i]);
+			}
+			//subTab();
+			return _sResult;
+		}
+	
+		public function freeAllVarObj(_oVar:VarObj):String {
+			switch (_oVar.eType) {
+				case EuVarType._FixeArray :
+					var _oVarFixeArray : VarFixeArray = cast(_oVar);
+					if (_oVarFixeArray.nStartSize != 0) { //only if we have setted size
+						return "GZ_fFree(" + _oVarFixeArray.sName + ");";
+					}
+				//break;
+				default:
+			}
+			return "";
 		}
 		
 		

@@ -302,7 +302,7 @@ package language.project ;
 			/////////////////////////////
 			_oSLib.oGroup = _oGroupSLib;
 			
-			_oSLib.fIni();
+			_oSLib.fIni(this);
 			
 			
 			if (_oCWMLib.bLoadAll) {

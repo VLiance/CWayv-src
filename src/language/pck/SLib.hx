@@ -59,6 +59,9 @@ package language.pck ;
 		
 		public var bForceLoadAll : Bool = false;
 
+		public var oSProject : SProject;
+		public var bProcessDynamicLoad : Bool = false;
+		
 		
 		public function new() {
 
@@ -71,7 +74,8 @@ package language.pck ;
 			
 		}
 		
-		public function fIni():Void {
+		public function fIni(_oSProject : SProject ):Void {
+			oSProject = _oSProject;
 			
 			fGetFolderFileList(sReadPath);
 			

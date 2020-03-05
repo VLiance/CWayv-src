@@ -166,7 +166,7 @@ package language.project.convertCpp ;
 				
 			//if(oSClass.bHaveOverplace == false){
 				//pushLine("GZ_mCppClass(::" + oSClass.oSLib.sWriteName + ", "  + oSClass.sName + ")");
-				pushLine("GZ_mCppClass("  + _oSClass.sName + ")");
+				pushLine("GZ_mCppClass(" + _oSClass.oSLib.sWriteName + ", " + _oSClass.sName + ")");
 			//}else{
 			//	var _oSClassOp : SClass =  SClass(oSClass.aExtendClass[0]);
 			//	pushLine("GZ_mCppClassExt(::" + oSClass.oSLib.sWriteName + ", " + oSClass.sName + ", " + _oSClassOp.sNsAccess + _oSClassOp.sName + ");");
@@ -196,10 +196,16 @@ package language.project.convertCpp ;
 			if(!_oSClass.bIsPod){
 				//Destructor
 				//pushLine(oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "::~" + oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "(){")
-				pushLine( "c" + _oSClass.sName + "::~" +  "c" + _oSClass.sName + "(){");
-				extractDestructor(_oSClass);
-				freeAll(_oSClass);
-				pushLine("}");
+				
+				var _sAutoFree : String = freeAll(_oSClass);
+				if(_oSClass.oFuncDestrutor != null ||  _sAutoFree != ""){ //Must be same as header
+					pushLine( "c" + _oSClass.sName + "::~" +  "c" + _oSClass.sName + "(){");
+					addTab();
+						extractDestructor(_oSClass);
+						pushLine( _sAutoFree );
+					subTab();
+					pushLine("}");
+				}
 			}
 			addSpace();
 			
@@ -649,29 +655,7 @@ package language.project.convertCpp ;
 			}
 		}
 		
-		
-		private function freeAll(_oSClass:SClass):Void {
-			addTab();
-			var _aVarList  : Array<Dynamic>  = _oSClass.aIniGlobalVarList;
-			var _i:UInt = _aVarList.length;
-			for (i in 0 ...  _i) {
-				freeAllVarObj(_aVarList[i]);
-			}
-			subTab();
-		}
-	
-		public function freeAllVarObj(_oVar:VarObj):Void {
-			switch (_oVar.eType) {
-				case EuVarType._FixeArray :
-					var _oVarFixeArray : VarFixeArray = cast(_oVar);
-					if (_oVarFixeArray.nStartSize != 0) { //only if we have setted size
-						pushLine( "GZ_fFree(" + _oVarFixeArray.sName + ");");
-					}
-				//break;
-				default:
-			}
-			
-		}
+
 		
 		public function fAddThreadFonction(_oSClass:SClass):Void {
 			if ( _oSClass.bThread ) {

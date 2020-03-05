@@ -83,8 +83,46 @@ package language.project.convertCpp ;
 			pushLine("return (&"+   oLib.sWriteName + "::zpLib)"  + ";");
 			
 			pushLine("}");
+			
+			
+			//Get all others full lib
+			pushLine("//DynamicLoad");
+			for ( _oOther in oLib.oSProject.aLibList){_oOther.bProcessDynamicLoad = false; } //Be sur to have it disabled
+			for ( _oOther in oLib.oSProject.aLibList){
+				if (_oOther != oLib){
+					if (_oOther.oParentLib != null){
+						fCreateDynamicLinking(_oOther.oParentLib );
+					}else{
+						fCreateDynamicLinking(_oOther);
+					}
+				}
+			}
 		}
 		
 		
+		public function fCreateDynamicLinking(_oLib: SLib ):Void {
+			if (!_oLib.bProcessDynamicLoad ){ //Don't do it twice
+				_oLib.bProcessDynamicLoad = true;
+				pushLine("//Lib: " +  _oLib.sWriteName);
+				pushLine("#ifdef D_RunTimeLink_" +  _oLib.sWriteName);
+				addTab();
+				for (_oPckg in _oLib.aPackage) {for (_oSClass in  _oPckg.aClassList) {
+					
+					pushLine(_oSClass.sNamespace + "gzPtrFuncRPAny Func_Get;" +  _oSClass.sEndNamespace);
+					
+					
+				}}
+				subTab();
+				
+				
+				
+				//`Lib_GZ::Debug::Debug::Func_Get'
+				pushLine("#endif");
+				
+				
+				
+			}	
+		}
+
 		
 	}

@@ -311,8 +311,13 @@ gzDef_Vec_Other(_Name, _nSize);
 				}
 				//Destructeur
 				//pushLine("virtual ~" + _oSClass.oSLib.sWriteName + "_"  + _oSClass.sName + "();")
-				if(!_oSClass.bIsPod){
-					pushLine("virtual ~c"  + _oSClass.sName + "();");
+				if (!_oSClass.bIsPod){
+					var _sAutoFree : String = freeAll(_oSClass); //TODO optimise to not reparse second time in cpp/h
+					if(_oSClass.oFuncDestrutor != null ||  _sAutoFree != ""){ //Must be same as Cpp
+						pushLine("virtual ~c"  + _oSClass.sName + "();");
+					}else{
+						pushLine("inline virtual ~c"  + _oSClass.sName + "(){};");
+					}
 				}
 				addSpace();
 				
