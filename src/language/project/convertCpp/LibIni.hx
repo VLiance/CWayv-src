@@ -116,6 +116,17 @@ package language.project.convertCpp ;
 				
 				
 				
+				if (_oLib.sIdName == "GZ" ){
+					pushLine("//Special Ini: " +  _oLib.sWriteName);
+					pushLine("//TODO associate!!: " +  _oLib.sWriteName);
+					pushLine("namespace Lib_GZ{namespace Lib {");
+					pushLine("gzPtrFuncRBoolPAny fAllClass;");
+					pushLine("gzPtrFuncRPAny fRegisterLib;");
+					pushLine("}}");
+					
+				}
+				
+				
 				//`Lib_GZ::Debug::Debug::Func_Get'
 				pushLine("#endif");
 				
