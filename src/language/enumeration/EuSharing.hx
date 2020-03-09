@@ -10,6 +10,7 @@ package language.enumeration ;
 			 SharingInvalid 		;
 			 Destructor 			;
 			 Overable 				;
+			 PrtFunc;
 		}
 			
 		class EuSharing_ {
@@ -47,6 +48,9 @@ package language.enumeration ;
 					
 					case Overable:
 						return "overable";
+						
+					case PrtFunc:
+						return "PrtFunc";//Not used?
 					
 				}
 			}
@@ -75,6 +79,9 @@ package language.enumeration ;
 					
 					case Overable:
 						return "Ov";
+						
+					case PrtFunc:
+						return "PrtFunc"; //Not used?
 					
 				}
 				return "Sharing Not Implemented";

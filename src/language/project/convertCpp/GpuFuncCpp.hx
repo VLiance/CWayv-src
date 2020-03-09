@@ -307,14 +307,14 @@ package language.project.convertCpp ;
 				}
 				//Lib_GZ::Debug::Debug::GetInst(thread)->fError(
 				//GZ_Debug_fError(
-				pushLine("Lib_GZ::Debug::Debug::GetInst(thread)->fError(Lib_GzOpenGL::pOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\":\") + gzStrUI(_line) );");
+				pushLine("Lib_GZ::Debug::Debug::GetInst(_this->thread)->fError(Lib_GzOpenGL::pOpGpuInfo::fGetErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\":\") + gzStrUI(_line) );");
 				//pushLine("MessageBox(0,TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),TEXT(\"GL Error : GL_" + _oSFunction.sName + " : \"),MB_OK | MB_ICONINFORMATION);");
 				pushLine("}");
 				
 				if(_oSFunction.bSpecifiquePlatforme){
 					pushLine("nErr = GetLastError();");		
 					pushLine("if(nErr){" );
-					pushLine("Lib_GZ::Debug::Debug::GetInst(thread)->fError(Lib_GzOpenGL::OpenGL::fGetLastErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\":\") + gzStrUI(_line) );");
+					pushLine("Lib_GZ::Debug::Debug::GetInst(_this->thread)->fError(Lib_GzOpenGL::OpenGL::fGetLastErrorString(nErr) + gzU8(\": gl" + _oSFunction.sName.substring(1) + "( \")" +  _sParamValue + " + gzU8(\") \") + gzU8(\" File: \") + Lib_GzOpenGL::cOpGpuInfo::fGetFile(_file) + gzU8(\":\") + gzStrUI(_line) );");
 					pushLine("}");
 				}
 

@@ -21,6 +21,9 @@ package language.vars.varObj ;
 		override public function fGetType():String {
 			return "VarString";
 		}
+		override public function fGetSingature():String {
+			return "s";
+		}
 		
 		/*
 		override public function fGetType():String {

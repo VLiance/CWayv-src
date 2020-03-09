@@ -124,6 +124,12 @@ package language.project.convertCpp ;
 					pushLine("gzPtrFuncRPAny fRegisterLib;");
 					pushLine("}}");
 					
+					pushLine("//Only for Test");
+					pushLine("namespace Lib_GZ{namespace EntryPoint {");
+					pushLine("gzInt (*Func_Constructor_)(cEntryPoint*) = 0;//TODO");
+					pushLine("}}");
+					
+					
 				}
 				
 				

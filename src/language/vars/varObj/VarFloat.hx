@@ -20,6 +20,10 @@ package language.vars.varObj ;
 			return "Float"  + EuBit_.getStringBit(this);
 		}
 		
+		override public function fGetSingature():String {
+			return "f";
+		}
+		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			return copyVarFloat(new VarFloat(_oSBloc) );
 		}		

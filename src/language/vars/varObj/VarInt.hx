@@ -28,6 +28,9 @@ package language.vars.varObj ;
 				return "Int" + EuBit_.getStringBit(this);
 			}
 		}
+		override public function fGetSingature():String {
+			return "i";
+		}
 		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			return copyVarInt(new VarInt(_oSBloc) );

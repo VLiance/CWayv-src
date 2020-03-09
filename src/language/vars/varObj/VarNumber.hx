@@ -22,6 +22,10 @@ package language.vars.varObj ;
 			return "Number"  + EuBit_.getStringBit(this);
 		}
 		
+		override public function fGetSingature():String {
+			return "n";
+		}
+		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			return copyVarFloat(new VarNumber(_oSBloc) );
 		}		

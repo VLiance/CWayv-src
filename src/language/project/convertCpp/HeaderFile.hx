@@ -157,6 +157,10 @@ package language.project.convertCpp ;
 				addSpace();	
 				
 				listDelegateTypeDef(_oSClass);
+			
+		
+				
+
 				
 				getUnitToConvert(_oSClass); //TODO Only local
 				//getEnumDefinition(); Remove now in _ClassName.h
@@ -256,13 +260,24 @@ gzDef_Vec_Other(_Name, _nSize);
 					pushLine("#endif");
 					return;
 				}
-
+				
+				
+				
+				pushLine("//Func_Ptr");
+				pushLine("namespace " +  _oSClass.sName  + "{");
+				getFunctionPtr(_oSClass );
+				pushLine("}");
+				
+					
+				
 				pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " c" + _oSClass.sName + _sExtend +" {");
 				
 				addTab();
 				addSpace();
 				
 				//Var list
+				
+				
 				
 				
 				/////////////////////
@@ -314,9 +329,10 @@ gzDef_Vec_Other(_Name, _nSize);
 				if (!_oSClass.bIsPod){
 					var _sAutoFree : String = freeAll(_oSClass); //TODO optimise to not reparse second time in cpp/h
 					if(_oSClass.oFuncDestrutor != null ||  _sAutoFree != ""){ //Must be same as Cpp
-						pushLine("virtual ~c"  + _oSClass.sName + "();");
+						//pushLine("virtual ~c"  + _oSClass.sName + "();");
+						pushLine("inline ~c"  + _oSClass.sName + "(){}; //TODO Virtual + Call destructor");
 					}else{
-						pushLine("inline virtual ~c"  + _oSClass.sName + "(){};");
+						pushLine("inline ~c"  + _oSClass.sName + "(){}; //TODO Virtual ");
 					}
 				}
 				addSpace();
@@ -331,6 +347,12 @@ gzDef_Vec_Other(_Name, _nSize);
 				pushLine("//Static singleton function");
 				getStaticFunctionToConvert(_oSClass);
 				
+				
+				
+						
+				pushLine("//FuncBody");
+				getClassFBody(_oSClass );
+				
 				subTab();
 				//////////////////////
 				//Get only private //
@@ -338,6 +360,11 @@ gzDef_Vec_Other(_Name, _nSize);
 				pushLine("private:");
 				addTab();
 				addSpace();
+				
+				pushLine("//FPtr");
+				getClassFPtr(_oSClass );
+		
+				
 				pushLine("//Var");
 				getVarToConvert_(_oSClass.aGlobalVarList, EuSharing.Private);
 		
@@ -1191,7 +1218,11 @@ gzDef_Vec_Other(_Name, _nSize);
 			
 			
 			//if(!_oSClass.bExtension && !_oSClass.bIsPod){
-				pushLine("virtual gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);};"); //gzSp?
+				
+			//pushLine("virtual gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);}; //TODO Virtual "); //gzSp?
+			pushLine("inline gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);}; //TODO Virtual "); //gzSp?
+		
+				
 				//pushLine("virtual gzAny MemCopy();"); 
 			//	pushLine("virtual gzAny DeepCopy();");
 			//}

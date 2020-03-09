@@ -72,8 +72,12 @@ package language.vars.varObj ;
 			}
 				
 			return oCallRef.sName;
-
 		}
+		
+		override public function fGetSingature():String {
+			return "o";
+		}
+		
 		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			return copyVarCallClass( new VarCallClass(_oSBloc, null));

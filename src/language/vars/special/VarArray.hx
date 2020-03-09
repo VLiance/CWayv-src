@@ -73,6 +73,12 @@ package language.vars.special ;
 			return "VarArray";
 		}
 		
+		override public function fGetSingature():String {
+			return "a";
+		}
+		
+		
+		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			var _oArray : VarArray = new VarArray(null, "", EuVarType._None);
 			_oArray.oSBloc = _oSBloc;

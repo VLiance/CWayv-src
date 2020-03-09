@@ -198,13 +198,18 @@ package language.project.convertCpp ;
 				//pushLine(oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "::~" + oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "(){")
 				
 				var _sAutoFree : String = freeAll(_oSClass);
-				if(_oSClass.oFuncDestrutor != null ||  _sAutoFree != ""){ //Must be same as header
+				if (_oSClass.oFuncDestrutor != null ||  _sAutoFree != ""){ //Must be same as header
+					
+					pushLine( "//TODO Call destructor");
+					pushLine( "/*");
 					pushLine( "c" + _oSClass.sName + "::~" +  "c" + _oSClass.sName + "(){");
 					addTab();
 						extractDestructor(_oSClass);
 						pushLine( _sAutoFree );
 					subTab();
 					pushLine("}");
+					pushLine( "*/");
+					
 				}
 			}
 			addSpace();

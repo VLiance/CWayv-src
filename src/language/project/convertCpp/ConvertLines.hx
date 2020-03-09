@@ -780,8 +780,13 @@ package language.project.convertCpp ;
 					var _oExtendFunc : ExtendFunc = cast(_oVar);
 					var _sExFuncName : String = _oExtendFunc.oSFunc.sName;  
 					if (_oExtendFunc.oSFunc.bConstructor) {  //Super constructor condition
-						//_sExBefore = "Ini_" + _oExtendFunc.oSFunc.oSClass.oSLib.sWriteName + "_";
+						//abcde
 						_sExFuncName = "c" + _oExtendFunc.oSFunc.oSClass.sName + "::" + Setting.sConstructorKeyword;
+						//_sExFuncName =  _oExtendFunc.oSFunc.oSClass.sName + "::" + Setting.sConstructorKeyword;
+
+						//_sExFuncName = _oExtendFunc.oSFunc.oSClass.sPtrCFuncName  + Setting.sConstructorKeyword +  CommonCpp.getFunctionSignature(_oExtendFunc.oSFunc);
+						//return   checkVarConvertIn(_oExtendFunc.oSFunc, _oConvertIn, _sExFuncName + "(this)", _oContainer);
+						
 					}
 					return   checkVarConvertIn(_oExtendFunc.oSFunc, _oConvertIn, _sExFuncName + "()", _oContainer);
 				//break;
@@ -840,15 +845,28 @@ package language.project.convertCpp ;
 						//Now with namespace
 						//_sFcBefore = CppProject.sStaticPrefix;;
 					}else if (_oVarFunc.bConstructor) {  //For ExtendFuncCall ONLY
-						//_sFcBefore = "Ini_" + _oVarFuncCall.oFunction.oSClass.oSLib.sWriteName + "_";
-						_sFcName =  "c" + _oVarFuncCall.oFunction.oSClass.sName  + "::"+ Setting.sConstructorKeyword;
+						//abcde
+						_sFcName =  "c" + _oVarFuncCall.oFunction.oSClass.sName  + "::" + Setting.sConstructorKeyword;
+						//_sFcName =   _oVarFuncCall.oFunction.oSClass.sName  + "::" + Setting.sConstructorKeyword;
+						
+						//Special explicit call contructor
+					//	_sFcName =  _oVarFuncCall.oFunction.oSClass.sPtrCFuncName  + Setting.sConstructorKeyword +  CommonCpp.getFunctionSignature(_oVarFuncCall.oFunction);
+					//	return   checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _sFcName + "(this" +  convertFuncCallParam(_oVarFuncCall, false) + ")", _oContainer);
 					}
 					/*
 					if (_oVarFuncCall.bInline) {
 						return "InlineFunc";
 					}*/
+					
 					return   checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _sFcName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer);
 					
+					/*
+					if (_oVarFunc.eFuncType == EuFuncType.Pure || _oVarFunc.oSClass.bIsPod ||  _oVarFunc.oSClass.bIsVector || _oVarFunc.oSClass.bIsResults ){
+						return   checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _sFcName + "(" +  convertFuncCallParam(_oVarFuncCall) + ")", _oContainer);
+					}else{
+						return   checkVarConvertIn(_oVarFunc.oReturn, _oConvertIn,  _sFcName + "(_this" +  convertFuncCallParam(_oVarFuncCall, false) + ")", _oContainer); 
+					}
+					*/
 						//_sName = convertVarToString("directName",   _aSelectedVar[cVarListName]);
 		
 				//break;

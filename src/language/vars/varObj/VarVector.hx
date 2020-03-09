@@ -22,7 +22,9 @@ package language.vars.varObj ;
 		override public function fGetType():String {
 			return "Vec" + nSize;
 		}
-		
+		override public function fGetSingature():String {
+			return "v";
+		}
 		
 		override public function copy(_oSBloc:SBloc):VarObj {
 			return copyVec(new VarVector(_oSBloc, nSize) );

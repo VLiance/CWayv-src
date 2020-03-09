@@ -30,6 +30,10 @@ package language.vars.varObj ;
 			return EuVarType_.fGetName(eType);
 		}
 		
+		public function fGetSingature():String {
+			return "_"; //Unknow
+		}
+		
 		 //Override
 		public function copy(_SBloc:SBloc):VarObj {
 			return null;

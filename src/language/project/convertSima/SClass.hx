@@ -37,6 +37,8 @@ package language.project.convertSima;
 	class SClass extends SBloc {
 
 		
+		public var sPtrCFuncName : String;
+		public var sCFuncName : String;
 		public var sNamespace : String;
 		public var sEndNamespace : String;
 		public var sNsAccess : String; 
@@ -230,6 +232,9 @@ package language.project.convertSima;
 			oSClass = this;
 			oSLib = _oPackage.oSLib;
 			
+			sCFuncName = fGetCFuncName();
+			
+			sPtrCFuncName = fGetNsCFuncName(); //See also fGetObjFPtrName
 			
 			sNamespace = fGetNamespace();
 			sEndNamespace = fGetEndNamespace();
@@ -849,6 +854,32 @@ package language.project.convertSima;
 		public function fGetNsAccess() :String {
 			return oPackage.sNsAccess; //TODO Class different name
 		}
+		
+		public function fGetCFuncName() :String {
+			var _sFuncName : String = "";
+			//var _sFirstIsLib: String = "Lib_";
+			if(oPackage.aFolderList != null){
+				for ( _sFolder  in oPackage.aFolderList) {
+					_sFuncName += _sFolder + "_";
+				//	_sFirstIsLib = "";
+				}
+			}
+			return _sFuncName + "c" + sName + "_";
+		}
+		
+			
+		public function fGetNsCFuncName() :String {
+			var _sFuncName : String = "::";
+			//var _sFirstIsLib: String = "Lib_";
+			if(oPackage.aFolderList != null){
+				for ( _sFolder  in oPackage.aFolderList) {
+					_sFuncName += _sFolder + "::";
+				//	_sFirstIsLib = "";
+				}
+			}
+			return _sFuncName + sName + "::Func_";
+		}
+		
 		
 		public function fGetNamespace() :String {
 			return oPackage.sNamespace; //TODO Class different name

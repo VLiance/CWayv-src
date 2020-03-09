@@ -114,6 +114,14 @@ package language.project.convertCpp ;
 		
 		
 		private function convertFunctionClass(_oSFunction : SFunction, _nFuncIndex : Int , _bInline : Bool = false ):Void {
+
+			
+			if ( _oSFunction.eFuncType == EuFuncType.Pure){
+				//Pure are inlined in header now --> //Change my mind (Maybe when inlined)
+			//	return;
+			}
+			
+			
 				var _oSClass : SClass = _oSFunction.oSClass;
 			ExtractBlocs.oCurrSClass = _oSFunction.oSClass;
 			ExtractBlocs.nCurrLine = _oSFunction.nLine;
@@ -166,12 +174,26 @@ package language.project.convertCpp ;
 			}
 
 			_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " ";
+			var _sMustReturn = "return ";
+			if (_oSFunction.oReturn.eType == EuVarType._Void  ){
+				_sMustReturn = "";
+			}
+			
+			
+			
 			
 			var _sFuncName : String = _sMainFunctionLib + _oSFunction.sName;
 			
 			
 			//Param
-			var _sParam : String =  getFunctionParam(_oSFunction);
+			var _sParam : String;
+			if ( _oSFunction.eFuncType == EuFuncType.Pure || _sInline != ""){
+				_sParam  =  getFunctionParam(_oSFunction);	
+			}else{
+				_sParam  =  "c" + _oSClass.sName +  "* _this" + getFunctionParam(_oSFunction,false,false,false);	
+			}
+			
+			
 
 			//Static
 			var _sStatic : String =  "c";
@@ -190,6 +212,10 @@ package language.project.convertCpp ;
 				_sStatic = "";
 			}
 			
+			var _sClassFuncName: String = "";
+			var _sFuncExport: String = "";
+			var _sPtrFuncName : String = "";
+			var _sPtrFuncNameNs : String = "";
 			
 			//if (_oSFunction.eFuncType == EuFuncType.Main &&  oSClass.bExtension) { //Special case for class extension They have no param
 		///	if (_oSFunction.bConstructor ) {
@@ -232,61 +258,112 @@ package language.project.convertCpp ;
 						}
 					}
 				}
-				pushLine(_sInline + _sReturn + _sStatic + _sClass  + _sFuncName + "(" + _sParam + "){" + _sStack + _sAddNamespace);
+				
+				
+				if( _oSFunction.eFuncType == EuFuncType.Pure || _sInline != ""){
+					pushLine(_sInline + _sReturn + _sStatic + _sClass  + _sFuncName + "(" + _sParam + "){" + _sStack + _sAddNamespace);
+				}else{
+				///	pushLine("GzExport "   + _sReturn +   _sStatic +	_oSClass.sCFuncName  + _sFuncName  + "(" + _sParam + ")" + "{" + _sStack +  _sAddNamespace); //_sInline/_sStatic? just for tests
+					_sPtrFuncName = _oSClass.sCFuncName  + _sFuncName  + getFunctionSignature(_oSFunction);
+					_sPtrFuncNameNs = _sFuncName;
+					//pushLine("GzExport "   + _sReturn  +	_sPtrFuncName + "(" + _sParam + ")" + "{" + _sStack +  _sAddNamespace); //_sInline/_sStatic? just for tests
+					_sFuncExport = "GzExport "   + _sReturn  +	_sPtrFuncName  + "(" + _sParam + ")" + "{" + _sStack +  _sAddNamespace;
+					
+					_sClassFuncName =   "c" + _sClass  + "FB_" +  _sFuncName;
+					pushLine("inline " + _sReturn  + _sClassFuncName+ "(" + getFunctionParam(_oSFunction) + "){" + _sStack + _sAddNamespace);
+				
+				}
+				
+			
+				
 			}
+			
 			
 			addTab();
 			//addSpace();
 			
-	
-			if (_oSFunction.bConstructor) {
-		
-				//if(!oSClass.bIsPod){
-				
-			/* Use inline constructor instead for performances, TODO Verify  
-					iniGlobalVar();
 			
-					//pushLine("//Special var ini");
-					ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
-					iniAssociateVar();
-					
-					//Special for calss extention type, we don't initialise constructor now becauswe we have an illogical execution order
-					//if( oSClass.bExtension){ //Now Always
-						addSpace();
-						subTab();
-						pushLine("}");
-						addSpace();
-				//}
-			*/
+			if (  !_oSClass.bIsResults && !_oSClass.bIsPod){ //TODO put it, in a inlined func
+			
 				
-				//pushLine("void c" + _sClass + "Ini_" + _sFuncName + "(" + _sParam + ")" + "{" + _sStack);
-				pushLine(_sInline + _sReturn + "c" + _sClass + Setting.sConstructorKeyword  + "(" + _sParam + ")" + "{" + _sStack);
-				//pushLine(_sInline + _sReturn +  _sStatic + _sClass + Setting.sConstructorKeyword  + "(" + _sParam + ")" + "{" + _sStack);
+				if (_oSFunction.bConstructor ) {//TODO 
+			
+					//if(!oSClass.bIsPod){
+					
+				/* Use inline constructor instead for performances, TODO Verify  
+						iniGlobalVar();
+				
+						//pushLine("//Special var ini");
+						ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction);
+						iniAssociateVar();
+						
+						//Special for calss extention type, we don't initialise constructor now becauswe we have an illogical execution order
+						//if( oSClass.bExtension){ //Now Always
+							addSpace();
+							subTab();
+							pushLine("}");
+							addSpace();
+					//}
+				*/
+					
+				
+					_sPtrFuncName =	_oSClass.sCFuncName  + Setting.sConstructorKeyword + getFunctionSignature(_oSFunction);
+					_sPtrFuncNameNs = Setting.sConstructorKeyword ;
+					//pushLine(_sInline + _sReturn + "c" + _sClass + Setting.sConstructorKeyword  + "(" + _sParam + ")" + "{" + _sStack);
+					
+					
+					_sClassFuncName =  "c" + _sClass + "FB_" +  Setting.sConstructorKeyword ;
+					pushLine("inline "  + _sReturn + _sClassFuncName + "(" + getFunctionParam(_oSFunction)  + ")" + "{" + _sStack);
+					//pushLine("GzExport "  + _sReturn + _sPtrFuncName  + "(" + _sParam + ")" + "{" + _sStack);
+					_sFuncExport = "GzExport "  + _sReturn + _sPtrFuncName  + "(" + _sParam + ")" + "{" + _sStack;
+					
+					
+					
+					
+					addTab();
+				//	pushLine("//Special var ini");
+				//	ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction); //TODO must be before Cpp section initilizer
+						
+					//}
+					iniEmbedVar(_oSClass); //TODO?
+				}
+				//addSpace();
+				
+				//Do all function lines
+				ConvertLines.convertFunctionLines(this, _oSFunction);
+			//	ConvertLines.convertBlocLines(this, _oSFunction);
+				addOverrideFunctionLines(_oSFunction); //Exmple Opengl generated function
+				
 
+				fAddMissingReturnInFunction(_oSFunction);
+			
 				
-				addTab();
-			//	pushLine("//Special var ini");
-			//	ConvertLines.convertSpecialVarConstructorIni(this, _oSFunction); //TODO must be before Cpp section initilizer
-					
-				//}
-				iniEmbedVar(_oSClass); //TODO?
+				
+				subTab();
+				
+				//ConvertLines.oCurrClass = null;  //Warning -> Global
+				pushLine("}");
+				
+				//Warpper
+				if (  !_bInline && _oSFunction.eFuncType != EuFuncType.Pure && !_oSClass.bIsResults && !_oSClass.bIsPod){
+
+					pushLine(_sFuncExport);
+					pushLine(_sMustReturn + "_this->" + _sClassFuncName + "(" +  getFunctionParam(_oSFunction,false,true) + ");");
+					pushLine("}");
+				}
 			}
-			//addSpace();
-			
-			//Do all function lines
-			ConvertLines.convertFunctionLines(this, _oSFunction);
-		//	ConvertLines.convertBlocLines(this, _oSFunction);
-			addOverrideFunctionLines(_oSFunction); //Exmple Opengl generated function
-			
-
-			fAddMissingReturnInFunction(_oSFunction);
+		
+			//Function table
+			if ( _sPtrFuncName != "") {
+				
+				// void (*fun_ptr)(int) = fun; 
+				pushLine( "namespace "  + 	_oSClass.sName + "{" +  fGetObjFPtrName(_oSFunction, _sReturn, _sPtrFuncNameNs, _sParam) + " = " + _sPtrFuncName + ";" + "}");
+	
+			}
 		
 			
 			
-			subTab();
 			
-			//ConvertLines.oCurrClass = null;  //Warning -> Global
-			pushLine("}");
 			if (_oSFunction.eFuncType == EuFuncType.Pure){
 				pushLine("#endif");
 			}
@@ -446,7 +523,17 @@ package language.project.convertCpp ;
 		}
 		
 		
-		private function getFunctionParam(_oSFunction:SFunction, _bHeader:Bool = false, _bOnlyVar:Bool = false, _bFirst:Bool = true, _bWebGL:Bool = false, _bNotClassFunc:Bool = false):String {
+		public static function  getFunctionSignature(_oSFunction:SFunction):String{
+			var _aParam : Array<VarObj> = _oSFunction.aParamList;
+			//var _sSignatrue : String = "_" + _oSFunction.oReturn.fGetSingature(); //Return cannot have multiple signatures
+			var _sSignatrue : String = "_";
+			for (_oObj in _aParam) {
+				_sSignatrue += _oObj.fGetSingature();
+			}
+			return _sSignatrue;
+		 }
+		
+		private function getFunctionParam(_oSFunction:SFunction, _bHeader:Bool = false, _bOnlyVar:Bool = false, _bFirst:Bool = true, _bWebGL:Bool = false, _bNotClassFunc:Bool = false):String {//, _bOnlyType:Bool = false
 			var _sInputVarString : String = "";
 			var _sParam : String = "";
 			var _aParam : Array<Dynamic> = _oSFunction.aParamList;
@@ -753,8 +840,103 @@ package language.project.convertCpp ;
 		
 		
 		
+		private function getFunctionPtr(_oSClass:SClass):Void {
+			if (_oSClass.bIsPod || _oSClass.bIsVector){
+				return;
+			}
+			addTab();	
+			
+			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
+			var _i : UInt = _aFunction.length;
+			for (i in 0 ...  _i) {
+				var _oSFunction : SFunction = _aFunction[i];
+				//Only private/public function
+				if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+				
+					var _sReturn: String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
 		
-		private function getFunctionToConvert(_oSClass:SClass, _eSharing:EuSharing):Void {
+					
+					var _sPtrFuncName : String =	 _oSFunction.sName;
+								
+					if(_oSFunction.bConstructor){
+						 _sPtrFuncName =	 Setting.sConstructorKeyword ;
+					}
+					
+					
+					var _sParam : String =  "c" +  _oSClass.sName + "*" + getFunctionParam(_oSFunction, false, false, false,false,false);
+					
+					pushLine("extern " + fGetObjFPtrName(_oSFunction, _sReturn, _sPtrFuncName, _sParam) + ";");
+				}
+			}
+			subTab();	
+			//addSpace();
+		}
+		
+		
+		
+		
+		private function getClassFPtr(_oSClass:SClass):Void {
+			if (_oSClass.bIsPod || _oSClass.bIsVector){
+				return;
+			}
+			addTab();	
+			
+			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
+			var _i : UInt = _aFunction.length;
+			for (i in 0 ...  _i) {
+				var _oSFunction : SFunction = _aFunction[i];
+				//Only private/public function
+				if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+				
+					var _sReturn: String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
+		
+					var _sPtrFuncName : String =	 _oSFunction.sName;
+								
+					if(_oSFunction.bConstructor){
+						 _sPtrFuncName =	 Setting.sConstructorKeyword ;
+					}
+					
+					var _sParam : String = "c" +  _oSClass.sName + "*" + getFunctionParam(_oSFunction, false, false, false,false,false);
+					pushLine(_sReturn + " (*FPtr_" + _sPtrFuncName +  getFunctionSignature(_oSFunction) + ")(" +  _sParam + ");");
+					
+				}
+			}
+			subTab();	
+			//addSpace();
+		}
+		
+
+		private function getClassFBody(_oSClass:SClass):Void {
+			if (_oSClass.bIsPod || _oSClass.bIsVector){
+				return;
+			}
+			addTab();	
+			
+			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
+			var _i : UInt = _aFunction.length;
+			for (i in 0 ...  _i) {
+				var _oSFunction : SFunction = _aFunction[i];
+				//Only private/public function
+				if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+				
+					var _sReturn: String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
+		
+					var _sPtrFuncName : String =	 _oSFunction.sName;
+								
+					if(_oSFunction.bConstructor){
+						 _sPtrFuncName =	 Setting.sConstructorKeyword ;
+					}
+					
+					var	_sClassFuncName : String =   "FB_" +  _sPtrFuncName;
+					pushLine("inline " + _sReturn  + _sClassFuncName+ "(" + getFunctionParam(_oSFunction, true) + ");");
+					
+				}
+			}
+			subTab();	
+			
+		}
+		
+		private function getFunctionToConvert(_oSClass:SClass, _eSharing:EuSharing,  _bOutsideClass: Bool = false):Void {
 		
 			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i : UInt = _aFunction.length;
@@ -762,7 +944,7 @@ package language.project.convertCpp ;
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
 				if(!_oSFunction.bStatic &&  _oSFunction.eSharing  == _eSharing){
-					convertFunctionHeader(_oSClass, _oSFunction);
+					convertFunctionHeader(_oSClass, _oSFunction, _bOutsideClass);
 				}
 			}
 			
@@ -776,7 +958,7 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(_oSFunction.bStatic){
+				if(_oSFunction.bStatic && _oSFunction.eFuncType != EuFuncType.Pure){
 					convertFunctionHeader(_oSClass, _oSFunction);
 				}
 			}
@@ -800,7 +982,12 @@ package language.project.convertCpp ;
 		}
 		
 		
-		private function convertFunctionHeader(_oSClass:SClass, _oSFunction:SFunction):Void {
+		private function convertFunctionHeader(_oSClass:SClass, _oSFunction:SFunction,  _bOutsideClass: Bool = false):Void {
+			
+			if (_bOutsideClass &&  (_oSFunction.bStatic || _oSClass.bIsPod || _oSClass.bIsResults) ){
+				return; //Test for Func Ptr Only
+			}
+			
 			var _sReturn : String;
 			var _sFuncName : String = _oSFunction.sName;
 			var _sLib : String = _oSClass.oSLib.sWriteName;
@@ -812,7 +999,14 @@ package language.project.convertCpp ;
 			}else {*/
 				//_sReturn = "Void "; //temp
 				_sReturn = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
+				
 			//}
+			
+			var _sMustReturn = "return ";
+			if (_oSFunction.oReturn.eType == EuVarType._Void  ){
+				_sMustReturn = "";
+			}
+			
 			
 			/* Namespace
 			if (_oSFunction.eFuncType  == EuFuncType.Static) {
@@ -829,7 +1023,7 @@ package language.project.convertCpp ;
 			//}else if (oSClass.bExtension  && _oSFunction.eFuncType !=  EuFuncType.Main  && !_oSFunction.bAddDlgWrapper || _oSFunction.bStatic) { // _nFuncId != 0  
 			}else if (  !_oSFunction.bConstructor  && !_oSFunction.bAddDlgWrapper || _oSFunction.bStatic && !_oSClass.bIsPod) { // _nFuncId != 0  
 			
-				_sReturn = "virtual " + _sReturn;
+			//	_sReturn = "virtual " + _sReturn;
 			}
 			
 			
@@ -861,6 +1055,7 @@ package language.project.convertCpp ;
 			}
 			
 			
+			var _sPtrFuncName : String = "";
 			//Special case for class extension type  //X Now -> Always
 			//if (oSClass.bExtension  && _oSFunction.eFuncType == EuFuncType.Main ) {  
 			if ( _oSFunction.bConstructor ) {
@@ -896,9 +1091,19 @@ package language.project.convertCpp ;
 					//pushLine("virtual void Ini_" +  _sReturn + "c" + _sFuncName + "(" + _sParam + ");");
 					var _sIsRideFunc : String = "";
 					if (_oSFunction.eFuncType == EuFuncType.Riding){
-						_sIsRideFunc = "virtual ";
+				//		_sIsRideFunc = "virtual ";
 					}
-					pushLine(_sIsRideFunc  + _sReturn  + " "+ Setting.sConstructorKeyword + "(" + _sParam + ");");
+					
+					
+					_sPtrFuncName =	_oSClass.sCFuncName  + Setting.sConstructorKeyword ;
+					
+					
+					
+					
+					///pushLine(_sIsRideFunc  + _sReturn  + " "+ Setting.sConstructorKeyword + "(" + _sParam + ");");
+					//pushLine("//" + _sIsRideFunc  + _sReturn  + " "+ Setting.sConstructorKeyword + "(" + _sParam + ");");
+					//pushLine("inline " + _sIsRideFunc  + _sReturn  + " "+ Setting.sConstructorKeyword + "(" + _sParam + "){" + _oSClass.sPtrCFuncName +  Setting.sConstructorKeyword + "();" +"};");
+					pushLine("inline " + _sIsRideFunc  + _sReturn  + " "+ Setting.sConstructorKeyword + "(" + _sParam + "){" + _sMustReturn + "FPtr_" + Setting.sConstructorKeyword  +  getFunctionSignature(_oSFunction) + "(this" + getFunctionParam(_oSFunction, false, true,false) + ");" +"};");
 					
 					
 					/*
@@ -911,10 +1116,37 @@ package language.project.convertCpp ;
 				
 			}else {
 				//Normal push
-				pushLine(_sStatic + _sReturn + _sFuncName + "(" + _sParam + ");");
+				if (_oSFunction.eFuncType == EuFuncType.Pure) { //And inlined
+					var _bInline = false;
+					
+					if(_bInline){
+						pushLine("inline static " +  _sReturn  + _sFuncName + "(" + _sParam + "){" );
+						addTab();
+						
+						ConvertLines.convertFunctionLines(this, _oSFunction);
+						//	addOverrideFunctionLines(_oSFunction); //Exmple Opengl generated function
+						fAddMissingReturnInFunction(_oSFunction);
+						
+						subTab();
+						pushLine("};");
+					}else{
+						pushLine("static " +  _sReturn  + _sFuncName + "(" + _sParam + ");" );
+					}
+					
+				}else{ //Simulate virtual
+					//pushLine(_sStatic + _sReturn + _sFuncName + "(" + _sParam + ");");
+					pushLine("inline " +  _sReturn  + _sFuncName + "(" + _sParam + "){" + _sMustReturn + "FPtr_" + _sFuncName+   getFunctionSignature(_oSFunction) +"(this" + getFunctionParam(_oSFunction, false, true,false) + ");" +"};");
+				}
+					
+				
 			}
 		
 			
+		}
+		
+		private function fGetObjFPtrName(_oSFunction:SFunction, _sReturn : String,  _sFuncName: String, _sParam):String {
+			return _sReturn + "(*Func_" +   _sFuncName + getFunctionSignature(_oSFunction) + ")(" + _sParam + ")";
+			//return _sReturn + "(*" +   _sFuncName  + ")(" + _sParam + ")";
 		}
 		
 		
