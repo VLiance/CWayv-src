@@ -828,6 +828,95 @@ package language.project.convertSima ;
 		
 		
 		
+		public static function fTestWord(_oSFunction:SFunction, _sWord : String, _sLine:String ):Void {
+			switch (_sWord) {
+				
+				case "destructor" :
+					
+					_oSFunction.eSharing = EuSharing.Destructor;
+					_oSFunction.sName = "destructor";
+					//_oSFunction.oSClass.aFunctionList.pop(); //*Special case Remove from the list* //Keep it to garanted seach balise between functions
+					_oSFunction.oSClass.oFuncDestrutor = _oSFunction;
+			
+				//	if (Text.search(_sLine, "{", _nSearchAccIndex) >= 0) {
+					if (Text.search(_sLine, "{", 0) >= 0) {
+						//return true;
+						return;
+					}else {
+						Debug.fError("destructor need \"{\"");
+						var _aStop : Array<Dynamic>=[]; _aStop = _aStop[5];
+						//return false;
+					}
+				//break;
+				
+				case "private" :
+					_oSFunction.eSharing = EuSharing.Private;
+				//break;
+				
+				case "public" : 
+					_oSFunction.eSharing = EuSharing.Public;
+				//break;
+				
+				case "atomic" : 
+					_oSFunction.oSClass.fAddAtomicFunc(_oSFunction);
+					_oSFunction.bAtomic = true;
+					_oSFunction.eSharing = EuSharing.Public;
+				
+				case "overable" : 
+					_oSFunction.bOverable = true;
+					_oSFunction.eSharing = EuSharing.Public;
+				//break;
+				
+				
+				case "riding" :
+					
+					_oSFunction.eFuncType = EuFuncType.Riding;
+					_oSFunction.eSharing = EuSharing.Public;
+					
+				case "override" :
+
+					_oSFunction.eFuncType = EuFuncType.Override;
+			
+					
+				case "function" :
+					//Cpp class always public by default ,  maybe test if its cpp class
+					_oSFunction.eSharing = EuSharing.Public;
+					//_bTestSecondWord = false;
+				//break;
+				
+				case "static_REMOVED" : //Disable static func because it break polymorphisme
+					//Cpp class always public by default,  maybe test if its cpp class
+					_oSFunction.eSharing = EuSharing.Public;
+					//_oSFunction.eFuncType = EuFuncType.Static;
+					_oSFunction.bStatic = true;
+					//_bTestSecondWord = false;
+				//break;
+
+				
+				
+				case "pure" :
+					//Cpp class always public by default,  maybe test if its cpp class
+					_oSFunction.eSharing = EuSharing.Public;
+					_oSFunction.eFuncType = EuFuncType.Pure;
+					_oSFunction.bStatic = true;
+					//_bTestSecondWord = false;
+				//break;
+
+				case "macro" :   //Todo search for real sharing
+					_oSFunction.eSharing = EuSharing.Public;
+					_oSFunction.eFuncType = EuFuncType.Macro;
+					_oSFunction.bStatic = true;
+					//_bTestSecondWord = false;
+				//break;
+			}
+			
+			
+		}
+		
+		
+		
+		
+		
 			//1 Function Name
 			//2 Function Type
 			//3 Function Sharing
@@ -843,6 +932,7 @@ package language.project.convertSima ;
 		public static function extractFunction(_oSClass:SClass, _nIndex:UInt, _sLine:String, _nLineNum : UInt):Bool {
 			
 			var _oSFunction : SFunction = new SFunction(null, _oSClass);
+			
 			_oSFunction.nLineNum = _nLineNum;
 			_oSFunction.nLine = _nLineNum;
 			_oSFunction.nLastLine = _nLineNum; //If has no line
@@ -863,6 +953,29 @@ package language.project.convertSima ;
 				//break;
 			}
 			
+			
+			
+			//!!TODODODOD 
+		/* 
+			fTestWord(_oSFunction, _firstWord, _sLine);
+			var _sNextWord : String = Text.between3(_sLine, Text.nCurrentIndex, EuBetween.Word);
+			fTestWord(_oSFunction, _sNextWord, _sLine);
+			*/
+			
+			
+				
+				/*
+				if (_nextWord == "static") {
+					_oSFunction.eSharing = EuSharing.Public; //Deflaut
+					 //_oSFunction.eFuncType = EuFuncType.Static;
+					_oSFunction.bStatic = true; //  EuFuncType.Override & Static
+					_nextWord = Text.between3(_sLine, Text.nCurrentIndex + 1,EuBetween.Word);
+				}*/
+			
+				
+					//!!TODODODOD 
+				
+		/////////////////////////////////////////////////////////////////
 			
 			switch (_firstWord) {
 				
@@ -931,8 +1044,9 @@ package language.project.convertSima ;
 						//break;
 						
 						default : 
-							Debug.fError("override without sharing type ");
-							gbug();
+							_oSFunction.eSharing = EuSharing.Public; //Default is public
+						//	Debug.fError("override without sharing type ");
+							//gbug();
 						//break;
 					}
 					
@@ -976,7 +1090,7 @@ package language.project.convertSima ;
 				var _sType : String = Text.between3(_sLine, Text.nCurrentIndex,EuBetween.Word);
 				switch (_sType) {
 					case "function" :
-						_oSFunction.eFuncType = EuFuncType.Normal;
+						//_oSFunction.eFuncType = EuFuncType.Normal;
 					//break;
 					
 					case "static_REMOVED" : //Disable static func because it break polymorphisme
@@ -991,6 +1105,8 @@ package language.project.convertSima ;
 					
 				}
 			}
+			
+			/////////////////////////////////////////////////////////////////
 			
 			//CPP Special Case for static function
 			if (_oSFunction.bStatic == true) {
@@ -1015,7 +1131,8 @@ package language.project.convertSima ;
 			//Name -> goto index after "function"
 			Text.nCurrentIndex = _nIndex;
 	
-			_oSFunction.sName = Text.between3(_sLine, Text.nCurrentIndex,EuBetween.Word);
+			_oSFunction.sName = Text.between3(_sLine, Text.nCurrentIndex, EuBetween.Word);
+			_oSFunction.sRealName = _oSFunction.sName;
 			if (_oSFunction.sName == _oSClass.sName) { //Detect constructor
 				if (_oSFunction.oSClass.oFuncConstructor != null) {
 					Debug.fError("Error, constructor already declared");
@@ -1023,6 +1140,7 @@ package language.project.convertSima ;
 				
 				_oSFunction.oSClass.oFuncConstructor = _oSFunction;
 				_oSFunction.bConstructor = true;
+				_oSFunction.sRealName = Setting.sConstructorKeyword;
 				
 
 			}
@@ -1031,6 +1149,7 @@ package language.project.convertSima ;
 			if (_oSFunction.eFuncType == EuFuncType.Normal) {
 				if (_oSFunction.sName == _oSClass.sName) { //Same name as class name(it's a constructor)
 					_oSFunction.bConstructor = true;
+					_oSFunction.sRealName = Setting.sConstructorKeyword;
 				}
 			}
 			

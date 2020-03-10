@@ -253,11 +253,11 @@ package language.project.convertCpp ;
 			
 
 			//Param
-			var _sParam : String = getFunctionParam(_oSFunction, false,false,true,false, true);
+			var _sParam : String = CommonCpp.getFunctionParam(_oSFunction, false,false,true,false, true);
 
 			//Normal push
 			//pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true,false, true);
+			var _sCallParam1 : String = CommonCpp.getFunctionParam(_oSFunction, false, true, true,false, true);
 			var _sCallParam2 : String = _sCallParam1;
 			if (_sCallParam2 != "") {
 				_sCallParam2 = ", " + _sCallParam2;
@@ -316,11 +316,11 @@ package language.project.convertCpp ;
 			
 
 			//Param
-			var _sParam : String = getFunctionParam(_oSFunction, false,false,true,false, true);
+			var _sParam : String = CommonCpp.getFunctionParam(_oSFunction, false,false,true,false, true);
 
 			//Normal push
 			//pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true,false, true);
+			var _sCallParam1 : String = CommonCpp.getFunctionParam(_oSFunction, false, true, true,false, true);
 			var _sCallParam2 : String = _sCallParam1;
 			if (_sCallParam2 != "") {
 				_sCallParam2 = ", " + _sCallParam2;
@@ -356,11 +356,11 @@ package language.project.convertCpp ;
 			var _sLib : String = _oSClass.oSLib.sWriteName;
 	
 			//Param
-			var _sParam : String = getFunctionParam(_oSFunction, false);
+			var _sParam : String = CommonCpp.getFunctionParam(_oSFunction, false);
 
 			//Normal push
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true, false, true );
-			var _sCallParam2 : String = getFunctionParam(_oSFunction, false, true, false, true, true);
+			var _sCallParam1 : String = CommonCpp.getFunctionParam(_oSFunction, false, true, true, false, true );
+			var _sCallParam2 : String = CommonCpp.getFunctionParam(_oSFunction, false, true, false, true, true);
 			//var _sCallParam2 : String = _sCallParam1;
 			
 			/*
@@ -449,7 +449,7 @@ package language.project.convertCpp ;
 	
 			//Param
 			//var _sParam : String = getFunctionParam(_oSFunction, false);
-			var _sParam : String = getFunctionParam(_oSFunction, false, false, true, false, true);
+			var _sParam : String = CommonCpp.getFunctionParam(_oSFunction, false, false, true, false, true);
 
 			
 			var _sReturn : String = "aasss";
@@ -492,7 +492,7 @@ package language.project.convertCpp ;
 			
 			//Normal push
 			//var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true);
-			var _sCallParam1 : String = getFunctionParam(_oSFunction, false, true, true, false,true);
+			var _sCallParam1 : String = CommonCpp.getFunctionParam(_oSFunction, false, true, true, false,true);
 			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sReturn);
 		}
 		

@@ -348,12 +348,25 @@ gzDef_Vec_Other(_Name, _nSize);
 				getStaticFunctionToConvert(_oSClass);
 				
 				
-				
-						
 				pushLine("//FuncBody");
 				getClassFBody(_oSClass );
 				
 				subTab();
+				addSpace();
+				
+				//////////////////////
+				//Get only protected //
+				/////////////////////
+				pushLine("protected:");
+				addTab();
+				addSpace();
+				
+				pushLine("//FPtr");
+				getClassFPtr(_oSClass );
+		
+				subTab();
+				addSpace();
+				
 				//////////////////////
 				//Get only private //
 				/////////////////////
@@ -361,14 +374,9 @@ gzDef_Vec_Other(_Name, _nSize);
 				addTab();
 				addSpace();
 				
-				pushLine("//FPtr");
-				getClassFPtr(_oSClass );
-		
-				
 				pushLine("//Var");
 				getVarToConvert_(_oSClass.aGlobalVarList, EuSharing.Private);
 		
-				
 				/*
 				//Static public var
 				pushLine("//Static Var")
@@ -459,11 +467,11 @@ gzDef_Vec_Other(_Name, _nSize);
 				
 					if (_oSClass.bIsPod ){ //Structure --> Same as fCreateConstrutorWrapper?
 						var _sLoc : String =  "c" + _oSClass.sName;
-						pushLine("inline "  + "gzUp<" + _sLoc  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
+						pushLine("inline "  + "gzUp<" + _sLoc  + "> New(Lib_GZ::Base::cClass* _parent"  + CommonCpp.getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 						addTab();
 						pushLine("gzUp<" + _sLoc  + ">_oTemp = gzUp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
 						//pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
-						pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
+						pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + CommonCpp.getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
 						if (_oSClass.bHaveOverplace) {
 							pushLine("return _oTemp.get();");//
 						}else{
@@ -987,9 +995,9 @@ gzDef_Vec_Other(_Name, _nSize);
 					_sDefaultReturn = "false";
 				}
 	
-				_sParam = getFunctionParam(_oFunc);
-				var _sParamIni : String = getFunctionParam(_oFunc, true);
-				var _sParamNoType : String = getFunctionParam(_oFunc, false, true);
+				_sParam = CommonCpp.getFunctionParam(_oFunc);
+				var _sParamIni : String = CommonCpp.getFunctionParam(_oFunc, true);
+				var _sParamNoType : String = CommonCpp.getFunctionParam(_oFunc, false, true);
 				if (_sParamNoType != "") {
 					_sParamNoType = ", " + _sParamNoType;
 				}
@@ -1084,13 +1092,13 @@ gzDef_Vec_Other(_Name, _nSize);
 						_sVirtual = "virtual ";
 					}
 					
-					pushLine("inline " + _sVirtual + "gzSp<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
+					pushLine("inline " + _sVirtual + "gzSp<" + _sLocOp  + "> New(Lib_GZ::Base::cClass* _parent"  + CommonCpp.getFunctionParam( _oSClass.oFuncConstructor , true, false, false) + "){" );
 					addTab();
 					//pushLine("gzSp<" + _sLoc  + ">_oTemp = gzSp<" + _sLoc + ">(new " + _sLoc + "(_parent));");
 					///pushLine("gzSp<" + _sLoc  + ">_oTemp(new " + _sLoc + "(_parent));");
 					pushLine( _sLoc  + "* _oTemp = new " + _sLoc + "(_parent);");
 					//pushLine("_oTemp->Ini_c" +  _oSClass.sName + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
-					pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
+					pushLine("_oTemp->" + Setting.sConstructorKeyword + "(" + CommonCpp.getFunctionParam(_oSClass.oFuncConstructor , false, true)  + ");");
 					if (_oSClass.bHaveOverplace) {
 						//pushLine("return _oTemp.get();");//
 						pushLine("return _oTemp;");//
@@ -1146,7 +1154,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				//With Parent:
 				// pushLine("inline " + " c" + _oFunc.sName + "(Lib_GZ::Base::cClass* _parent " + getFunctionParam(_oFunc, true, false, false) + "): Lib_GZ::Base::Thread::cThreadMsg(_parent)");
 				//Without Parent:
-				pushLine("inline " + " c" + _oFunc.sName + "(" + getFunctionParam(_oFunc, true) + "): Lib_GZ::Base::Thread::cThreadMsg()");
+				pushLine("inline " + " c" + _oFunc.sName + "(" + CommonCpp.getFunctionParam(_oFunc, true) + "): Lib_GZ::Base::Thread::cThreadMsg()");
 				
 				 var _sIni : String = "";
 				 var _aParam : Array<VarObj> = _oFunc.aParamList;
@@ -1164,7 +1172,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				 pushLine("{};"); 
 				 
 				 pushLine("inline virtual void fRun(){");
-				  pushLine("((" + "c" + _oFunc.oSClass.sName + "*)parent.get())->" + _oFunc.sName + "(" +  getFunctionParam(_oFunc, false, true)+ ");");
+				  pushLine("((" + "c" + _oFunc.oSClass.sName + "*)parent.get())->" + _oFunc.sName + "(" +  CommonCpp.getFunctionParam(_oFunc, false, true)+ ");");
 				 pushLine("};");
 				 
 				subTab();

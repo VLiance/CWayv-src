@@ -52,7 +52,7 @@ package language.enumeration ;
 					//break;
 					
 					case Normal:
-						return "";
+						return "normal";
 						
 					case Override:
 						return "override";

@@ -275,7 +275,7 @@ package language.project.assist;
 			ExtractBlocs.extractClassFunctions(_oSClass);
 			
 			for ( _oFunction  in _oSClass.aFunctionList){//SFunction
-				if (_oFunction) {
+				if (_oFunction != null) {
 					//Debug.fAssist("FuncLine " +  _oFunction.nLine + " <=  " + _oFunction.nLastLine +  " : "  +_nLine );
 				//	_sResult += _oFunction.sName + " "  + _oFunction.nLine + " L " + _oFunction.nLastLine + " ";
 					if (_nLine >= _oFunction.nLine && _nLine <= _oFunction.nLastLine) {

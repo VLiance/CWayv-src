@@ -22,6 +22,7 @@ package language.vars.special ;
 			eType =  EuVarType._SNatFunction;
 			bIntegrateFunc = _bIntegrateFunc;
 			sName = _sName;
+			sRealName = sName;
 			eFromType = _eFromType;
 			sConvertName = _sAdd +  _sName;
 			sBeforeSource = _sBeforeSource;

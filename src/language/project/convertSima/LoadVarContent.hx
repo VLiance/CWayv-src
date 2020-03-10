@@ -120,7 +120,16 @@ package language.project.convertSima ;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				extractFunctionInfo( _oSClass);
+				extractFunctionInfoSignature(_oSClass);
 			}}
+			
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
+				ExtractBlocs.oCurrSClass = _oSClass;
+				ExtractBlocs.nCurrLine = _oSClass.nLine;
+
+				extractFunctionInfoOverride(_oSClass);
+			}}
+			
 			
 			//Ini Embed (oCallRef from _CallClass must be initialised, maybe initiale this before iniGlobalVar????)
 			for (_oSPck in _aPackage){
@@ -224,6 +233,8 @@ package language.project.convertSima ;
 			 }*/
 	
 			_oSFunction.sName = _oSClass.sName;
+			_oSFunction.sRealName = Setting.sConstructorKeyword;//bConstructor?
+			
 			var  _nLineNum : UInt  = _oSClass.nLine;
 			_oSFunction.nLineNum = _nLineNum;
 			_oSFunction.nLine = _nLineNum;
@@ -235,6 +246,7 @@ package language.project.convertSima ;
 			_oSFunction.sIniReturn = "Void";
 			extractFunctionInfoReturn(_oSFunction);
 			_oSFunction.bConstructor = true;
+			_oSFunction.sRealName = Setting.sConstructorKeyword;
 			//_oSFunction.eFuncType  = EuFuncType.Main; 
 
 			
@@ -826,6 +838,28 @@ package language.project.convertSima ;
 			}
 			
 		}
+		
+		private static function extractFunctionInfoSignature(_oSClass : SClass):Void {
+
+			for (_oSFunction in _oSClass.aFunctionList) {
+				_oSFunction.fExtractFunctionInfoSignature();
+			}
+			
+		}
+		private static function extractFunctionInfoOverride(_oSClass : SClass):Void {
+
+			
+			if(!_oSClass.bIsPod && !_oSClass.bIsResults && !_oSClass.bIsVector){
+				//_oSFunction.fExtractFunctionInfoSignature();
+				for (_oSFunction in _oSClass.aFunctionList) {
+					_oSFunction.fExtractFunctionInfoOverride();
+				}
+			}
+			
+		}
+		
+	
+		
 		
 		public static function extractFunctionInfoParam(_oSFunc:SFunction):Void {
 			

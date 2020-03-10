@@ -20,6 +20,7 @@ package language.enumeration ;
 			 Namespace_H 	 ;
 			 Namespace_End_H 	 ;
 			 Initializer_list;
+			 PreInitializer_list;
 			 Initializer;
 			 Static 	 ;
 			 Static_H 	 ;
@@ -83,6 +84,9 @@ package language.enumeration ;
 						return EuCppLineType.Static_H;
 					//break;	
 					
+					case "cpp_preinitializer_list" :
+						return EuCppLineType.PreInitializer_list;
+						
 					case "cpp_initializer_list" :
 						return EuCppLineType.Initializer_list;
 						

@@ -113,7 +113,7 @@ package language.project.convertSima;
 		public var aNotIniStaticVarList: Array<Dynamic> = [];
 		public var aNotIniGlobalVarList: Array<Dynamic> = [];
 		
-		public var aFunctionList : Array<Dynamic> = [];
+		public var aFunctionList : Array<SFunction> = [];
 		public var aFunctionExtend : Array<Dynamic> = [];
 		
 		public var aPtrFuncList : Array<Dynamic> = [];
@@ -197,6 +197,7 @@ package language.project.convertSima;
 		public var aCppLineListClass_H : Array<Dynamic> = [];
 		public var aCppLineListClass_H_aft : Array<Dynamic> = [];
 		public var aCppLineInitializerList_H : Array<VarCppLine> = [];
+		public var aCppLinePreInitializerList_H : Array<VarCppLine> = [];
 		public var aCppLineInitializer_H : Array<VarCppLine> = [];
 		
 		public var aCppLineListNamespace : Array<Dynamic> = [];
@@ -773,6 +774,7 @@ package language.project.convertSima;
 			aCppLineListClass_H  = [];
 			aCppLineListClass_H_aft  = [];
 			aCppLineInitializerList_H  = [];
+			aCppLinePreInitializerList_H  = [];
 			aCppLineInitializer_H  = [];
 			aCppLineListNamespace  = [];
 			aCppLineListNamespace_H = [];
@@ -927,6 +929,11 @@ package language.project.convertSima;
 					
 					case Initializer_list :
 						aCppLineInitializerList_H.push(_oCpp);
+						
+					case PreInitializer_list :
+						aCppLinePreInitializerList_H.push(_oCpp);
+						
+						
 						
 					case Initializer :
 						aCppLineInitializer_H.push(_oCpp);

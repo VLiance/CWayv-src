@@ -1,8 +1,10 @@
 package language.project.convertSima ;
+	import language.base.Debug;
 	import language.enumeration.EuFuncType;
 	import language.enumeration.EuLocation;
 	import language.enumeration.EuVarType;
 	import language.enumeration.EuSharing;
+	import language.project.convertCpp.CommonCpp;
 	import language.project.convertCpp.TypeText;
 	import language.vars.varObj.CommonVar;
 	import language.vars.varObj.PtrFunc;
@@ -44,6 +46,7 @@ package language.project.convertSima ;
 		public var nLineNum : UInt;
 		
 		public var sName : String;
+		public var sRealName : String;
 
 		public var aAllVarList : Array<Dynamic> = [];
 		public var aAddRefParamU : Array<Dynamic> = [];
@@ -63,11 +66,16 @@ package language.project.convertSima ;
 		
 		public var sDelegateString : String;
 		
+		public var oOverrideFunc : SFunction;
+		public var sSignature : String;
+		public var sTest : String = "";
+		
 		//public var oSClass :SClass
 		
 		
 		
 		public function new(_Main:Root, _oSClass : SClass) {
+			eFuncType = EuFuncType.Normal;
 			if(_oSClass != null){
 				oSClass = _oSClass;
 				oSFunction = this;
@@ -117,6 +125,54 @@ package language.project.convertSima ;
 			}
 			return sDelegateString;
 		}
+		
+		
+		
+				
+		public function fExtractFunctionInfoSignature(){
+			sSignature = CommonCpp.getFunctionSignature(this); //Todo remove all other getFunctionSignature with sSignature
+		//sTest = "[" + sSignature + "]";
+		}
+		
+		
+		public function fExtractFunctionInfoOverride(){
+			
+			if (oSClass.oFuncDestrutor == this){
+				return;
+			}
+			
+			for (_oSExt in oSClass.aExtendAllClassList){
+				for (_oSFunc in _oSExt.aFunctionList){
+					if (sRealName == _oSFunc.sRealName){ //Todo Test same signatures
+						sTest = _oSFunc.sRealName + ":" + _oSFunc.sSignature;
+						if (sSignature == _oSFunc.sSignature){
+							
+							if (_oSFunc.eFuncType == EuFuncType.Riding){
+								
+								oOverrideFunc = _oSFunc;
+								
+							}else{
+							
+								if(eFuncType == EuFuncType.Override){
+									oOverrideFunc = _oSFunc;
+								}else{
+									
+									if(!bConstructor) {
+										Debug.fWarning("Maybe you want Overriding this function: " + _oSFunc.sName + "[" +   EuFuncType_.fGetName( eFuncType) + "]" + " in " + _oSFunc.oSClass.sName  + " file: " + oSClass.oPackage.sReadedFilePath + ":" + nLine);
+								
+									}
+								}
+								
+							}
+							
+							
+							//Debug.fWarning("Fond: " + _oSFunc.sName);
+						}
+					}
+				}
+			}
+		}
+		
 		
 			
 	}
