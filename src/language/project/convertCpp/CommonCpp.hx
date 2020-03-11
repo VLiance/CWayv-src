@@ -1176,10 +1176,12 @@ package language.project.convertCpp ;
 					//pushLine(_sStatic + _sReturn + _sFuncName + "(" + _sParam + ");");
 					pushLine("inline " +  _sReturn  + _sFuncName + "(" + _sParam + "){" + _sMustReturn + "FPtr_" + _sFuncName+   getFunctionSignature(_oSFunction) +"(this" + getFunctionParam(_oSFunction, false, true,false) + ");" +"};");
 				}
-					
-				
 			}
-		
+			
+			if (!_oSClass.bIsResults && !_oSClass.bIsPod && !_oSClass.bIsVector && _oSFunction.eFuncType != EuFuncType.Pure) {
+				pushLine("inline " +  _sReturn  + "c" + _oSFunction.oSClass.sName + "_" +  _oSFunction.sRealName + "(" + _sParam + "){" + _sMustReturn +  _oSFunction.oSClass.sName  + "::Func_" + _oSFunction.sRealName +   getFunctionSignature(_oSFunction) +"(this" + getFunctionParam(_oSFunction, false, true,false) + ");" +"};");
+			}
+			
 			
 		}
 		

@@ -781,7 +781,8 @@ package language.project.convertCpp ;
 					var _sExFuncName : String = _oExtendFunc.oSFunc.sName;  
 					if (_oExtendFunc.oSFunc.bConstructor) {  //Super constructor condition
 						//abcde
-						_sExFuncName = "c" + _oExtendFunc.oSFunc.oSClass.sName + "::" + Setting.sConstructorKeyword;
+						//_sExFuncName = "c" + _oExtendFunc.oSFunc.oSClass.sName + "::" + Setting.sConstructorKeyword;
+						_sExFuncName = "c" + _oExtendFunc.oSFunc.oSClass.sName + "_" + Setting.sConstructorKeyword;
 						//_sExFuncName =  _oExtendFunc.oSFunc.oSClass.sName + "::" + Setting.sConstructorKeyword;
 
 						//_sExFuncName = _oExtendFunc.oSFunc.oSClass.sPtrCFuncName  + Setting.sConstructorKeyword +  CommonCpp.getFunctionSignature(_oExtendFunc.oSFunc);
@@ -846,7 +847,8 @@ package language.project.convertCpp ;
 						//_sFcBefore = CppProject.sStaticPrefix;;
 					}else if (_oVarFunc.bConstructor) {  //For ExtendFuncCall ONLY
 						//abcde
-						_sFcName =  "c" + _oVarFuncCall.oFunction.oSClass.sName  + "::" + Setting.sConstructorKeyword;
+					//	_sFcName =  "c" + _oVarFuncCall.oFunction.oSClass.sName  + "::" + Setting.sConstructorKeyword;
+						_sFcName =  "c" + _oVarFuncCall.oFunction.oSClass.sName  + "_" + Setting.sConstructorKeyword;
 						//_sFcName =   _oVarFuncCall.oFunction.oSClass.sName  + "::" + Setting.sConstructorKeyword;
 						
 						//Special explicit call contructor
