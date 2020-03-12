@@ -190,6 +190,10 @@ package language.project.convertCpp ;
 				}
 			}
 			
+			//Create Func Table
+			fCreateFuncTable(_oSClass);
+			
+			
 			fDefaultCopyFunc(_oSClass);
 
 			
@@ -688,6 +692,26 @@ package language.project.convertCpp ;
 			}
 		}
 		*/
+		
+		public function fCreateFuncTable(_oSClass : SClass) :Void {
+			if(!_oSClass.bIsResults && !_oSClass.bIsPod && !_oSClass.bIsVector ){
+				pushLine("//FuncTable " );
+				pushLine("namespace " + _oSClass.sName + "{");
+				addTab();
+				for (_oSFunc in _oSClass.aFunctionList){
+					if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+						//pushLine("//FuncTable" + _oSFunc.sName);
+						
+						//pushLine(_oSClass.sNamespace);
+						var _sPtrFuncName : String =	_oSClass.sCFuncName  + _oSFunc.sRealName + _oSFunc.sSignature;
+						pushLine(CommonCpp.fGetObjFPtrNameFull(_oSFunc) + " = "  + _sPtrFuncName +  ";");
+						//pushLine(_oSExt.sEndNamespace);
+					}
+				}
+				subTab();
+				pushLine("}");
+			}
+		}
 
 		public function fDefaultCopyFunc(_oSClass : SClass) :Void {
 			/*

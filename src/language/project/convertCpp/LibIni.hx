@@ -97,8 +97,12 @@ package language.project.convertCpp ;
 					}
 				}
 			}
+			
+			fCreateImportClass(oLib);
 		}
 		
+		
+
 		
 		public function fCreateDynamicLinking(_oLib: SLib ):Void {
 			if (!_oLib.bProcessDynamicLoad ){ //Don't do it twice
@@ -129,17 +133,71 @@ package language.project.convertCpp ;
 					pushLine("gzInt (*Func_Constructor_)(cEntryPoint*) = 0;//TODO");
 					pushLine("}}");
 					
+				
 					
 				}
+			
+				for (_oPck in _oLib.aPackage){for (_oSClass in _oPck.aClassList){for (_oSExt in _oSClass.aExtendAllClassList){
+					_oSExt.bIsProcessed = false;
+				}}}
 				
-				
+		
+					
 				//`Lib_GZ::Debug::Debug::Func_Get'
 				pushLine("#endif");
-				
-				
-				
+
 			}	
 		}
 
+		public function fCreateImportClass(_oLib: SLib ):Void {
+			var _oLastLib : SLib = null;
+			var _bHaveToCloseIfDef : Bool = false;
+			
+			pushLine("//Test Import Class " + _oLib.sName);
+			for (_oPck in _oLib.aPackage){for (_oSClass in _oPck.aClassList){for (_oSExt in _oSClass.aExtendAllClassList){
+				if(!_oSExt.bIsProcessed){
+					_oSExt.bIsProcessed = true;
+					pushLine("//Ext Class " + _oSExt.sName);
+					if (_oSExt.oSLib != _oLib){
+						
+						if (_oSExt.oSLib != _oLastLib){
+							_oLastLib = _oSExt.oSLib;
+							if(_bHaveToCloseIfDef){
+								subTab();
+								pushLine("#endif");
+							}
+							pushLine("#ifdef D_RunTimeLink_" +  _oSExt.oSLib.sWriteName);
+							addTab();
+							_bHaveToCloseIfDef = true;
+						}
+
+						if(!_oSExt.bIsResults && !_oSExt.bIsPod && !_oSExt.bIsVector ){
+							pushLine("//Import Class " + _oSExt.sName);
+							addTab();
+							pushLine("#include \"" + _oSExt.oPackage.sFilePath + ".h\"");
+							for (_oSFunc in _oSExt.aFunctionList){
+								if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+									pushLine("//Func" + _oSFunc.sName);
+									pushLine(_oSExt.sNamespace);
+									pushLine(CommonCpp.fGetObjFPtrNameFull(_oSFunc) + " = 0;");
+									pushLine(_oSExt.sEndNamespace);
+								}
+							}
+							subTab();
+						}
+						
+						
+					
+					}
+				}
+				
+			}}}
+			
+			if(_bHaveToCloseIfDef){
+				subTab();
+				pushLine("#endif");
+			}
+		}
+
 		
-	}
+}

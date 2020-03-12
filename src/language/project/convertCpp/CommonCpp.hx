@@ -357,7 +357,7 @@ package language.project.convertCpp ;
 			if ( _sPtrFuncName != "") {
 				
 				// void (*fun_ptr)(int) = fun; 
-				pushLine( "namespace "  + 	_oSClass.sName + "{" +  fGetObjFPtrName(_oSFunction, _sReturn, _sPtrFuncNameNs, _sParam) + " = " + _sPtrFuncName + ";" + "}");
+		//		pushLine( "namespace "  + 	_oSClass.sName + "{" +  fGetObjFPtrName(_oSFunction, _sReturn, _sPtrFuncNameNs, _sParam) + " = " + _sPtrFuncName + ";" + "}");
 	
 			}
 		
@@ -1185,11 +1185,15 @@ package language.project.convertCpp ;
 			
 		}
 		
-		private function fGetObjFPtrName(_oSFunction:SFunction, _sReturn : String,  _sFuncName: String, _sParam):String {
-			return _sReturn + "(*Func_" +   _sFuncName + getFunctionSignature(_oSFunction) + ")(" + _sParam + ")";
+		public static function fGetObjFPtrName(_oSFunction:SFunction, _sReturn : String,  _sFuncName: String, _sParam):String {
+			return _sReturn + "(*Func_" +   _sFuncName + _oSFunction.sSignature + ")(" + _sParam + ")";
 			//return _sReturn + "(*" +   _sFuncName  + ")(" + _sParam + ")";
 		}
-		
+		public static function fGetObjFPtrNameFull(_oSFunction:SFunction):String {
+			return TypeText.typeToCPP(_oSFunction.oReturn, true) + "(*Func_" +   _oSFunction.sRealName + _oSFunction.sSignature + ")(" +  "c" + _oSFunction.oSClass.sName +  "* _this" + getFunctionParam(_oSFunction,false,false,false) + ")";
+			//return _sReturn + "(*" +   _sFuncName  + ")(" + _sParam + ")";
+		}
+
 		
 		private function getUnitFunction(_oSClass:SClass):Void {
 		

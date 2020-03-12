@@ -53,7 +53,7 @@ package language.project.convertSima;
 		public var sConstructLineToExtract : String = "";
 		
 
-
+		public var bIsProcessed : Bool = false; //Generic flag to not process multiple time the same class
 		
 		public var bExtension : Bool = false;
 		public var bOverclass : Bool = false;
