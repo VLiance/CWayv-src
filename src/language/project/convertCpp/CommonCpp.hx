@@ -865,7 +865,6 @@ package language.project.convertCpp ;
 				if( _oSFunction != _oSClass.oFuncDestrutor){
 				
 					var _sReturn: String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
-		
 					
 					var _sPtrFuncName : String =	 _oSFunction.sName;
 								
@@ -873,12 +872,27 @@ package language.project.convertCpp ;
 						 _sPtrFuncName =	 Setting.sConstructorKeyword ;
 					}
 					
-					
 					var _sParam : String =  "c" +  _oSClass.sName + "*" + getFunctionParam(_oSFunction, false, false, false,false,false);
 					
 					pushLine("extern " + fGetObjFPtrName(_oSFunction, _sReturn, _sPtrFuncName, _sParam) + ";");
+					
+					
+					
 				}
 			}
+			
+			//qwer
+									
+			pushLine("struct FuncTable {" );
+			for (_oSFunc in _oSClass.aFunctionList){
+				if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+					pushLine(CommonCpp.fGetObjFPtrNameFull(_oSFunc) + ";");
+				}
+			}
+			pushLine("};");
+			pushLine("extern FuncTable Func;"); 
+			
+			
 			subTab();	
 			//addSpace();
 		}
@@ -1315,7 +1329,11 @@ package language.project.convertCpp ;
 						_oCastFunc = _oSFunc;
 					}
 					
-					pushLine("FPtr_" +  _sFunc + " = "  + "(" +  fGetFuncPtr(_oCastFunc,true) + ")"+ _oSClass.sName + "::Func_" +  _sFunc  + ";");
+					//qwer
+					//pushLine("FPtr_" +  _sFunc + " = "  + "(" +  fGetFuncPtr(_oCastFunc, true) + ")" + _oSClass.sName + "::Func_" +  _sFunc  + ";");
+					pushLine("FPtr_" +  _sFunc + " = "  + "(" +  fGetFuncPtr(_oCastFunc, true) + ")" + _oSClass.sName + "::Func.Func_" +  _sFunc  + ";");
+					
+					
 					//pushLine("FPtr_" +  _sFunc + " = " + _oSClass.sName + "::Func_" +  _sFunc  + ";");
 					//'void (*)(Lib_GZ::Base::Thread::cThread*)' to 'void (*)(Lib_GZ::Base::cClass*)' [-fpermissive]
 				}

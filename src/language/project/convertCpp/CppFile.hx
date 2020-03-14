@@ -694,10 +694,40 @@ package language.project.convertCpp ;
 		*/
 		
 		public function fCreateFuncTable(_oSClass : SClass) :Void {
-			if(!_oSClass.bIsResults && !_oSClass.bIsPod && !_oSClass.bIsVector ){
+			if (!_oSClass.bIsResults && !_oSClass.bIsPod && !_oSClass.bIsVector ){
+				
+				//qwer
+				
 				pushLine("//FuncTable " );
 				pushLine("namespace " + _oSClass.sName + "{");
 				addTab();
+				
+					/*
+					pushLine("struct FuncTable {" );
+						for (_oSFunc in _oSClass.aFunctionList){
+							if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+								pushLine(CommonCpp.fGetObjFPtrNameFull(_oSFunc) + ";");
+							}
+						}
+
+					pushLine("}  FTable = {");
+					*/
+					
+					pushLine("FuncTable Func = {");
+						var _sDelim : String = " ";
+						for (_oSFunc in _oSClass.aFunctionList){
+							if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+								pushLine( _sDelim + _oSClass.sCFuncName  + _oSFunc.sRealName + _oSFunc.sSignature );
+								_sDelim = ",";
+							}
+						}
+						
+						
+					pushLine("};");
+
+					
+				
+			
 				for (_oSFunc in _oSClass.aFunctionList){
 					if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
 						//pushLine("//FuncTable" + _oSFunc.sName);
