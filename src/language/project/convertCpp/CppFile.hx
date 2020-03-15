@@ -185,7 +185,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunctionList[i];
 				
-				if(_oSFunction.eFuncType != EuFuncType.Extend && _oSFunction.eSharing != EuSharing.Destructor){
+				//if(_oSFunction.eFuncType != EuFuncType.Extend && _oSFunction.eSharing != EuSharing.Destructor){
+				if(_oSFunction.eFuncType != EuFuncType.Extend ){
 					convertFunctionClass(_oSFunction, i);
 				}
 			}
@@ -716,7 +717,8 @@ package language.project.convertCpp ;
 					pushLine("FuncTable Func = {");
 						var _sDelim : String = " ";
 						for (_oSFunc in _oSClass.aFunctionList){
-							if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+						//	if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+							if ( _oSFunc.eFuncType != EuFuncType.Pure) {
 								pushLine( _sDelim + _oSClass.sCFuncName  + _oSFunc.sRealName + _oSFunc.sSignature );
 								_sDelim = ",";
 							}
@@ -727,7 +729,7 @@ package language.project.convertCpp ;
 
 					
 				
-			
+				/*
 				for (_oSFunc in _oSClass.aFunctionList){
 					if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
 						//pushLine("//FuncTable" + _oSFunc.sName);
@@ -737,7 +739,7 @@ package language.project.convertCpp ;
 						pushLine(CommonCpp.fGetObjFPtrNameFull(_oSFunc) + " = "  + _sPtrFuncName +  ";");
 						//pushLine(_oSExt.sEndNamespace);
 					}
-				}
+				}*/
 				subTab();
 				pushLine("}");
 			}

@@ -835,6 +835,7 @@ package language.project.convertSima ;
 					
 					_oSFunction.eSharing = EuSharing.Destructor;
 					_oSFunction.sName = "destructor";
+					_oSFunction.sRealName = _oSFunction.sName;
 					//_oSFunction.oSClass.aFunctionList.pop(); //*Special case Remove from the list* //Keep it to garanted seach balise between functions
 					_oSFunction.oSClass.oFuncDestrutor = _oSFunction;
 			
@@ -983,6 +984,7 @@ package language.project.convertSima ;
 					
 					_oSFunction.eSharing = EuSharing.Destructor;
 					_oSFunction.sName = "destructor";
+					_oSFunction.sRealName = _oSFunction.sName;
 					//_oSFunction.oSClass.aFunctionList.pop(); //*Special case Remove from the list* //Keep it to garanted seach balise between functions
 					_oSClass.oFuncDestrutor = _oSFunction;
 			

@@ -60,6 +60,11 @@ package language.project.convertSima ;
 				fCreateDefaultConstructor(_oSClass);
 			}}
 			
+			//Create default destructor
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
+				fCreateDefaultDestructor(_oSClass);
+			}}
+			
 			
 			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
@@ -246,7 +251,7 @@ package language.project.convertSima ;
 			_oSFunction.sIniReturn = "Void";
 			extractFunctionInfoReturn(_oSFunction);
 			_oSFunction.bConstructor = true;
-			_oSFunction.sRealName = Setting.sConstructorKeyword;
+			//_oSFunction.sRealName = Setting.sConstructorKeyword;
 			//_oSFunction.eFuncType  = EuFuncType.Main; 
 
 			
@@ -262,6 +267,56 @@ package language.project.convertSima ;
 				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
 			}
 		}
+		
+		
+		public static function fCreateDefaultDestructor(_oSClass:SClass):Void {
+			
+			 if ( _oSClass.oFuncDestrutor != null || _oSClass.bExtension || _oSClass.bDefaultDestructorGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
+				 return;
+			 }
+			 
+			  _oSClass.bDefaultDestructorGenereted = true;
+			 
+			 ExtractBlocs.oCurrSClass = _oSClass;
+			 ExtractBlocs.nCurrLine = _oSClass.nLine;
+			 
+			var _oSFunction : SFunction = new SFunction(null, _oSClass); 
+			_oSClass.oFuncDestrutor = _oSFunction;
+	
+			_oSFunction.sName = Setting.sDestructorKeyword;
+			_oSFunction.sRealName = _oSFunction.sName;//bConstructor?
+			
+			var  _nLineNum : UInt  = _oSClass.nLine;
+			_oSFunction.nLineNum = _nLineNum;
+			_oSFunction.nLine = _nLineNum;
+			_oSFunction.nLastLine = _nLineNum; //If has no line
+			
+			_oSFunction.bDefaultDestructor = true;
+		
+			_oSFunction.eSharing = EuSharing.Public;
+			_oSFunction.sIniReturn = "Void";
+			extractFunctionInfoReturn(_oSFunction);
+			//_oSFunction.bConstructor = true;
+			//_oSFunction.sRealName = Setting.sConstructorKeyword;
+			//_oSFunction.eFuncType  = EuFuncType.Main; 
+
+			
+			_oSFunction.bNoLine = true; //If have no extention
+			
+			//Call default extends function
+			if (_oSClass.aExtendClass.length > 0) {
+				/*
+				var _oExtClass : SClass = _oSClass.aExtendClass[0]; //only one extend
+				fCreateDefaultConstructor(_oExtClass); //recursive if not already analysed
+				ExtractBlocs.oCurrSClass = _oSClass;
+				ExtractBlocs.nCurrLine = _oSClass.nLine;
+				
+				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
+				*/
+			}
+		}
+		
+		
 		
 		
 		public static function fSetDefaultConstructLineToExtract(_oSFunction : SFunction, _oExtClass : SClass ){
@@ -829,12 +884,15 @@ package language.project.convertSima ;
 			var _i:UInt = _aFuncList.length;
 			for (i in 0 ..._i) {
 				var _oSFunction : SFunction =  _aFuncList[i];
-				if(_oSFunction.eSharing != EuSharing.Destructor){ //Not sure
+				if (_oSFunction.eSharing == EuSharing.Destructor){ 
+					_oSFunction.sIniReturn = "Void";
+				}	
+				//if (_oSFunction.eSharing != EuSharing.Destructor){ //Not sure
 					ExtractBlocs.oCurrSFunc = _oSFunction;
 					extractFunctionInfoParam(_oSFunction);
 					extractFunctionInfoReturn(_oSFunction);
 					ExtractBlocs.oCurrSFunc = null;
-				}
+				//}
 			}
 			
 		}

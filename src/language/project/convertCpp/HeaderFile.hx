@@ -612,7 +612,8 @@ gzDef_Vec_Other(_Name, _nSize);
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunctionList[i];
 				
-				if (_oSFunction.eFuncType != EuFuncType.Extend && _oSFunction.eSharing != EuSharing.Destructor){
+				//if (_oSFunction.eFuncType != EuFuncType.Extend && _oSFunction.eSharing != EuSharing.Destructor){
+				if (_oSFunction.eFuncType != EuFuncType.Extend ){
 						if (!_oSFunction.bConstructor) { //TODO
 					convertFunctionClass(_oSFunction, i, true);
 						}

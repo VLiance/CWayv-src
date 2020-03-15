@@ -50,6 +50,7 @@ package language.project.convertSima;
 		public var eClassType : EuClassType = EuClassType.Invalid;
 				
 		public var bDefaultConstrutorGenereted : Bool = false;
+		public var bDefaultDestructorGenereted : Bool = false;
 		public var sConstructLineToExtract : String = "";
 		
 

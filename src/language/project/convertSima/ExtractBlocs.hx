@@ -795,10 +795,14 @@ package language.project.convertSima ;
 			
 			for (i in 0 ..._i) {
 				var _oFunction : SFunction = _aFunctionList[i];
-				if(!_oFunction.bDefaultConstructor){
+				if(!_oFunction.bDefaultConstructor && !_oFunction.bDefaultDestructor){
 					var _nLastLine : UInt = _nTotalLine;
-					if (i + 1 < _i) {
-						_nLastLine = cast(_aFunctionList[i + 1],SFunction).nLine;
+					while (i + 1 < _i) {
+						var _oNextFunction : SFunction =  cast(_aFunctionList[i + 1], SFunction);
+						if(!_oNextFunction.bDefaultConstructor && !_oNextFunction.bDefaultDestructor) { //Or any genreated function
+							_nLastLine = _oNextFunction.nLine;
+						}
+						break;
 					}
 					var _nStartLine : UInt = _oFunction.nLastLine + 1;
 					for (j in _nStartLine ... _nLastLine) {

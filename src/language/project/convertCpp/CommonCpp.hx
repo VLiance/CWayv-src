@@ -855,13 +855,14 @@ package language.project.convertCpp ;
 				return;
 			}
 			addTab();	
-			
+			/*
 			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
 			var _i : UInt = _aFunction.length;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
 				//if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+				
 				if( _oSFunction != _oSClass.oFuncDestrutor){
 				
 					var _sReturn: String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
@@ -879,13 +880,14 @@ package language.project.convertCpp ;
 					
 					
 				}
-			}
+			}*/
 			
 			//qwer
 									
 			pushLine("struct FuncTable {" );
 			for (_oSFunc in _oSClass.aFunctionList){
-				if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+				//if ( _oSFunc.eFuncType != EuFuncType.Pure && _oSFunc.oSClass.oFuncDestrutor != _oSFunc) {
+				if ( _oSFunc.eFuncType != EuFuncType.Pure) {
 					pushLine(CommonCpp.fGetObjFPtrNameFull(_oSFunc) + ";");
 				}
 			}
@@ -927,7 +929,8 @@ package language.project.convertCpp ;
 			for (i in 0 ...  _i) {
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
-				if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+				//if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+				if(!_oSFunction.bStatic ){
 					
 					if (_oSFunction.oOverrideFunc == null){
 						pushLine(fGetFuncPtr(_oSFunction) + ";" + "//" + _oSFunction.sTest);
@@ -965,7 +968,7 @@ package language.project.convertCpp ;
 				var _oSFunction : SFunction = _aFunction[i];
 				//Only private/public function
 				//if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
-				if( _oSFunction != _oSClass.oFuncDestrutor){
+				//if( _oSFunction != _oSClass.oFuncDestrutor){
 				
 					var _sReturn: String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
 		
@@ -978,7 +981,7 @@ package language.project.convertCpp ;
 					var	_sClassFuncName : String =   "FB_" +  _sPtrFuncName;
 					pushLine("inline " + _sReturn  + _sClassFuncName+ "(" + getFunctionParam(_oSFunction, true) + ");");
 					
-				}
+			//	}
 			}
 			subTab();	
 			
@@ -1193,7 +1196,7 @@ package language.project.convertCpp ;
 			}
 			
 			if (!_oSClass.bIsResults && !_oSClass.bIsPod && !_oSClass.bIsVector && _oSFunction.eFuncType != EuFuncType.Pure) {
-				pushLine("inline " +  _sReturn  + "c" + _oSFunction.oSClass.sName + "_" +  _oSFunction.sRealName + "(" + _sParam + "){" + _sMustReturn +  _oSFunction.oSClass.sName  + "::Func_" + _oSFunction.sRealName +   getFunctionSignature(_oSFunction) +"(this" + getFunctionParam(_oSFunction, false, true,false) + ");" +"};");
+				pushLine("inline " +  _sReturn  + "c" + _oSFunction.oSClass.sName + "_" +  _oSFunction.sRealName + "(" + _sParam + "){" + _sMustReturn +  _oSFunction.oSClass.sName  + "::Func.Func_" + _oSFunction.sRealName +   getFunctionSignature(_oSFunction) +"(this" + getFunctionParam(_oSFunction, false, true,false) + ");" +"};");
 			}
 			
 			
@@ -1310,7 +1313,7 @@ package language.project.convertCpp ;
 			pushLine("//VTable");
 			for (_oSFunc in _oSClass.aFunctionList){
 				if (_oSFunc.eFuncType != EuFuncType.Pure ){
-				if (_oSFunc != _oSClass.oFuncDestrutor){//Temp
+				//if (_oSFunc != _oSClass.oFuncDestrutor){//Temp
 					var _sTest : String = "";
 					var _sFunc : String;
 					if (_oSFunc.bConstructor){
@@ -1336,7 +1339,7 @@ package language.project.convertCpp ;
 					
 					//pushLine("FPtr_" +  _sFunc + " = " + _oSClass.sName + "::Func_" +  _sFunc  + ";");
 					//'void (*)(Lib_GZ::Base::Thread::cThread*)' to 'void (*)(Lib_GZ::Base::cClass*)' [-fpermissive]
-				}
+				//}
 				}
 				
 			}

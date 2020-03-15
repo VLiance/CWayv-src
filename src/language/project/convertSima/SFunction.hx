@@ -29,6 +29,7 @@ package language.project.convertSima ;
 		public var bConstructor : Bool = false;
 		public var bCallExtendConstuctor : Bool = false;
 		public var bDefaultConstructor : Bool = false;
+		public var bDefaultDestructor : Bool = false;
 		public var eSharing : EuSharing;
 		public var bOverable : Bool = true;
 		public var bAtomic : Bool = false;
