@@ -932,9 +932,11 @@ package language.project.convertCpp ;
 				//if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
 				if(!_oSFunction.bStatic ){
 					
+				
 					if (_oSFunction.oOverrideFunc == null){
 						pushLine(fGetFuncPtr(_oSFunction) + ";" + "//" + _oSFunction.sTest);
 					}
+				
 					
 					//if ( !(_oSFunction.bConstructor && _oSFunction.oSClass.aExClassList.length != 0) ){ //Constructor is always override
 						//pushLine(fGetFuncPtr(_oSFunction) + ";");

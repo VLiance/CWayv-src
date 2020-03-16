@@ -172,6 +172,14 @@ package language.project.convertSima ;
 					}
 				}
 			}
+			
+			if (eFuncType == EuFuncType.Override && oOverrideFunc == null){
+				ExtractBlocs.nCurrLine = nLine;
+				Debug.fError("Function Overriding nothing: " + oSClass.sName + "." + sName );
+			}
+			
+			
+			
 		}
 		
 		

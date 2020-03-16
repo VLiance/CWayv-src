@@ -906,10 +906,11 @@ package language.project.convertSima ;
 		}
 		private static function extractFunctionInfoOverride(_oSClass : SClass):Void {
 
-			
+			ExtractBlocs.oCurrSClass = _oSClass;
 			if(!_oSClass.bIsPod && !_oSClass.bIsResults && !_oSClass.bIsVector){
 				//_oSFunction.fExtractFunctionInfoSignature();
 				for (_oSFunction in _oSClass.aFunctionList) {
+					ExtractBlocs.nCurrLine = _oSFunction.nLine;
 					_oSFunction.fExtractFunctionInfoOverride();
 				}
 			}
