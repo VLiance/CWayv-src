@@ -933,7 +933,7 @@ package language.project.convertCpp ;
 				if(!_oSFunction.bStatic ){
 					
 				
-					if (_oSFunction.oOverrideFunc == null){
+					if (_oSFunction.oOverrideFunc == null && !_oSFunction.bCppOverride){
 						pushLine(fGetFuncPtr(_oSFunction) + ";" + "//" + _oSFunction.sTest);
 					}
 				

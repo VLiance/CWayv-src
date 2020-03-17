@@ -22,6 +22,7 @@ package language.project.convertSima ;
 		public var eFuncType : EuFuncType;
 		
 		public var bHaveCpp : Bool = false;
+		public var bCppOverride : Bool = false;
 			
 		public var bSpecifiquePlatforme : Bool = false;
 		public var bSpecialGenerate : Bool = false;
@@ -173,7 +174,7 @@ package language.project.convertSima ;
 				}
 			}
 			
-			if (eFuncType == EuFuncType.Override && oOverrideFunc == null){
+			if (eFuncType == EuFuncType.Override && oOverrideFunc == null && !bCppOverride){
 				ExtractBlocs.nCurrLine = nLine;
 				Debug.fError("Function Overriding nothing: " + oSClass.sName + "." + sName );
 			}

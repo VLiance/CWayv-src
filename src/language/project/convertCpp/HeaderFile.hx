@@ -1155,7 +1155,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				//With Parent:
 				// pushLine("inline " + " c" + _oFunc.sName + "(Lib_GZ::Base::cClass* _parent " + getFunctionParam(_oFunc, true, false, false) + "): Lib_GZ::Base::Thread::cThreadMsg(_parent)");
 				//Without Parent:
-				pushLine("inline " + " c" + _oFunc.sName + "(" + CommonCpp.getFunctionParam(_oFunc, true) + "): Lib_GZ::Base::Thread::cThreadMsg()");
+				pushLine("inline " + " c" + _oFunc.sName + "(" + CommonCpp.getFunctionParam(_oFunc, true) + "): Lib_GZ::Base::Thread::cThreadMsg(0)");
 				
 				 var _sIni : String = "";
 				 var _aParam : Array<VarObj> = _oFunc.aParamList;

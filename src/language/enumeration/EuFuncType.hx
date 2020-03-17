@@ -10,6 +10,7 @@ package language.enumeration ;
 				// Extension 				;
 				 Extend 					;
 				 Override 					;
+				// Cpp_Override 					;
 				 Riding 					;
 				 Normal 					;
 				// Static 					; //
@@ -53,6 +54,9 @@ package language.enumeration ;
 					
 					case Normal:
 						return "normal";
+						
+				//	case Cpp_Override:
+				//		return "Cpp_Override";
 						
 					case Override:
 						return "override";

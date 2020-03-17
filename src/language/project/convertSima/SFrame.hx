@@ -828,7 +828,7 @@ package language.project.convertSima ;
 		
 		
 		
-		public static function fTestWord(_oSFunction:SFunction, _sWord : String, _sLine:String ):Void {
+		public static function fTestWord(_oSFunction:SFunction, _sWord : String, _sLine:String ):Int {
 			switch (_sWord) {
 				
 				case "destructor" :
@@ -842,7 +842,7 @@ package language.project.convertSima ;
 				//	if (Text.search(_sLine, "{", _nSearchAccIndex) >= 0) {
 					if (Text.search(_sLine, "{", 0) >= 0) {
 						//return true;
-						return;
+						return Text.nCurrentIndex;
 					}else {
 						Debug.fError("destructor need \"{\"");
 						var _aStop : Array<Dynamic>=[]; _aStop = _aStop[5];
@@ -874,6 +874,13 @@ package language.project.convertSima ;
 					_oSFunction.eFuncType = EuFuncType.Riding;
 					_oSFunction.eSharing = EuSharing.Public;
 					
+						
+				case "cpp_override" :
+
+					//_oSFunction.eFuncType = EuFuncType.Cpp_Override;
+					_oSFunction.bCppOverride = true;
+					_oSFunction.eFuncType = EuFuncType.Override;
+			
 				case "override" :
 
 					_oSFunction.eFuncType = EuFuncType.Override;
@@ -912,6 +919,26 @@ package language.project.convertSima ;
 			}
 			
 			
+			
+			if (_oSFunction.bStatic == true) {
+				var _sSpecialCase : String = Text.between3(_sLine, Text.nCurrentIndex,EuBetween.Word);
+				var _sNewName : String = Text.between3(_sLine, Text.nCurrentIndex,EuBetween.Word);
+				switch (_sSpecialCase) {
+					case "changeRem": //Change fonction name and remove class like Math.h sin(), remove LibCpp_Math:: and change fSin name 
+						_oSFunction.bRemoveStaticClass = true;
+						_oSFunction.bConvNewName = true;
+						_oSFunction.sConvNewName = _sNewName;
+					//break;
+					
+					case "change":
+						
+					//break;
+					
+				}
+			}
+			
+
+			return Text.nCurrentIndex;
 		}
 		
 		
@@ -954,14 +981,15 @@ package language.project.convertSima ;
 				//break;
 			}
 			
-			
+			//fTestWord(_oSFunction, _firstWord, _sLine);
+		//fTestWord(_oSFunction, _firstWord, _sLine);
 			
 			//!!TODODODOD 
-		/* 
-			fTestWord(_oSFunction, _firstWord, _sLine);
+		
+			Text.nCurrentIndex = fTestWord(_oSFunction, _firstWord, _sLine);
 			var _sNextWord : String = Text.between3(_sLine, Text.nCurrentIndex, EuBetween.Word);
-			fTestWord(_oSFunction, _sNextWord, _sLine);
-			*/
+			Text.nCurrentIndex = fTestWord(_oSFunction, _sNextWord, _sLine);
+			
 			
 			
 				
@@ -977,7 +1005,7 @@ package language.project.convertSima ;
 					//!!TODODODOD 
 				
 		/////////////////////////////////////////////////////////////////
-			
+			/*
 			switch (_firstWord) {
 				
 				case "destructor" :
@@ -1106,10 +1134,12 @@ package language.project.convertSima ;
 					//break;
 					
 				}
-			}
+			}*/
+			
+			
 			
 			/////////////////////////////////////////////////////////////////
-			
+			/*
 			//CPP Special Case for static function
 			if (_oSFunction.bStatic == true) {
 				var _sSpecialCase : String = Text.between3(_sLine, Text.nCurrentIndex,EuBetween.Word);
@@ -1127,7 +1157,13 @@ package language.project.convertSima ;
 					
 				}
 			}
+			*/
 			
+			
+			if (_oSFunction.eSharing == EuSharing.Destructor){
+				//Destructor does not have name and param
+				return true;
+			}
 			
 			
 			//Name -> goto index after "function"
