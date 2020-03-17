@@ -1167,6 +1167,8 @@ gzDef_Vec_Other(_Name, _nSize);
 					var _sAdd : String = "";
 					if (_oParam.eType == EuVarType._CallClass && !cast(_oParam, VarCallClass).oCallRef.bIsVector ){
 						_sAdd += "->Copy(true)";
+				
+						
 						//_sAdd += "*";
 					}
 					_sIni +=  ", " + _sName + "("  + _sName + _sAdd +   ")";
@@ -1222,14 +1224,16 @@ gzDef_Vec_Other(_Name, _nSize);
 			
 			
 			//pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" + getExtendClassToString(_oSClass, "(_o)")  );
-			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" + getAllExtendClassToString(_oSClass, "(_o)")  );
+			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" + getAllExtendClassToString(_oSClass, "(_o, _bDCpy)")  );
 			
-			fAddCppLines(_oSClass.aCppLinePreInitializerList_H);
-		//	fGetInitializerList(_oSFunction);
-			fAddCppLines(_oSClass.aCppLineInitializerList_H);
+			//TODO Check if weed need special copy initialiser instead
+			fAddCppLines(_oSClass.aCppLinePreInitializerList_H);	//TODO Check if weed need special copy initialiser instead
+			fAddCppLines(_oSClass.aCppLineInitializerList_H);	//TODO Check if weed need special copy initialiser instead
+			//TODO Check if weed need special copy initialiser instead
+			
 			pushLine( fCopyAllVar(_oSClass,true)  + "{" );
 			
-			
+			 fCopyAllSpecial(_oSClass);
 			
 			
 			//pushLine("GZ_printf(\"\\nCopy" + _oSClass.sName  +"\");");
@@ -1303,6 +1307,20 @@ gzDef_Vec_Other(_Name, _nSize);
 			return _sCopy;
 		}
 		
+		
+		public function fCopyAllSpecial(_oSClass : SClass) :Void {
+			if (!(_oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults)){
+				for (_oSFunction in _oSClass.aFunctionList){
+					if(!_oSFunction.bStatic ){
+						//if (_oSFunction.oOverrideFunc == null && !_oSFunction.bCppOverride){
+						if (_oSFunction.bCppOverride){ //bCppOverride is needed
+							var _sFuncName : String =  "FPtr_" + _oSFunction.sRealName  + CommonCpp.getFunctionSignature(_oSFunction) ;
+							pushLine( _sFuncName + " = " + "_o." +  _sFuncName + ";");
+						}
+					}
+				}
+			}
+		}
 		
 		
 		/*  To have legal code **
