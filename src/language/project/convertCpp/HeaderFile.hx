@@ -268,7 +268,8 @@ gzDef_Vec_Other(_Name, _nSize);
 				getFunctionPtr(_oSClass );
 				pushLine("}");
 				
-					
+				
+				
 				
 				pushLine("class tApi_" + _oSClass.oSLib.sWriteName + " c" + _oSClass.sName + _sExtend +" {");
 				
@@ -362,6 +363,7 @@ gzDef_Vec_Other(_Name, _nSize);
 				addSpace();
 				
 				pushLine("//FPtr");
+				
 				getClassFPtr(_oSClass );
 		
 				subTab();
@@ -1193,17 +1195,43 @@ gzDef_Vec_Other(_Name, _nSize);
 		
 		public function fDefaultCopyFunc(_oSClass : SClass) :Void {
 			
+			var _oSFunction :SFunction = _oSClass.oFuncConstructor;
+			
+			
 		//	pushLine("#define Cpy_" + _oSClass.sHeaderName  + " "  + getExtendClassToString(_oSClass, "(_o)") + fCopyAllVar(_oSClass);
 		//	pushLine("#define DCpy_" + _oSClass.sHeaderName  + " "  + getExtendClassToString(_oSClass, "(_o)") + fCopyAllVar(_oSClass, true);
 			
 		//	pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o)" + " : " + Cpy_" + _oSClass.sHeaderName + "{};" );
 		//	pushLine("inline c" + _oSClass.sName + "(var c" + _oSClass.sName + " &_o, gzBool _b)" + " : "+ getExtendClassToString(_oSClass,"(_o, _b)") + fCopyAllVar(_oSClass, true)  + "{};" ); 
-			var _sInitialiserList : String = getExtendClassToString(_oSClass, "(_o)") + fCopyAllVar(_oSClass,true);
+			
+		/*
+		var _sInitialiserList : String = getExtendClassToString(_oSClass, "(_o)") + fCopyAllVar(_oSClass,true);
 			if (_sInitialiserList == " : "){ //minimal = " : "
 				_sInitialiserList = "";
-			}
+			}*/
 			
-			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" +  _sInitialiserList  + "{" );
+			/*
+	
+			pushLine("inline c" + _oSClass.sName  + "(Lib_GZ::Base::cClass* _parent )" + getExtendClassToString(_oSClass, "(_o)"));
+			fAddCppLines(_oSClass.aCppLinePreInitializerList_H);
+			fGetInitializerList(_oSFunction);
+			fAddCppLines(_oSClass.aCppLineInitializerList_H);
+			pushLine("{");
+	
+			*/
+			
+			
+			//pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" + getExtendClassToString(_oSClass, "(_o)")  );
+			pushLine("inline c" + _oSClass.sName + "(const c" + _oSClass.sName + "& _o, gzBool _bDCpy = false)" + getAllExtendClassToString(_oSClass, "(_o)")  );
+			
+			fAddCppLines(_oSClass.aCppLinePreInitializerList_H);
+		//	fGetInitializerList(_oSFunction);
+			fAddCppLines(_oSClass.aCppLineInitializerList_H);
+			pushLine( fCopyAllVar(_oSClass,true)  + "{" );
+			
+			
+			
+			
 			//pushLine("GZ_printf(\"\\nCopy" + _oSClass.sName  +"\");");
 				pushLine("};" ); 
 	
@@ -1257,6 +1285,19 @@ gzDef_Vec_Other(_Name, _nSize);
 					_sCopy += ", " + _oVar.sName + "(" + _sSetTo + ")";
 				}
 			
+			}
+			
+			if (!(_oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults)){
+				for (_oSFunction in _oSClass.aFunctionList){
+					if(!_oSFunction.bStatic ){
+						if (_oSFunction.oOverrideFunc == null && !_oSFunction.bCppOverride){
+							var _sFuncName : String =  "FPtr_" + _oSFunction.sRealName  + CommonCpp.getFunctionSignature(_oSFunction) ;
+							_sCopy += ", " + _sFuncName + "(" + "_o." +  _sFuncName + ")";
+							//pushLine(fGetFuncPtr(_oSFunction) + ";" + "//" + _oSFunction.sTest);
+						}
+					}
+					
+				}
 			}
 			
 			return _sCopy;

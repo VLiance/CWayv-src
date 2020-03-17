@@ -924,12 +924,8 @@ package language.project.convertCpp ;
 			}
 			addTab();	
 			
-			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
-			var _i : UInt = _aFunction.length;
-			for (i in 0 ...  _i) {
-				var _oSFunction : SFunction = _aFunction[i];
-				//Only private/public function
-				//if(!_oSFunction.bStatic && _oSFunction != _oSClass.oFuncDestrutor){
+			
+			for (_oSFunction in _oSClass.aFunctionList){
 				if(!_oSFunction.bStatic ){
 					
 				
@@ -1118,7 +1114,7 @@ package language.project.convertCpp ;
 					//pushLine(_sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent);");
 					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(oSClass, "(_parent)")  +"{};");
 					//pushLine("inline " + _sReturn + "c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
-					pushLine("inline c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent)" + getAllExtendClassToString(_oSClass, "(_parent)"));
+					pushLine("inline c" + _sFuncName + "(Lib_GZ::Base::cClass* _parent )" + getAllExtendClassToString(_oSClass, "(_parent)"));
 				}else {
 					
 					//pushLine("inline c" + _sFuncName + "()" + getAllExtendClassToString(_oSClass, "(_parent)"));
