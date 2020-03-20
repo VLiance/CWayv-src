@@ -586,7 +586,7 @@ package language.project.convertCpp ;
 				_bEmpty = true;
 			}
 			
-			if (!_oSFunction.bConstructor &&  !_bNotClassFunc  &&  _oSFunction.oSClass.oPackage.oSFrame.bAddDebugFile){ //!TODO add a "pragma to auto add debug line --> OGL temps get line info
+			if (!_oSFunction.bFuncGenerated &&  !_bNotClassFunc  &&  _oSFunction.oSClass.oPackage.oSFrame.bAddDebugFile){ //!TODO add a "pragma to auto add debug line --> OGL temps get line info
 				
 				if(_bOnlyVar){
 					_sParam += "  GZ_DbgFile";

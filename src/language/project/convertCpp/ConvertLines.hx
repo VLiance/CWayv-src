@@ -1797,7 +1797,7 @@ package language.project.convertCpp ;
 				
 			}
 			
-			if (_oFuncCall.oFunction.oSClass.oPackage.oSFrame.bAddDebugFile && !_oFuncCall.oFunction.bConstructor){
+			if (_oFuncCall.oFunction.oSClass.oPackage.oSFrame.bAddDebugFile && !_oFuncCall.oFunction.bFuncGenerated){
 				_sReturn += "  GZ_DbgFile";
 			}
 			

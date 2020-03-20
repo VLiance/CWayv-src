@@ -20,7 +20,9 @@ class Setting
 	
 	
 	public static var sConstructorKeyword = "Constructor"; //or super?
-	public static var sDestructorKeyword = "destructor"; //or super?
+	public static var sDestructorKeyword = "destructor"; 
+	public static var sDestroyKeyword = "destroy"; 
+	public static var sCopyKeyword = "copy";
  
 	
 	public function new() 

@@ -174,6 +174,14 @@ class SPackage extends SBloc
 			//oClassImport.oSLib = oSProject.oGzCppLib;//ReadOnly
 */
 						
+			/*
+			oThreadMsgImport = newSImport();
+			oThreadMsgImport.sPath = "Base/";
+			oThreadMsgImport.sName = "Class";
+			oThreadMsgImport.nLine = 0;
+			oThreadMsgImport.oSLib = oSProject.oGzLib; //Temp?
+			*/
+			
 			oThreadMsgImport = newSImport();
 			oThreadMsgImport.sPath = "Base/Thread/";
 			oThreadMsgImport.sName = "ThreadMsg";

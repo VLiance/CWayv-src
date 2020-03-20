@@ -30,7 +30,10 @@ package language.project.convertSima ;
 		public var bConstructor : Bool = false;
 		public var bCallExtendConstuctor : Bool = false;
 		public var bDefaultConstructor : Bool = false;
+		public var bFuncGenerated : Bool = false;
 		public var bDefaultDestructor : Bool = false;
+		public var bDefaultDestroy : Bool = false;
+		public var bDefaultCopy : Bool = false;
 		public var eSharing : EuSharing;
 		public var bOverable : Bool = true;
 		public var bAtomic : Bool = false;
@@ -71,6 +74,11 @@ package language.project.convertSima ;
 		public var oOverrideFunc : SFunction;
 		public var sSignature : String;
 		public var sTest : String = "";
+		
+		
+		public var aGeneratedLine : Array<String>  = [];
+		
+		
 		
 		//public var oSClass :SClass
 		
@@ -159,7 +167,7 @@ package language.project.convertSima ;
 									oOverrideFunc = _oSFunc;
 								}else{
 									
-									if(!bConstructor) {
+									if(!bConstructor && !bFuncGenerated) {
 										Debug.fWarning("Maybe you want Overriding this function: " + _oSFunc.sName + "[" +   EuFuncType_.fGetName( eFuncType) + "]" + " in " + _oSFunc.oSClass.sName  + " file: " + oSClass.oPackage.sReadedFilePath + ":" + nLine);
 								
 									}

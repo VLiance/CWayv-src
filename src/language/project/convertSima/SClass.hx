@@ -51,6 +51,8 @@ package language.project.convertSima;
 				
 		public var bDefaultConstrutorGenereted : Bool = false;
 		public var bDefaultDestructorGenereted : Bool = false;
+		public var bDefaultDestroyGenereted : Bool = false;
+		public var bDefaultCopyGenereted : Bool = false;
 		public var sConstructLineToExtract : String = "";
 		
 
@@ -170,6 +172,8 @@ package language.project.convertSima;
 	
 		public var oFuncConstructor : SFunction;
 		public var oFuncDestrutor : SFunction;
+		public var oFuncDestroy : SFunction;
+		public var oFuncCopy : SFunction;
 		
 		public var oHeaderFile : HeaderFile;
 		

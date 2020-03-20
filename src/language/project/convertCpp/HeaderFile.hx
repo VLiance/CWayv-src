@@ -1261,8 +1261,9 @@ gzDef_Vec_Other(_Name, _nSize);
 			//if(!_oSClass.bExtension && !_oSClass.bIsPod){
 				
 			//pushLine("virtual gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);}; //TODO Virtual "); //gzSp?
-			pushLine("inline gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);}; //TODO Virtual "); //gzSp?
-		
+			//pushLine("inline gzClass Copy(gzBool _bDeepCopy = false){return new c" + _oSClass.sName  + "(*this, _bDeepCopy);}; //TODO Virtual "); //gzSp?
+			pushLine("inline gzClass Copy(gzBool _bDeepCopy = false){return (gzClass)copy(_bDeepCopy);};"); //gzSp?
+			
 				
 				//pushLine("virtual gzAny MemCopy();"); 
 			//	pushLine("virtual gzAny DeepCopy();");
