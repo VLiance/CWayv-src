@@ -343,7 +343,7 @@ package language.project.convertSima ;
 			var _oSFunction : SFunction = new SFunction(null, _oSClass); 
 			
 
-			_oSFunction.pushParam( newVarParam(_oSFunction, "_bDeepCpy:Bool", _oSFunction.nLine));
+			_oSFunction.pushParam( newVarParam(_oSFunction, "_bDeepCopy:Bool", _oSFunction.nLine));
 			
 			_oSClass.oFuncCopy = _oSFunction;
 	 
@@ -426,6 +426,8 @@ package language.project.convertSima ;
 			_oSFunction.bNoLine = true; //If have no extention
 			
 			_oSFunction.aGeneratedLine.push("<cpp>");
+			
+			_oSFunction.aGeneratedLine.push("GZ_printf(\"\\nDelete: " + _oSClass.sName + "\");");
 			_oSFunction.aGeneratedLine.push("delete this;");
 			_oSFunction.aGeneratedLine.push("</cpp>");
 			
