@@ -94,7 +94,7 @@ package language.project.convertCpp ;
 			//addTab();
 			addSpace();	
 		
-			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_CpcDos  ||  defined D_Platform_Lite  ) ");
+			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_Android ||  defined D_Platform_CpcDos  ||  defined D_Platform_Lite  ) ");
 				pushLine("#define GL_fGetError glCall_fGetError");
 				pushLine("typedef gzUInt (APIENTRY* FUNC_fGetError)();");
 				pushLine("extern FUNC_fGetError glCall_fGetError;");
@@ -106,7 +106,7 @@ package language.project.convertCpp ;
 			
 
 			
-			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_CpcDos  ||  defined D_Platform_Lite  ) ");
+			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_Android  ||  defined D_Platform_CpcDos  ||  defined D_Platform_Lite  ) ");
 			gpuFunctionToConvert(_oSClass);
 			pushLine("#endif");
 					
@@ -114,7 +114,7 @@ package language.project.convertCpp ;
 			gpuWebFunctionToConvert(_oSClass);
 			pushLine("#endif");
 			
-			pushLine("#if ( defined D_Platform_CpcDos ||  defined D_Platform_Lite ) ");
+			pushLine("#if ( defined D_Platform_Android ||  defined D_Platform_CpcDos ||  defined D_Platform_Lite ) ");
 			//pushLine("#ifdef GZ_tCpcDos");
 		//	pushLine("gzBool gzN(bool _bVal){return false;};");
 		//	pushLine("gzUInt gzN(gzUInt _bVal){return 0;};");

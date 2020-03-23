@@ -427,21 +427,21 @@ package language.project.convertSima ;
 			
 			_oSFunction.aGeneratedLine.push("<cpp>");
 			
-			_oSFunction.aGeneratedLine.push("GZ_printf(\"\\nDelete: " + _oSClass.sName + "\");");
+			_oSFunction.aGeneratedLine.push("//GZ_printf(\"\\nDelete: " + _oSClass.sName + "\");");
 			_oSFunction.aGeneratedLine.push("delete this;");
 			_oSFunction.aGeneratedLine.push("</cpp>");
 			
+			/*
 			//Call default extends function
 			if (_oSClass.aExtendClass.length > 0) {
-				/*
+				
 				var _oExtClass : SClass = _oSClass.aExtendClass[0]; //only one extend
-				fCreateDefaultConstructor(_oExtClass); //recursive if not already analysed
+				fCreateDefaultDestroy(_oExtClass); //recursive if not already analysed
 				ExtractBlocs.oCurrSClass = _oSClass;
 				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
 				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
-				*/
-			}
+			}*/
 		}
 
 		
