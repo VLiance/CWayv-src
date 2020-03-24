@@ -796,6 +796,10 @@ package language.project.convertCpp ;
 			}
 			*/
 			
+			//pushLine("GZ_printf(\"\\nIniClass: " + _oSClass.sName + "\");");
+			if(_oSClass.bExtension){
+				pushLine("//Warning! Extention InClass Not called!!: " + _oSClass.sName );
+			}
 			pushLine("}");
 			
 		}
