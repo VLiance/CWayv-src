@@ -82,7 +82,10 @@ package language.vars.varObj ;
 				return  _oVarSel.copy(_oSBloc);
 			}
 		
-		
+			
+		public function fGetRootContainer():VarObj {
+			return this;
+		}
 	
 
 	}

@@ -184,7 +184,8 @@ package language.project.convertSima ;
 			
 			if (eFuncType == EuFuncType.Override && oOverrideFunc == null && !bCppOverride){
 				ExtractBlocs.nCurrLine = nLine;
-				Debug.fError("Function Overriding nothing: " + oSClass.sName + "." + sName );
+				//Debug.fError("Function Overriding nothing: " + oSClass.sName + "." + sName );
+				Debug.fWarning("Function Overriding nothing: " + oSClass.sName + "." + sName );
 			}
 			
 			

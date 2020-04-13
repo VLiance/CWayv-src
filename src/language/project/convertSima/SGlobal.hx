@@ -62,6 +62,7 @@ package language.project.convertSima ;
 			aNFArray.push(new SNatFunction(_oSClassNative, EuVarType._DArray, "", "fPush", ["_Element : Type"], "Void", "", true));
 			aNFArray.push(new SNatFunction(_oSClassNative, EuVarType._DArray, "", "fClear", [], "Void", "", true));
 			aNFArray.push(new SNatFunction(_oSClassNative, EuVarType._DArray, "", "fMaxSize", ["_nSize : UIntX"], "Void", "", true));
+			aNFArray.push(new SNatFunction(_oSClassNative, EuVarType._DArray, "", "fSetSize", ["_nSize : UIntX"], "Void", "", true));
 						
 			
 			aNFDataArr.push(new SNatFunction(_oSClassNative, EuVarType._DataArr, "", "fPush", ["_Element : Type"], "Void","",true));

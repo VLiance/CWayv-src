@@ -25,7 +25,7 @@ package language.vars.varObj ;
 		
 		public function getCppName():String {
 			//return oSClass.oSLib.sWriteName + "::" +  oSClass.sName + "::" + sName;
-			return oExCallRef.sNsAccess + "c" + oExCallRef.sName + "::";
+			return oExCallRef.sNsAccess + "c" + oExCallRef.sName + "::" + "c" + oExCallRef.sName + "_"; //Explicit extend class call
 		}
 		
 		/*

@@ -540,6 +540,7 @@ package language.project.convertCpp ;
 				
 				
 				case EuVarType._LineLoc : 
+					cast(_oVar, LineLoc).oTContainer = _oContainer; // Ugly but we lost container when cconverting
 					return  checkVarConvertIn(cast(_oVar,LineLoc).oResultingType, _oConvertIn, convertLineLoc(cast(_oVar,LineLoc)), _oVar);
 				//break;
 				
@@ -1252,14 +1253,19 @@ package language.project.convertCpp ;
 			var _sArray : String = checkVarConvertIn(_oLineArray, _oConvertIn, _oLineArray.oArray.sName, _oContainer);
 			var _aVarList :Array<Dynamic> = _oLineArray.aVarList;
 			
+			var _oRootContainer : VarObj = null;
+			if(_oContainer != null){
+				_oRootContainer = _oContainer.fGetRootContainer();
+			}
 			
 			///////////FIXE ARRAY///////////
 		//	if (_oLineArray.oArray.eType == EuVarType._FixeArray) {
 				var _j:UInt = _aVarList.length;
 				for (j in 0 ..._j){
 					var _oFixeSquare : VarObj  =  _aVarList[j];
-					if ((j == _aVarList.length - 1  && _oLineArray.oArray.eType != EuVarType._FixeArray) &&  (_oContainer == null || _oContainer.eType != EuVarType._LineInput)) {
+					if ((j == _aVarList.length - 1  && _oLineArray.oArray.eType != EuVarType._FixeArray) &&  (_oRootContainer == null || _oRootContainer.eType != EuVarType._LineInput)) {
 						//Reading operation
+						
 						_sArray +=  "(" + convertCppVarType(_oFixeSquare, _oLineArray.nLine, false,  _oLineArray.aConvertInTypeList[j]) + ")" ;
 					
 					}else{

@@ -120,6 +120,7 @@ package language.project.convertCpp ;
 			*/
 			addSpace();
 			
+			
 			pushLine("#if !( defined D_Platform_Web_Emsc ||  defined D_Platform_Android ||  defined  D_Platform_CpcDos  ||  defined D_Platform_Lite ) ");
 				pushLine("FUNC_fGetError glCall_fGetError = 0;");
 				gpuFunctionToConvert(_oSClass);

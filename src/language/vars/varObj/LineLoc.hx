@@ -11,6 +11,8 @@ package language.vars.varObj ;
 	class LineLoc extends LineObj {
 		
 		
+		public var oTContainer : VarObj; //Used juste when converting --> Ugly
+		
 		public var oVarInput  : VarObj;
 		public var oResultVar  : VarObj;
 		public var sBefore  : String; //use for convertion
@@ -20,6 +22,14 @@ package language.vars.varObj ;
 			super();
 			eType = EuVarType._LineLoc;
 		}
+		
+	
+		override public function fGetRootContainer():VarObj {
+			return oTContainer;
+		}
+	
+		
+		
 		
 		
 		override public function copy(_oSBloc:SBloc):VarObj {
@@ -35,6 +45,8 @@ package language.vars.varObj ;
 			_oCopy.bLast = bLast;
 			return copyLineObj(_oCopy);
 		}
+		
+		
 			
 	
 	}

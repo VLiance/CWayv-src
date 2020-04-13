@@ -114,7 +114,8 @@ package language.project.convertCpp ;
 			gpuWebFunctionToConvert(_oSClass);
 			pushLine("#endif");
 			
-			pushLine("#if ( defined D_Platform_Android ||  defined D_Platform_CpcDos ||  defined D_Platform_Lite ) ");
+			//TODO THIS is platform with no OGL support -> use a define for that
+			pushLine("#if (defined D_Platform_CpcDos ||  defined D_Platform_Lite ) ");
 			//pushLine("#ifdef GZ_tCpcDos");
 		//	pushLine("gzBool gzN(bool _bVal){return false;};");
 		//	pushLine("gzUInt gzN(gzUInt _bVal){return 0;};");
@@ -124,6 +125,14 @@ package language.project.convertCpp ;
 		///	pushLine("#inl fGetGpuFunctions() false");
 			gpuEmptyFunctionToConvert(_oSClass);
 			pushLine("#endif");
+			
+			//TODO Other are  platform with default OGL function -> use a define for that
+			pushLine("#if (defined D_Platform_Android ) ");
+			gpuStandardFunctionToConvert(_oSClass);
+			pushLine("#endif");
+			
+			
+			
 			
 			
 			//subTab();
@@ -285,6 +294,24 @@ package language.project.convertCpp ;
 			
 			pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
 		}
+		private function gpuConvertFunctionHeaderStandard(_oSClass:SClass, _oSFunction:SFunction):Void {
+			
+			var _sFuncNameGL : String = "gl" + _oSFunction.sName.substring(1);
+			var _sFuncNameUSE : String = "GL_" + _oSFunction.sName;
+			
+			
+			var _sParam : String = CommonCpp.getFunctionParam(_oSFunction, false, false, true, false, true);
+			var _sReturn  : String = TypeText.typeToCPP(_oSFunction.oReturn, true) + " "; //TODO
+			
+			pushLine("GL_APICALL " + _sReturn + _sFuncNameGL + "(" + _sParam + ");");
+			
+			
+			pushLine("#define " + _sFuncNameUSE + " " + _sFuncNameGL);
+			
+			
+
+		}
+		
 		
 		private function gpuConvertFunctionHeaderDebug(_oSClass:SClass, _oSFunction:SFunction):Void {
 	
@@ -419,6 +446,31 @@ package language.project.convertCpp ;
 			pushLine("#define " + _sFuncNameUSE + "(" + _sCallParam1 + ") " + _sFuncNameDbg  + _sCallParam2 + ")");
 			
 		}
+		
+		
+		
+		private function gpuStandardFunctionToConvert(_oSClass:SClass):Void {
+		
+			var _aFunction : Array<Dynamic> = _oSClass.aFunctionList;
+			var _i : UInt = _aFunction.length;
+			for (i in 0 ...  _i) {
+				var _oSFunction : SFunction = _aFunction[i];
+				//Only private/public function
+				//if(_oSFunction.bSpecialGenerate &&  _oSFunction.bStatic && _oSFunction.sName != "fGetError"){
+				if (_oSFunction.bSpecifiquePlatforme){
+					gpuEmptyFunctionToConvertHeader(_oSClass, _oSFunction); //TODO Only if it not is platform
+					
+				}else{
+					
+					if( _oSFunction.bSpecialGenerate  && _oSFunction.sName != "fGetError"){
+						gpuConvertFunctionHeaderStandard(_oSClass, _oSFunction);
+					}
+				}
+			}
+			
+			addSpace();
+		}
+		
 		
 		
 		private function gpuEmptyFunctionToConvert(_oSClass:SClass):Void {
