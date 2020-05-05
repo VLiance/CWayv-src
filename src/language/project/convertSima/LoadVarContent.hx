@@ -357,14 +357,13 @@ package language.project.convertSima ;
 			
 			//Call default extends function
 			if (_oSFunction.oSClass.aExtendClass.length > 0) {
-				/*
-				var _oExtClass : SClass = _oSClass.aExtendClass[0]; //only one extend
-				fCreateDefaultConstructor(_oExtClass); //recursive if not already analysed
-				ExtractBlocs.oCurrSClass = _oSClass;
-				ExtractBlocs.nCurrLine = _oSClass.nLine;
 				
-				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
-				*/
+				var _oExtClass : SClass = _oSFunction.oSClass.aExtendClass[0]; //only one extend
+							
+				_oSFunction.aGeneratedLine.push("<cpp>");
+				_oSFunction.aGeneratedLine.push("c" +  _oExtClass.sName + "_destructor();");
+				_oSFunction.aGeneratedLine.push("</cpp>");
+				
 			}
 		}
 
@@ -372,7 +371,8 @@ package language.project.convertSima ;
 		
 		public static function fCreateDefaultDestructor(_oSClass:SClass):Void {
 			
-			 if ( _oSClass.oFuncDestrutor != null || _oSClass.bExtension || _oSClass.bDefaultDestructorGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
+			// if ( _oSClass.oFuncDestrutor != null || _oSClass.bExtension || _oSClass.bDefaultDestructorGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
+			 if ( _oSClass.oFuncDestrutor != null || _oSClass.bDefaultDestructorGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
 				 return;
 			 }
 			 
