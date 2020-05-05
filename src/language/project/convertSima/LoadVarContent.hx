@@ -278,22 +278,22 @@ package language.project.convertSima ;
 		}
 		
 		
-		public static function fCreateDefaultDestructor(_oSClass:SClass):Void {
+		
+		public static function fCreateDefaultDestroy(_oSClass:SClass):Void {
 			
-			 if ( _oSClass.oFuncDestrutor != null || _oSClass.bExtension || _oSClass.bDefaultDestructorGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
+			 if ( _oSClass.oFuncDestroy != null || _oSClass.bExtension || _oSClass.bDefaultDestroyGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
 				 return;
 			 }
 			 
-			 
-			  _oSClass.bDefaultDestructorGenereted = true;
+			  _oSClass.bDefaultDestroyGenereted = true;
 			 
 			 ExtractBlocs.oCurrSClass = _oSClass;
 			 ExtractBlocs.nCurrLine = _oSClass.nLine;
 			 
 			var _oSFunction : SFunction = new SFunction(null, _oSClass); 
-			_oSClass.oFuncDestrutor = _oSFunction;
+			_oSClass.oFuncDestroy = _oSFunction;
 	
-			_oSFunction.sName = Setting.sDestructorKeyword;
+			_oSFunction.sName = Setting.sDestroyKeyword;
 			_oSFunction.sRealName = _oSFunction.sName;//bConstructor?
 			
 			var  _nLineNum : UInt  = _oSClass.nLine;
@@ -302,6 +302,49 @@ package language.project.convertSima ;
 			_oSFunction.nLastLine = _nLineNum; //If has no line
 			
 			_oSFunction.bFuncGenerated = true;
+			_oSFunction.bDefaultDestroy = true;
+		
+			_oSFunction.eSharing = EuSharing.Public;
+			_oSFunction.eFuncType = EuFuncType.Override;
+			
+			_oSFunction.sIniReturn = "Void";
+			extractFunctionInfoReturn(_oSFunction);
+			//_oSFunction.bConstructor = true;
+			//_oSFunction.sRealName = Setting.sConstructorKeyword;
+			//_oSFunction.eFuncType  = EuFuncType.Main; 
+
+			
+			_oSFunction.bNoLine = true; //If have no extention
+			
+			_oSFunction.aGeneratedLine.push("<cpp>");
+			
+			_oSFunction.aGeneratedLine.push("//GZ_printf(\"\\nDelete: " + _oSClass.sName + "\");");
+			
+			_oSFunction.aGeneratedLine.push("c" +  _oSClass.sName + "_destructor();");
+			_oSFunction.aGeneratedLine.push("delete this;");
+			_oSFunction.aGeneratedLine.push("</cpp>");
+			
+			/*
+			//Call default extends function
+			if (_oSClass.aExtendClass.length > 0) {
+				
+				var _oExtClass : SClass = _oSClass.aExtendClass[0]; //only one extend
+				fCreateDefaultDestroy(_oExtClass); //recursive if not already analysed
+				ExtractBlocs.oCurrSClass = _oSClass;
+				ExtractBlocs.nCurrLine = _oSClass.nLine;
+				
+				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
+			}*/
+		}
+
+		public static function fCreateFuncDestructor(_oSFunction:SFunction):Void {
+
+			_oSFunction.oSClass.oFuncDestrutor = _oSFunction;
+	
+			_oSFunction.sName = Setting.sDestructorKeyword;
+			_oSFunction.sRealName = _oSFunction.sName;//bConstructor?
+			
+			
 			_oSFunction.bDefaultDestructor = true;
 		
 			_oSFunction.eSharing = EuSharing.Public;
@@ -312,10 +355,8 @@ package language.project.convertSima ;
 			//_oSFunction.eFuncType  = EuFuncType.Main; 
 
 			
-			_oSFunction.bNoLine = true; //If have no extention
-			
 			//Call default extends function
-			if (_oSClass.aExtendClass.length > 0) {
+			if (_oSFunction.oSClass.aExtendClass.length > 0) {
 				/*
 				var _oExtClass : SClass = _oSClass.aExtendClass[0]; //only one extend
 				fCreateDefaultConstructor(_oExtClass); //recursive if not already analysed
@@ -325,6 +366,34 @@ package language.project.convertSima ;
 				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
 				*/
 			}
+		}
+
+		
+		
+		public static function fCreateDefaultDestructor(_oSClass:SClass):Void {
+			
+			 if ( _oSClass.oFuncDestrutor != null || _oSClass.bExtension || _oSClass.bDefaultDestructorGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
+				 return;
+			 }
+			 
+			 _oSClass.bDefaultDestructorGenereted = true;
+			 
+			 ExtractBlocs.oCurrSClass = _oSClass;
+			 ExtractBlocs.nCurrLine = _oSClass.nLine;
+			 
+			var _oSFunction : SFunction = new SFunction(null, _oSClass); 
+			_oSFunction.bNoLine = true; //If have no extention
+			_oSFunction.bFuncGenerated = true;
+			
+			
+			var  _nLineNum : UInt  = _oSClass.nLine;
+			_oSFunction.nLineNum = _nLineNum;
+			_oSFunction.nLine = _nLineNum;
+			_oSFunction.nLastLine = _nLineNum; //If has no line
+			
+			
+			fCreateFuncDestructor(_oSFunction);
+			
 		}
 		
 		
@@ -388,62 +457,6 @@ package language.project.convertSima ;
 			}
 		}
 		
-		public static function fCreateDefaultDestroy(_oSClass:SClass):Void {
-			
-			 if ( _oSClass.oFuncDestroy != null || _oSClass.bExtension || _oSClass.bDefaultDestroyGenereted == true || _oSClass.bIsPod || _oSClass.bIsVector || _oSClass.bIsResults) { //No need for extention
-				 return;
-			 }
-			 
-			  _oSClass.bDefaultDestroyGenereted = true;
-			 
-			 ExtractBlocs.oCurrSClass = _oSClass;
-			 ExtractBlocs.nCurrLine = _oSClass.nLine;
-			 
-			var _oSFunction : SFunction = new SFunction(null, _oSClass); 
-			_oSClass.oFuncDestroy = _oSFunction;
-	
-			_oSFunction.sName = Setting.sDestroyKeyword;
-			_oSFunction.sRealName = _oSFunction.sName;//bConstructor?
-			
-			var  _nLineNum : UInt  = _oSClass.nLine;
-			_oSFunction.nLineNum = _nLineNum;
-			_oSFunction.nLine = _nLineNum;
-			_oSFunction.nLastLine = _nLineNum; //If has no line
-			
-			_oSFunction.bFuncGenerated = true;
-			_oSFunction.bDefaultDestroy = true;
-		
-			_oSFunction.eSharing = EuSharing.Public;
-			_oSFunction.eFuncType = EuFuncType.Override;
-			
-			_oSFunction.sIniReturn = "Void";
-			extractFunctionInfoReturn(_oSFunction);
-			//_oSFunction.bConstructor = true;
-			//_oSFunction.sRealName = Setting.sConstructorKeyword;
-			//_oSFunction.eFuncType  = EuFuncType.Main; 
-
-			
-			_oSFunction.bNoLine = true; //If have no extention
-			
-			_oSFunction.aGeneratedLine.push("<cpp>");
-			
-			_oSFunction.aGeneratedLine.push("//GZ_printf(\"\\nDelete: " + _oSClass.sName + "\");");
-			_oSFunction.aGeneratedLine.push("delete this;");
-			_oSFunction.aGeneratedLine.push("</cpp>");
-			
-			/*
-			//Call default extends function
-			if (_oSClass.aExtendClass.length > 0) {
-				
-				var _oExtClass : SClass = _oSClass.aExtendClass[0]; //only one extend
-				fCreateDefaultDestroy(_oExtClass); //recursive if not already analysed
-				ExtractBlocs.oCurrSClass = _oSClass;
-				ExtractBlocs.nCurrLine = _oSClass.nLine;
-				
-				fSetDefaultConstructLineToExtract(_oSFunction, _oExtClass);
-			}*/
-		}
-
 		
 		
 		public static function fSetDefaultConstructLineToExtract(_oSFunction : SFunction, _oExtClass : SClass ){
@@ -1024,9 +1037,10 @@ package language.project.convertSima ;
 			var _i:UInt = _aFuncList.length;
 			for (i in 0 ..._i) {
 				var _oSFunction : SFunction =  _aFuncList[i];
-				if (_oSFunction.eSharing == EuSharing.Destructor){ 
-					_oSFunction.sIniReturn = "Void";
-				}	
+				
+			//	if (_oSFunction.eSharing == EuSharing.Destructor){ 
+			//		_oSFunction.sIniReturn = "Void";
+			//	}	
 				//if (_oSFunction.eSharing != EuSharing.Destructor){ //Not sure
 					ExtractBlocs.oCurrSFunc = _oSFunction;
 					extractFunctionInfoParam(_oSFunction);
