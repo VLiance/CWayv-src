@@ -834,20 +834,19 @@ package language.project.convertSima ;
 				case "destructor" :
 					
 					
-					
-					/*
-					
+			
 					//_oSFunction.eSharing = EuSharing.Destructor;
 					_oSFunction.eSharing =  EuSharing.Public;
 					
-					_oSFunction.sName = "destructor";
+					_oSFunction.sName = "destructor_custom";
 					_oSFunction.sRealName = _oSFunction.sName;
 					//_oSFunction.oSClass.aFunctionList.pop(); //*Special case Remove from the list* //Keep it to garanted seach balise between functions
-					_oSFunction.oSClass.oFuncDestrutor = _oSFunction;
+					_oSFunction.oSClass.oFuncDestrutorCustom = _oSFunction;
 					_oSFunction.sIniReturn = "Void";
-					*/
+					LoadVarContent.extractFunctionInfoReturn(_oSFunction);
 					
-					LoadVarContent.fCreateFuncDestructor(_oSFunction);
+					//LoadVarContent.fCreateFuncDestructor(_oSFunction);
+					
 					
 				//	if (Text.search(_sLine, "{", _nSearchAccIndex) >= 0) {
 					if (Text.search(_sLine, "{", 0) >= 0) {
@@ -1171,7 +1170,7 @@ package language.project.convertSima ;
 			
 			
 			//if (_oSFunction.eSharing == EuSharing.Destructor){
-			if (_oSFunction  == _oSFunction.oSClass.oFuncDestrutor){
+			if (_oSFunction  == _oSFunction.oSClass.oFuncDestrutor || _oSFunction == _oSFunction.oSClass.oFuncDestrutorCustom){
 				//Destructor does not have name and param
 				return true;
 			}

@@ -172,6 +172,7 @@ package language.project.convertSima;
 	
 		public var oFuncConstructor : SFunction;
 		public var oFuncDestrutor : SFunction;
+		public var oFuncDestrutorCustom : SFunction;
 		public var oFuncDestroy : SFunction;
 		public var oFuncCopy : SFunction;
 		

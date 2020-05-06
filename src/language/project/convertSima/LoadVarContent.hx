@@ -361,6 +361,10 @@ package language.project.convertSima ;
 				var _oExtClass : SClass = _oSFunction.oSClass.aExtendClass[0]; //only one extend
 							
 				_oSFunction.aGeneratedLine.push("<cpp>");
+				if (_oSFunction.oSClass.oFuncDestrutorCustom != null){
+					_oSFunction.aGeneratedLine.push("c" +  _oSFunction.oSClass.sName + "_destructor_custom();");
+				}
+				
 				_oSFunction.aGeneratedLine.push("c" +  _oExtClass.sName + "_destructor();");
 				_oSFunction.aGeneratedLine.push("</cpp>");
 				
