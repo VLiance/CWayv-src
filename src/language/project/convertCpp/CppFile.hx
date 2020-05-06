@@ -197,7 +197,7 @@ package language.project.convertCpp ;
 			
 			fDefaultCopyFunc(_oSClass);
 
-			
+			/*
 			if(!_oSClass.bIsPod){
 				//Destructor
 				//pushLine(oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "::~" + oSClass.oSLib.sWriteName + "_"  + oSClass.sName + "(){")
@@ -206,17 +206,17 @@ package language.project.convertCpp ;
 				if (_oSClass.oFuncDestrutor != null ||  _sAutoFree != ""){ //Must be same as header
 					
 					pushLine( "//TODO Call destructor");
-					pushLine( "/*");
+		
 					pushLine( "c" + _oSClass.sName + "::~" +  "c" + _oSClass.sName + "(){");
 					addTab();
 						extractDestructor(_oSClass);
 						pushLine( _sAutoFree );
 					subTab();
 					pushLine("}");
-					pushLine( "*/");
+				
 					
 				}
-			}
+			}*/
 			addSpace();
 			
 			

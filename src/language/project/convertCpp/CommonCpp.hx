@@ -455,7 +455,7 @@ package language.project.convertCpp ;
 		
 				
 		
-		public function freeAll(_oSClass:SClass):String {
+		public static function freeAll(_oSClass:SClass):String {
 			
 			var _sResult : String = "";
 			//addTab();
@@ -468,7 +468,7 @@ package language.project.convertCpp ;
 			return _sResult;
 		}
 	
-		public function freeAllVarObj(_oVar:VarObj):String {
+		public static function freeAllVarObj(_oVar:VarObj):String {
 			switch (_oVar.eType) {
 				case EuVarType._FixeArray :
 					var _oVarFixeArray : VarFixeArray = cast(_oVar);

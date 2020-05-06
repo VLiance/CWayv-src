@@ -9,6 +9,7 @@ package language.project.convertSima ;
 	import language.project.SProject;
 	import language.Text;
 	import language.TextType;
+	import language.project.convertCpp.CommonCpp;
 	import language.vars.special.EnumObj;
 	import language.vars.special.UnitObj;
 	import language.vars.special.UseEnum;
@@ -60,10 +61,7 @@ package language.project.convertSima ;
 				fCreateDefaultConstructor(_oSClass);
 			}}
 			
-			//Create default destructor
-			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
-				fCreateDefaultDestructor(_oSClass);
-			}}
+
 			
 			//Create default destroy
 			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
@@ -125,6 +123,12 @@ package language.project.convertSima ;
 				
 	
 			}}
+			
+			//Create default destructor (must be after global var ini)
+			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
+				fCreateDefaultDestructor(_oSClass);
+			}}
+			
 			
 			for(_oSPck in _aPackage){for(_oSClass in _oSPck.aClassList){
 				ExtractBlocs.oCurrSClass = _oSClass;
@@ -366,6 +370,11 @@ package language.project.convertSima ;
 				}
 				
 				_oSFunction.aGeneratedLine.push("c" +  _oExtClass.sName + "_destructor();");
+				var _sAutoFree : String = CommonCpp.freeAll(_oSFunction.oSClass);
+				if (_sAutoFree != ""){
+					_oSFunction.aGeneratedLine.push(_sAutoFree);
+				}
+				_oSFunction.aGeneratedLine.push("//" + _oSFunction.oSClass.aIniGlobalVarList.length);
 				_oSFunction.aGeneratedLine.push("</cpp>");
 				
 			}

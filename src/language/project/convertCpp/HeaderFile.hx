@@ -326,6 +326,8 @@ gzDef_Vec_Other(_Name, _nSize);
 					fDefaultCopyFunc(_oSClass);
 				}
 				//Destructeur
+				
+				/*
 				//pushLine("virtual ~" + _oSClass.oSLib.sWriteName + "_"  + _oSClass.sName + "();")
 				if (!_oSClass.bIsPod){
 					var _sAutoFree : String = freeAll(_oSClass); //TODO optimise to not reparse second time in cpp/h
@@ -336,8 +338,9 @@ gzDef_Vec_Other(_Name, _nSize);
 						pushLine("inline ~c"  + _oSClass.sName + "(){}; //TODO Virtual ");
 					}
 				}
-				addSpace();
 				
+				addSpace();
+				*/
 
 
 				//Create associateVar
